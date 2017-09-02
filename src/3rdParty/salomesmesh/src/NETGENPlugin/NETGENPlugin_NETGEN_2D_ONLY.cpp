@@ -47,12 +47,14 @@
 #include <utilities.h>
 
 #include <list>
+#include <memory>
 #include <vector>
 #include <limits>
 
 /*
   Netgen include files
 */
+
 namespace nglib {
 #include <nglib.h>
 }
@@ -64,9 +66,11 @@ namespace nglib {
 #include <meshing.hpp>
 //#include <meshtype.hpp>
 namespace netgen {
-#if NETGEN_VERSION > 5
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,2)
+  DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, shared_ptr<Mesh>&, MeshingParameters&);
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(6,0)
   DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, shared_ptr<Mesh>&, MeshingParameters&, int, int);
-#elif NETGEN_VERSION == 5
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(5,0)
   DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, Mesh*&, MeshingParameters&, int, int);
 #else
   DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, Mesh*&, int, int, char*);
@@ -187,41 +191,41 @@ bool NETGENPlugin_NETGEN_2D_ONLY::CheckHypothesis (SMESH_Mesh&         aMesh,
   return ( aStatus == HYP_OK );
 }
 
-namespace
-{
-  inline void limitSize( netgen::Mesh* ngMesh,
-                  const double  maxh )
-  {
-    // get bnd box
-    netgen::Point3d pmin, pmax;
-    ngMesh->GetBox( pmin, pmax, 0 );
-    const double dx = pmax.X() - pmin.X();
-    const double dy = pmax.Y() - pmin.Y();
-    const double dz = pmax.Z() - pmin.Z();
+//namespace
+//{
+//  inline void limitSize( netgen::Mesh* ngMesh,
+//                  const double  maxh )
+//  {
+//    // get bnd box
+//    netgen::Point3d pmin, pmax;
+//    ngMesh->GetBox( pmin, pmax, 0 );
+//    const double dx = pmax.X() - pmin.X();
+//    const double dy = pmax.Y() - pmin.Y();
+//    const double dz = pmax.Z() - pmin.Z();
 
-    const int nbX = Max( 2, int( dx / maxh * 3 ));
-    const int nbY = Max( 2, int( dy / maxh * 3 ));
-    const int nbZ = Max( 2, int( dz / maxh * 3 ));
+//    const int nbX = Max( 2, int( dx / maxh * 3 ));
+//    const int nbY = Max( 2, int( dy / maxh * 3 ));
+//    const int nbZ = Max( 2, int( dz / maxh * 3 ));
 
-    if ( ! & ngMesh->LocalHFunction() )
-      ngMesh->SetLocalH( pmin, pmax, 0.1 );
+//    if ( ! & ngMesh->LocalHFunction() )
+//      ngMesh->SetLocalH( pmin, pmax, 0.1 );
 
-    netgen::Point3d p;
-    for ( int i = 0; i <= nbX; ++i )
-    {
-      p.X() = pmin.X() +  i * dx / nbX;
-      for ( int j = 0; j <= nbY; ++j )
-      {
-        p.Y() = pmin.Y() +  j * dy / nbY;
-        for ( int k = 0; k <= nbZ; ++k )
-        {
-          p.Z() = pmin.Z() +  k * dz / nbZ;
-          ngMesh->RestrictLocalH( p, maxh );
-        }
-      }
-    }
-  }
-}
+//    netgen::Point3d p;
+//    for ( int i = 0; i <= nbX; ++i )
+//    {
+//      p.X() = pmin.X() +  i * dx / nbX;
+//      for ( int j = 0; j <= nbY; ++j )
+//      {
+//        p.Y() = pmin.Y() +  j * dy / nbY;
+//        for ( int k = 0; k <= nbZ; ++k )
+//        {
+//          p.Z() = pmin.Z() +  k * dz / nbZ;
+//          ngMesh->RestrictLocalH( p, maxh );
+//        }
+//      }
+//    }
+//  }
+//}
 
 //=============================================================================
 /*!
@@ -243,7 +247,11 @@ bool NETGENPlugin_NETGEN_2D_ONLY::Compute(SMESH_Mesh&         aMesh,
   ngLib._isComputeOk = false;
 
   netgen::Mesh   ngMeshNoLocSize;
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,0)
   netgen::Mesh * ngMeshes[2] = { (netgen::Mesh*) ngLib._ngMesh,  & ngMeshNoLocSize };
+#else
+  netgen::Mesh * ngMeshes[2] = { (netgen::Mesh*) ngLib._ngMesh.get(),  & ngMeshNoLocSize };
+#endif
   netgen::OCCGeometry occgeoComm;
 
   // min / max sizes are set as follows:
@@ -466,15 +474,24 @@ bool NETGENPlugin_NETGEN_2D_ONLY::Compute(SMESH_Mesh&         aMesh,
       // -------------------------
       // Generate surface mesh
       // -------------------------
-
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,2)
       const int startWith = MESHCONST_MESHSURFACE;
       const int endWith   = toOptimize ? MESHCONST_OPTSURFACE : MESHCONST_MESHSURFACE;
-
+#else
+      netgen::mparam.perfstepsstart = MESHCONST_MESHEDGES;
+      netgen::mparam.perfstepsend = toOptimize ? MESHCONST_OPTSURFACE : MESHCONST_MESHSURFACE;
+#endif
       SMESH_Comment str;
       try {
         OCC_CATCH_SIGNALS;
-
-#if NETGEN_VERSION > 4
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,0)
+        std::shared_ptr<netgen::Mesh> mesh_ptr(ngMesh,  [](netgen::Mesh*){});
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,2)
+        err = netgen::OCCGenerateMesh(occgeom, mesh_ptr, netgen::mparam);
+#else
+        err = netgen::OCCGenerateMesh(occgeom, mesh_ptr, netgen::mparam, startWith, endWith);
+#endif
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(5,0)
         err = netgen::OCCGenerateMesh(occgeom, ngMesh, netgen::mparam, startWith, endWith);
 #else
         char *optstr = 0;

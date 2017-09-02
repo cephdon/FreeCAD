@@ -22,6 +22,7 @@
 
 #ifndef _TechDraw_DrawViewDimension_h_
 #define _TechDraw_DrawViewDimension_h_
+#include <tuple>
 
 # include <App/DocumentObject.h>
 # include <App/FeaturePython.h>
@@ -34,6 +35,12 @@ class Measurement;
 }
 namespace TechDraw
 {
+class DrawViewPart;
+
+struct DimRef {
+    DrawViewPart* part;
+    std::string   sub;
+};
 
 class DrawViewPart;
 
@@ -58,9 +65,6 @@ public:
     App::PropertyFloat   LineWidth;
     //App::PropertyBool    CentreLines;
 
-    //TODO: do we need a property for the actual dimension value? how else to access from Py?
-    //wf: expose getValue & getFormatedValue
-
     short mustExecute() const;
     bool has2DReferences(void) const;
     bool has3DReferences(void) const;
@@ -78,26 +82,28 @@ public:
     //return PyObject as DrawViewDimensionPy
     virtual PyObject *getPyObject(void);
 
-    virtual std::string getFormatedValue() const;
-    virtual double getDimValue() const;
+    virtual std::string getFormatedValue();
+    virtual double getDimValue();
     DrawViewPart* getViewPart() const;
     virtual QRectF getRect() const { return QRectF(0,0,1,1);}                   //pretend dimensions always fit!
+    static int getRefType1(const std::string s);
+    static int getRefType2(const std::string s1, const std::string s2);
+    int getRefType() const;                                                     //Vertex-Vertex, Edge, Edge-Edge
+    void setAll3DMeasurement();
+    void clear3DMeasurements(void);
+    bool checkReferences2D(void) const;
 
 protected:
     void onChanged(const App::Property* prop);
     virtual void onDocumentRestored();
-    int getIndexFromName(std::string geomName) const;
-    int getRefType() const;                                                     //Vertex-Vertex, Edge, Edge-Edge
     bool showUnits() const;
 
 protected:
     Measure::Measurement *measurement;
-    void set3DMeasurement(DocumentObject* const &obj, const std::vector<std::string>& subElements);
-    void clear3DMeasurements(void);
-    double dist2Segs(Base::Vector2D s1,
-                     Base::Vector2D e1,
-                     Base::Vector2D s2,
-                     Base::Vector2D e2) const;
+    double dist2Segs(Base::Vector2d s1,
+                     Base::Vector2d e1,
+                     Base::Vector2d s2,
+                     Base::Vector2d e2) const;
 private:
     static const char* TypeEnums[];
     static const char* MeasureTypeEnums[];

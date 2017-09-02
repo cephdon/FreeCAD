@@ -32,14 +32,19 @@
 #include <App/DocumentObject.h>
 #include <App/PropertyLinks.h>
 #include <App/PropertyStandard.h>
-#include "DrawView.h"
 #include <App/FeaturePython.h>
 
 #include <Base/BoundBox.h>
 
-//#include "GeometryObject.h"
+#include "DrawView.h"
 
 class gp_Pnt;
+class gp_Pln;
+class gp_Ax2;
+//class TopoDS_Edge;
+//class TopoDS_Vertex;
+//class TopoDS_Wire;
+//class TopoDS_Shape;
 
 namespace TechDrawGeometry
 {
@@ -51,15 +56,16 @@ class Face;
 
 namespace TechDraw {
 class DrawHatch;
+class DrawGeomHatch;
+class DrawViewDimension;
+class DrawProjectSplit;
+class DrawViewSection;
+class DrawViewDetail;
 }
 
 namespace TechDraw
 {
-struct splitPoint {
-    int i;
-    Base::Vector3d v;
-    double param;
-};
+
 class DrawViewSection;
 
 class TechDrawExport DrawViewPart : public DrawView
@@ -72,7 +78,6 @@ public:
 
     App::PropertyLink   Source;                                        //Part Feature
     App::PropertyVector Direction;  //TODO: Rename to YAxisDirection or whatever this actually is  (ProjectionDirection)
-    App::PropertyVector XAxisDirection;
     App::PropertyBool   SeamVisible;
     App::PropertyBool   SmoothVisible;
     //App::PropertyBool   OutlinesVisible;
@@ -90,17 +95,14 @@ public:
     App::PropertyFloat  IsoWidth;
     App::PropertyBool   ArcCenterMarks;
     App::PropertyFloat  CenterScale;
-    App::PropertyFloatConstraint  Tolerance;
     App::PropertyBool   HorizCenterLine;
     App::PropertyBool   VertCenterLine;
-
     App::PropertyBool   ShowSectionLine;
-    App::PropertyBool   HorizSectionLine;     //true(horiz)/false(vert)
-    App::PropertyBool   ArrowUpSection;       //true(up/right)/false(down/left)
-    App::PropertyString SymbolSection;
 
 
     std::vector<TechDraw::DrawHatch*> getHatches(void) const;
+    std::vector<TechDraw::DrawGeomHatch*> getGeomHatches(void) const;
+    std::vector<TechDraw::DrawViewDimension*> getDimensions() const;
 
     //TODO: are there use-cases for Python access to TechDrawGeometry???
 
@@ -108,7 +110,9 @@ public:
     const std::vector<TechDrawGeometry::BaseGeom  *> & getEdgeGeometry() const;
     const std::vector<TechDrawGeometry::BaseGeom  *> getVisibleFaceEdges() const;
     const std::vector<TechDrawGeometry::Face *> & getFaceGeometry() const;
+
     bool hasGeometry(void) const;
+    TechDrawGeometry::GeometryObject* getGeometryObject(void) const { return geometryObject; }
 
     TechDrawGeometry::BaseGeom* getProjEdgeByIndex(int idx) const;               //get existing geom for edge idx in projection
     TechDrawGeometry::Vertex* getProjVertexByIndex(int idx) const;               //get existing geom for vertex idx in projection
@@ -118,13 +122,16 @@ public:
     double getBoxX(void) const;
     double getBoxY(void) const;
     virtual QRectF getRect() const;
-    virtual DrawViewSection* getSectionRef() const;                    //is there a ViewSection based on this ViewPart?
+    virtual std::vector<DrawViewSection*> getSectionRefs() const;                    //are there ViewSections based on this ViewPart?
+    virtual std::vector<DrawViewDetail*> getDetailRefs() const;
     const Base::Vector3d& getUDir(void) const {return uDir;}                       //paperspace X
     const Base::Vector3d& getVDir(void) const {return vDir;}                       //paperspace Y
     const Base::Vector3d& getWDir(void) const {return wDir;}                       //paperspace Z
     const Base::Vector3d& getCentroid(void) const {return shapeCentroid;}
-    Base::Vector3d getValidXDir() const;
     Base::Vector3d projectPoint(const Base::Vector3d& pt) const;
+    virtual gp_Ax2 getViewAxis(const Base::Vector3d& pt,
+                               const Base::Vector3d& direction,
+                               const bool flip=true) const;
 
     virtual short mustExecute() const;
 
@@ -143,38 +150,35 @@ public:
     }
     //return PyObject as DrawViewPartPy
     virtual PyObject *getPyObject(void);
+    bool isDeleting(void) { return nowDeleting; }
+    
+    gp_Pln getProjPlane(void) const;
+    virtual std::vector<TopoDS_Wire> getWireForFace(int idx) const;
+
 
 protected:
     TechDrawGeometry::GeometryObject *geometryObject;
     Base::BoundBox3d bbox;
 
     void onChanged(const App::Property* prop);
-    void buildGeometryObject(TopoDS_Shape shape, gp_Pnt& center);
+    virtual void unsetupObject();
+
+    virtual TechDrawGeometry::GeometryObject*  buildGeometryObject(TopoDS_Shape shape, gp_Ax2 viewAxis);
     void extractFaces();
 
-    bool isOnEdge(TopoDS_Edge e, TopoDS_Vertex v, double& param, bool allowEnds = false);
-    std::vector<TopoDS_Edge> splitEdges(std::vector<TopoDS_Edge> orig, std::vector<splitPoint> splits);
-    std::vector<TopoDS_Edge> split1Edge(TopoDS_Edge e, std::vector<splitPoint> splitPoints);
-    double simpleMinDist(TopoDS_Shape s1, TopoDS_Shape s2); //const;   //probably sb static or DrawUtil
-
     //Projection parameter space
-    void saveParamSpace(const Base::Vector3d& direction,
-                        const Base::Vector3d& xAxis);
+    virtual void saveParamSpace(const Base::Vector3d& direction, const Base::Vector3d& xAxis=Base::Vector3d(0.0,0.0,0.0));
     Base::Vector3d uDir;                       //paperspace X
     Base::Vector3d vDir;                       //paperspace Y
     Base::Vector3d wDir;                       //paperspace Z
     Base::Vector3d shapeCentroid;
-    std::vector<splitPoint> sortSplits(std::vector<splitPoint>& s, bool ascend);
-    static bool splitCompare(const splitPoint& p1, const splitPoint& p2);
-    static bool splitEqual(const splitPoint& p1, const splitPoint& p2);
     void getRunControl(void);
 
-    long int m_interAlgo;
     bool m_sectionEdges;
     bool m_handleFaces;
 
 private:
-    static App::PropertyFloatConstraint::Constraints floatRange;
+    bool nowDeleting;
 
 };
 

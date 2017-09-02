@@ -17,12 +17,13 @@
 %}
 
      /* Bison declarations.  */
-     %token UNIT NUM MINUSSIGN
+     %token UNIT ONE NUM MINUSSIGN
      %token ACOS ASIN ATAN ATAN2 COS EXP ABS MOD LOG LOG10 POW SIN SINH TAN TANH SQRT;
      %left MINUSSIGN '+'
      %left '*' '/'
      %left NEG     /* negation--unary minus */
      %right '^'    /* exponentiation */
+     %left ONE NUM
 
 
 
@@ -37,29 +38,31 @@
             |  quantity quantity            { QuantResult = $1 + $2;            }
  ;   
      num:      NUM                			{ $$ = $1;         	}
-             | num '+' num        			{ $$ = $1.getValue() + $3.getValue();    	}
-             | num MINUSSIGN num      		{ $$ = $1.getValue() - $3.getValue();    	}
-             | num '*' num        			{ $$ = $1.getValue() * $3.getValue();    	}
-             | num '/' num        			{ $$ = $1.getValue() / $3.getValue();    	}
-             | MINUSSIGN num  %prec NEG     { $$ = -$2.getValue();        	}
-             | num '^' num        			{ $$ = pow ($1.getValue(), $3.getValue());}
+             | ONE                			{ $$ = $1;         	}
+             | num '+' num        			{ $$ = Quantity($1.getValue() + $3.getValue());    	}
+             | num MINUSSIGN num      		{ $$ = Quantity($1.getValue() - $3.getValue());    	}
+             | num '*' num        			{ $$ = Quantity($1.getValue() * $3.getValue());    	}
+             | num '/' num        			{ $$ = Quantity($1.getValue() / $3.getValue());    	}
+             | MINUSSIGN num  %prec NEG     { $$ = Quantity(-$2.getValue());        	}
+             | num '^' num        			{ $$ = Quantity(pow ($1.getValue(), $3.getValue()));}
              | '(' num ')'        			{ $$ = $2;         	}
-             | ACOS  '(' num ')'  			{ $$ = acos($3.getValue());   	}
-             | ASIN  '(' num ')'  			{ $$ = asin($3.getValue());   	}
-             | ATAN  '(' num ')'  			{ $$ = atan($3.getValue());   	}
-             | ABS  '(' num ')'   			{ $$ = fabs($3.getValue());   	}
-             | EXP  '(' num ')'   			{ $$ = exp($3.getValue());    	}
-             | LOG  '(' num ')'				{ $$ = log($3.getValue());     }
-             | LOG10  '(' num ')'			{ $$ = log10($3.getValue());   }
-             | SIN  '(' num ')'   			{ $$ = sin($3.getValue());     }
-             | SINH '(' num ')'   			{ $$ = sinh($3.getValue());    }
-             | TAN  '(' num ')'   			{ $$ = tan($3.getValue());     }
-             | TANH  '(' num ')'   			{ $$ = tanh($3.getValue());    }
-             | SQRT  '(' num ')'   			{ $$ = sqrt($3.getValue());    }
-             | COS  '(' num ')'   			{ $$ = cos($3.getValue());    }
+             | ACOS  '(' num ')'  			{ $$ = Quantity(acos($3.getValue()));   	}
+             | ASIN  '(' num ')'  			{ $$ = Quantity(asin($3.getValue()));   	}
+             | ATAN  '(' num ')'  			{ $$ = Quantity(atan($3.getValue()));   	}
+             | ABS  '(' num ')'   			{ $$ = Quantity(fabs($3.getValue()));   	}
+             | EXP  '(' num ')'   			{ $$ = Quantity(exp($3.getValue()));    	}
+             | LOG  '(' num ')'				{ $$ = Quantity(log($3.getValue()));     }
+             | LOG10  '(' num ')'			{ $$ = Quantity(log10($3.getValue()));   }
+             | SIN  '(' num ')'   			{ $$ = Quantity(sin($3.getValue()));     }
+             | SINH '(' num ')'   			{ $$ = Quantity(sinh($3.getValue()));    }
+             | TAN  '(' num ')'   			{ $$ = Quantity(tan($3.getValue()));     }
+             | TANH  '(' num ')'   			{ $$ = Quantity(tanh($3.getValue()));    }
+             | SQRT  '(' num ')'   			{ $$ = Quantity(sqrt($3.getValue()));    }
+             | COS  '(' num ')'   			{ $$ = Quantity(cos($3.getValue()));    }
 ;            
 
     unit:       UNIT                        { $$ = $1;         	                }
+            |   ONE '/' unit                { $$ = Quantity(1.0)/$3;  	        }
             |   unit '*' unit        	    { $$ = $1 * $3;    	                }
             |   unit '/' unit        		{ $$ = $1 / $3;    	                }
             |   unit '^' num        	    { $$ = $1.pow ($3);                 }

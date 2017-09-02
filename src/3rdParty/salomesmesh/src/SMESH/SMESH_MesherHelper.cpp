@@ -765,7 +765,7 @@ bool SMESH_MesherHelper::CheckNodeUV(const TopoDS_Face&   F,
         MESSAGE( "SMESH_MesherHelper::CheckNodeUV() failed to project" );
         return false;
       }
-      Quantity_Parameter U,V;
+      Standard_Real U,V;
       projector.LowerDistanceParameters(U,V);
       uv.SetCoord( U,V );
       surfPnt = surface->Value( U, V );
@@ -1071,7 +1071,7 @@ bool SMESH_MesherHelper::CheckNodeU(const TopoDS_Edge&   E,
           MESSAGE( "SMESH_MesherHelper::CheckNodeU() failed to project" );
           return false;
         }
-        Quantity_Parameter U = projector->LowerDistanceParameter();
+        Standard_Real U = projector->LowerDistanceParameter();
         u = double( U );
         MESSAGE(" f " << f << " l " << l << " u " << u);
         curvPnt = curve->Value( u );
@@ -3667,7 +3667,7 @@ namespace { // Structures used by FixQuadraticElements()
    * \brief Make up a chain of links
    *  \param iSide - link to add first
    *  \param chain - chain to fill in
-   *  \param pos   - postion of medium nodes the links should have
+   *  \param pos   - position of medium nodes the links should have
    *  \param error - out, specifies what is wrong
    *  \retval bool - false if valid chain can't be built; "valid" means that links
    *                 of the chain belongs to rectangles bounding hexahedrons
@@ -4584,7 +4584,7 @@ namespace { // Structures used by FixQuadraticElements()
       SMDS_ElemIteratorPtr faceIter( new TIterOnIter( faceIterVec ));
 
       // a seacher to check if a volume is close to a concave face
-      std::auto_ptr< SMESH_ElementSearcher > faceSearcher
+      std::unique_ptr< SMESH_ElementSearcher > faceSearcher
         ( SMESH_MeshAlgos::GetElementSearcher( *theHelper.GetMeshDS(), faceIter ));
 
       // classifier

@@ -27,6 +27,8 @@
 #include <QGraphicsView>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsPathItem>
+#include <QGraphicsRectItem>
+#include <QColor>
 #include <Base/Vector3D.h>
 #include "QGIView.h"
 #include "QGCustomText.h"
@@ -92,11 +94,14 @@ public:
     ~QGIViewDimension() = default;
 
     void setViewPartFeature(TechDraw::DrawViewDimension *obj);
-    int type() const { return Type;}
+    int type() const override { return Type;}
 
-    virtual void drawBorder();
+    virtual void drawBorder() override;
     virtual void updateView(bool update = false) override;
-    virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 );
+    virtual void paint( QPainter * painter,
+                        const QStyleOptionGraphicsItem * option,
+                        QWidget * widget = 0 ) override;
+    virtual QColor getNormalColor(void) override;
 
 public Q_SLOTS:
     void datumLabelDragged(void);
@@ -106,8 +111,9 @@ public Q_SLOTS:
     void updateDim(void);
 
 protected:
-    void draw();
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    void draw() override;
+    virtual QVariant itemChange( GraphicsItemChange change,
+                                 const QVariant &value ) override;
     virtual void setSvgPens(void);
     virtual void setPens(void);
 

@@ -24,6 +24,7 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
+# include <QByteArray>
 # include <qpixmap.h>
 # include <Inventor/actions/SoSearchAction.h>
 # include <Inventor/nodes/SoDrawStyle.h>
@@ -42,6 +43,7 @@
 #include "MDIView.h"
 #include "TaskView/TaskAppearance.h"
 #include "ViewProviderDocumentObject.h"
+#include "ViewProviderExtension.h"
 #include <Gui/ViewProviderDocumentObjectPy.h>
 
 
@@ -90,6 +92,15 @@ const char* ViewProviderDocumentObject::detachFromDocument()
     // name comes from the document object
     setStatus(Detach, true);
     return "";
+}
+
+void ViewProviderDocumentObject::onAboutToRemoveProperty(const char* prop)
+{
+    // transactions of view providers are also managed in App::Document.
+    App::DocumentObject* docobject = getObject();
+    App::Document* document = docobject ? docobject->getDocument() : nullptr;
+    if (document)
+        document->removePropertyOfObject(this, prop);
 }
 
 void ViewProviderDocumentObject::onBeforeChange(const App::Property* prop)
@@ -179,6 +190,16 @@ void ViewProviderDocumentObject::attach(App::DocumentObject *pcObj)
     const char* defmode = this->getDefaultDisplayMode();
     if (defmode)
         DisplayMode.setValue(defmode);
+    
+    //attach the extensions
+    auto vector = getExtensionsDerivedFromType<Gui::ViewProviderExtension>();
+    for(Gui::ViewProviderExtension* ext : vector)
+        ext->extensionAttach(pcObj);
+}
+
+void ViewProviderDocumentObject::updateData(const App::Property* prop)
+{
+    ViewProvider::updateData(prop);
 }
 
 Gui::Document* ViewProviderDocumentObject::getDocument() const
@@ -265,45 +286,10 @@ void ViewProviderDocumentObject::setActiveMode()
         ViewProvider::hide();
 }
 
-const char* ViewProviderDocumentObject::getDefaultDisplayMode() const
-{
-    // We use the first item then
-    return 0;
-}
-
-std::vector<std::string> ViewProviderDocumentObject::getDisplayModes(void) const
-{
-    // empty
-    return std::vector<std::string>();
-}
-
 PyObject* ViewProviderDocumentObject::getPyObject()
 {
     if (!pyViewObject)
         pyViewObject = new ViewProviderDocumentObjectPy(this);
     pyViewObject->IncRef();
     return pyViewObject;
-}
-
-bool ViewProviderDocumentObject::allowDrop(const std::vector<const App::DocumentObject*> &objList,
-                                           Qt::KeyboardModifiers keys,
-                                           Qt::MouseButtons mouseBts,
-                                           const QPoint &pos)
-{
-    Q_UNUSED(objList);
-    Q_UNUSED(keys);
-    Q_UNUSED(mouseBts);
-    Q_UNUSED(pos);
-    return false;
-}
-
-void ViewProviderDocumentObject::drop(const std::vector<const App::DocumentObject*> &objList,
-                                      Qt::KeyboardModifiers keys,
-                                      Qt::MouseButtons mouseBts,
-                                      const QPoint &pos)
-{
-    Q_UNUSED(objList);
-    Q_UNUSED(keys);
-    Q_UNUSED(mouseBts);
-    Q_UNUSED(pos);
 }

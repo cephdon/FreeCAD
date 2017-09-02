@@ -21,11 +21,12 @@
 # *                                                                         *
 # ***************************************************************************
 
-
 __title__ = "Fem Tools super class"
 __author__ = "Przemo Firszt, Bernd Hahnebach"
 __url__ = "http://www.freecadweb.org"
 
+## \addtogroup FEM
+#  @{
 
 import FreeCAD
 from PySide import QtCore
@@ -55,8 +56,6 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
             self.solver = None
         if self.analysis:
             self.update_objects()
-            self.results_present = False
-            self.result_object = None
         else:
             raise Exception('FEM: No active analysis found!')
 
@@ -65,22 +64,10 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
     def purge_results(self):
         for m in self.analysis.Member:
             if (m.isDerivedFrom('Fem::FemResultObject')):
+                if m.Mesh and hasattr(m.Mesh, "Proxy") and m.Mesh.Proxy.Type == "FemMeshResult":
+                    self.analysis.Document.removeObject(m.Mesh.Name)
                 self.analysis.Document.removeObject(m.Name)
-        self.results_present = False
-
-    ## Resets mesh deformation
-    #  @param self The python object self
-    def reset_mesh_deformation(self):
-        if self.mesh:
-            self.mesh.ViewObject.applyDisplacement(0.0)
-
-    ## Resets mesh color
-    #  @param self The python object self
-    def reset_mesh_color(self):
-        if self.mesh:
-            self.mesh.ViewObject.NodeColor = {}
-            self.mesh.ViewObject.ElementColor = {}
-            self.mesh.ViewObject.setNodeColorByScalars()
+        FreeCAD.ActiveDocument.recompute()
 
     ## Resets mesh color, deformation and removes all result objects if preferences to keep them is not set
     #  @param self The python object self
@@ -89,62 +76,11 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
         keep_results_on_rerun = self.fem_prefs.GetBool("KeepResultsOnReRun", False)
         if not keep_results_on_rerun:
             self.purge_results()
-        self.reset_mesh_color()
-        self.reset_mesh_deformation()
 
     ## Resets mesh color, deformation and removes all result objects
     #  @param self The python object self
     def reset_all(self):
         self.purge_results()
-        self.reset_mesh_color()
-        self.reset_mesh_deformation()
-
-    ## Sets mesh color using selected type of results (Sabs by default)
-    #  @param self The python object self
-    #  @param result_type Type of FEM result, allowed are:
-    #  - U1, U2, U3 - deformation
-    #  - Uabs - absolute deformation
-    #  - Sabs - Von Mises stress
-    #  @param limit cutoff value. All values over the limit are treated as equal to the limit. Useful for filtering out hot spots.
-    def show_result(self, result_type="Sabs", limit=None):
-        self.update_objects()
-        if result_type == "None":
-            self.reset_mesh_color()
-            return
-        if self.result_object:
-            if FreeCAD.GuiUp:
-                if self.result_object.Mesh.ViewObject.Visibility is False:
-                    self.result_object.Mesh.ViewObject.Visibility = True
-            if result_type == "Sabs":
-                values = self.result_object.StressValues
-            elif result_type == "Uabs":
-                values = self.result_object.DisplacementLengths
-            else:
-                match = {"U1": 0, "U2": 1, "U3": 2}
-                d = zip(*self.result_object.DisplacementVectors)
-                values = list(d[match[result_type]])
-            self.show_color_by_scalar_with_cutoff(values, limit)
-
-    ## Sets mesh color using list of values. Internally used by show_result function.
-    #  @param self The python object self
-    #  @param values list of values
-    #  @param limit cutoff value. All values over the limit are treated as equel to the limit. Useful for filtering out hot spots.
-    def show_color_by_scalar_with_cutoff(self, values, limit=None):
-        if limit:
-            filtered_values = []
-            for v in values:
-                if v > limit:
-                    filtered_values.append(limit)
-                else:
-                    filtered_values.append(v)
-        else:
-            filtered_values = values
-        self.mesh.ViewObject.setNodeColorByScalars(self.result_object.NodeNumbers, filtered_values)
-
-    def show_displacement(self, displacement_factor=0.0):
-        self.mesh.ViewObject.setNodeDisplacementByVectors(self.result_object.NodeNumbers,
-                                                          self.result_object.DisplacementVectors)
-        self.mesh.ViewObject.applyDisplacement(displacement_factor)
 
     def update_objects(self):
         # [{'Object':materials_linear}, {}, ...]
@@ -156,6 +92,7 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
         # [{'Object':heatflux_constraints, 'xxxxxxxx':value}, {}, ...]
         # [{'Object':initialtemperature_constraints, 'xxxxxxxx':value}, {}, ...]
         # [{'Object':beam_sections, 'xxxxxxxx':value}, {}, ...]
+        # [{'Object':fluid_sections, 'xxxxxxxx':value}, {}, ...]
         # [{'Object':shell_thicknesses, 'xxxxxxxx':value}, {}, ...]
         # [{'Object':contact_constraints, 'xxxxxxxx':value}, {}, ...]
 
@@ -188,11 +125,15 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
         self.pressure_constraints = []
         ## @var beam_sections
         # set of beam sections from the analysis. Updated with update_objects
-        # Individual beam sections are Proxy.Type "FemBeamSection"
+        # Individual beam sections are Proxy.Type "FemElementGeometry1D"
         self.beam_sections = []
+        ## @var fluid_sections
+        # set of fluid sections from the analysis. Updated with update_objects
+        # Individual fluid sections are Proxy.Type "FemElementFluid1D"
+        self.fluid_sections = []
         ## @var shell_thicknesses
         # set of shell thicknesses from the analysis. Updated with update_objects
-        # Individual shell thicknesses are Proxy.Type "FemShellThickness"
+        # Individual shell thicknesses are Proxy.Type "FemElementGeometry2D"
         self.shell_thicknesses = []
         ## @var displacement_constraints
         # set of displacements for the analysis. Updated with update_objects
@@ -263,6 +204,7 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
             elif m.isDerivedFrom("Fem::ConstraintForce"):
                 force_constraint_dict = {}
                 force_constraint_dict['Object'] = m
+                force_constraint_dict['RefShapeType'] = get_refshape_type(m)
                 self.force_constraints.append(force_constraint_dict)
             elif m.isDerivedFrom("Fem::ConstraintPressure"):
                 PressureObjectDict = {}
@@ -296,16 +238,21 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                 transform_constraint_dict = {}
                 transform_constraint_dict['Object'] = m
                 self.transform_constraints.append(transform_constraint_dict)
-            elif hasattr(m, "Proxy") and m.Proxy.Type == "FemBeamSection":
+            elif hasattr(m, "Proxy") and m.Proxy.Type == "FemElementGeometry1D":
                 beam_section_dict = {}
                 beam_section_dict['Object'] = m
                 self.beam_sections.append(beam_section_dict)
-            elif hasattr(m, "Proxy") and m.Proxy.Type == "FemShellThickness":
+            elif hasattr(m, "Proxy") and m.Proxy.Type == "FemElementFluid1D":
+                fluid_section_dict = {}
+                fluid_section_dict['Object'] = m
+                self.fluid_sections.append(fluid_section_dict)
+            elif hasattr(m, "Proxy") and m.Proxy.Type == "FemElementGeometry2D":
                 shell_thickness_dict = {}
                 shell_thickness_dict['Object'] = m
                 self.shell_thicknesses.append(shell_thickness_dict)
 
     def check_prerequisites(self):
+        from FreeCAD import Units
         message = ""
         # analysis
         if not self.analysis:
@@ -328,19 +275,23 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                     message += "Frequency analysis: Solver has no EigenmodeLowLimit.\n"
                 elif not hasattr(self.solver, "EigenmodesCount"):
                     message += "Frequency analysis: Solver has no EigenmodesCount.\n"
-            if hasattr(self.solver, "MaterialNonlinearity") and self.solver.MaterialNonlinearity == "nonlinear" and not self.materials_nonlinear:
-                message += "Solver is set to nonlinear materials, but there is no nonlinear material in the analysis. \n"
+            if hasattr(self.solver, "MaterialNonlinearity") and self.solver.MaterialNonlinearity == "nonlinear":
+                if not self.materials_nonlinear:
+                    message += "Solver is set to nonlinear materials, but there is no nonlinear material in the analysis.\n"
+                if self.solver.SolverType == 'FemSolverCalculix' and self.solver.GeometricalNonlinearity != "nonlinear":
+                    # nonlinear geometry --> should be set https://forum.freecadweb.org/viewtopic.php?f=18&t=23101&p=180489#p180489
+                    message += "Solver CalculiX triggers nonlinear geometry for nonlinear material, thus it should to be set too.\n"
         # mesh
         if not self.mesh:
             message += "No mesh object defined in the analysis\n"
         if self.mesh:
             if self.mesh.FemMesh.VolumeCount == 0 and self.mesh.FemMesh.FaceCount > 0 and not self.shell_thicknesses:
                 message += "FEM mesh has no volume elements, either define a shell thicknesses or provide a FEM mesh with volume elements.\n"
-            if self.mesh.FemMesh.VolumeCount == 0 and self.mesh.FemMesh.FaceCount == 0 and self.mesh.FemMesh.EdgeCount > 0 and not self.beam_sections:
-                message += "FEM mesh has no volume and no shell elements, either define a beam section or provide a FEM mesh with volume elements.\n"
+            if self.mesh.FemMesh.VolumeCount == 0 and self.mesh.FemMesh.FaceCount == 0 and self.mesh.FemMesh.EdgeCount > 0 and not self.beam_sections and not self.fluid_sections:
+                message += "FEM mesh has no volume and no shell elements, either define a beam/fluid section or provide a FEM mesh with volume elements.\n"
             if self.mesh.FemMesh.VolumeCount == 0 and self.mesh.FemMesh.FaceCount == 0 and self.mesh.FemMesh.EdgeCount == 0:
                 message += "FEM mesh has neither volume nor shell or edge elements. Provide a FEM mesh with elements!\n"
-        # materials linear and nonlinear
+        # material linear and nonlinear
         if not self.materials_linear:
             message += "No material object defined in the analysis\n"
         has_no_references = False
@@ -349,22 +300,38 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                 if has_no_references is True:
                     message += "More than one material has an empty references list (Only one empty references list is allowed!).\n"
                 has_no_references = True
+        mat_ref_shty = ''
+        for m in self.materials_linear:
+            ref_shty = get_refshape_type(m['Object'])
+            if not mat_ref_shty:
+                mat_ref_shty = ref_shty
+            if mat_ref_shty and ref_shty and ref_shty != mat_ref_shty:  # mat_ref_shty could be empty in one material, only the not empty ones should have the same shape type
+                message += 'Some material objects do not have the same reference shape type (all material objects must have the same reference shape type, at the moment).\n'
         for m in self.materials_linear:
             mat_map = m['Object'].Material
-            if 'YoungsModulus' not in mat_map:
-                message += "No YoungsModulus defined for at least one material.\n"
-            if 'PoissonRatio' not in mat_map:
-                message += "No PoissonRatio defined for at least one material.\n"
+            mat_obj = m['Object']
+            if mat_obj.Category == 'Solid':
+                if 'YoungsModulus' in mat_map:
+                    # print Units.Quantity(mat_map['YoungsModulus']).Value
+                    if not Units.Quantity(mat_map['YoungsModulus']).Value:
+                        message += "Value of YoungsModulus is set to 0.0.\n"
+                else:
+                    message += "No YoungsModulus defined for at least one material.\n"
+                if 'PoissonRatio' not in mat_map:
+                    message += "No PoissonRatio defined for at least one material.\n"  # PoissonRatio is allowed to be 0.0 (in ccx), but it should be set anyway.
             if self.analysis_type == "frequency" or self.selfweight_constraints:
                 if 'Density' not in mat_map:
                     message += "No Density defined for at least one material.\n"
             if self.analysis_type == "thermomech":
-                if 'ThermalConductivity' not in mat_map:
+                if 'ThermalConductivity' in mat_map:
+                    if not Units.Quantity(mat_map['ThermalConductivity']).Value:
+                        message += "Value of ThermalConductivity is set to 0.0.\n"
+                else:
                     message += "Thermomechanical analysis: No ThermalConductivity defined for at least one material.\n"
-                if 'ThermalExpansionCoefficient' not in mat_map:
-                    message += "Thermomechanical analysis: No ThermalExpansionCoefficient defined for at least one material.\n"
+                if 'ThermalExpansionCoefficient' not in mat_map and mat_obj.Category == 'Solid':
+                    message += "Thermomechanical analysis: No ThermalExpansionCoefficient defined for at least one material.\n"  # allowed to be 0.0 (in ccx)
                 if 'SpecificHeat' not in mat_map:
-                    message += "Thermomechanical analysis: No SpecificHeat defined for at least one material.\n"
+                    message += "Thermomechanical analysis: No SpecificHeat defined for at least one material.\n"  # allowed to be 0.0 (in ccx)
         for m in self.materials_linear:
             has_nonlinear_material = False
             for nlm in self.materials_nonlinear:
@@ -372,24 +339,72 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                     if has_nonlinear_material is False:
                         has_nonlinear_material = True
                     else:
-                        message += "At least two nonlinear materials use the same linear base material. Only one nonlinear material for each linear material allowed. \n"
-        # constraints
+                        message += "At least two nonlinear materials use the same linear base material. Only one nonlinear material for each linear material allowed.\n"
+        # which analysis needs which constraints
+        # no check in the regard of loads existence (constraint force, pressure, self weight) is done because an analysis without loads at all is an valid analysis too
         if self.analysis_type == "static":
             if not (self.fixed_constraints or self.displacement_constraints):
                 message += "Static analysis: Neither constraint fixed nor constraint displacement defined.\n"
-        if self.analysis_type == "static":
-            if not (self.force_constraints or self.pressure_constraints or self.selfweight_constraints):
-                message += "Static analysis: Neither constraint force nor constraint pressure or a constraint selfweight defined.\n"
         if self.analysis_type == "thermomech":
             if not self.initialtemperature_constraints:
-                message += "Thermomechanical analysis: No initial temperature defined.\n"
+                if not self.fluid_sections:
+                    message += "Thermomechanical analysis: No initial temperature defined.\n"
             if len(self.initialtemperature_constraints) > 1:
                 message += "Thermomechanical analysis: Only one initial temperature is allowed.\n"
-        # beam sections and shell thicknesses
+        # constraints
+        # fixed
+        if self.fixed_constraints:
+            for c in self.fixed_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint fixed has an empty reference.\n"
+        # displacement
+        if self.displacement_constraints:
+            for di in self.displacement_constraints:
+                if len(di['Object'].References) == 0:
+                    message += "At least one constraint displacement has an empty reference.\n"
+        # plane rotation
+        if self.planerotation_constraints:
+            for c in self.planerotation_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint plane rotation has an empty reference.\n"
+        # contact
+        if self.contact_constraints:
+            for c in self.contact_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint contact has an empty reference.\n"
+        # transform
+        if self.transform_constraints:
+            for c in self.transform_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint transform has an empty reference.\n"
+        # pressure
+        if self.pressure_constraints:
+            for c in self.pressure_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint pressure has an empty reference.\n"
+        # force
+        if self.force_constraints:
+            for c in self.force_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint force has an empty reference.\n"
+        # temperature
+        if self.temperature_constraints:
+            for c in self.temperature_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint temperature has an empty reference.\n"
+        # heat flux
+        if self.heatflux_constraints:
+            for c in self.heatflux_constraints:
+                if len(c['Object'].References) == 0:
+                    message += "At least one constraint heat flux has an empty reference.\n"
+        # beam section
         if self.beam_sections:
             if self.shell_thicknesses:
                 # this needs to be checked only once either here or in shell_thicknesses
                 message += "Beam Sections and shell thicknesses in one analysis is not supported at the moment.\n"
+            if self.fluid_sections:
+                # this needs to be checked only once either here or in shell_thicknesses
+                message += "Beam Sections and Fluid Sections in one analysis is not supported at the moment.\n"
             has_no_references = False
             for b in self.beam_sections:
                 if len(b['Object'].References) == 0:
@@ -401,6 +416,7 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                     message += "Beam sections defined but FEM mesh has volume or shell elements.\n"
                 if self.mesh.FemMesh.EdgeCount == 0:
                     message += "Beam sections defined but FEM mesh has no edge elements.\n"
+        # shell thickness
         if self.shell_thicknesses:
             has_no_references = False
             for s in self.shell_thicknesses:
@@ -413,6 +429,23 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                     message += "Shell thicknesses defined but FEM mesh has volume elements.\n"
                 if self.mesh.FemMesh.FaceCount == 0:
                     message += "Shell thicknesses defined but FEM mesh has no shell elements.\n"
+        # fluid section
+        if self.fluid_sections:
+            if not self.selfweight_constraints:
+                message += "A fluid network analysis requires self weight constraint to be applied"
+            if self.analysis_type != "thermomech":
+                message += "A fluid network analysis can only be done in a thermomech analysis"
+            has_no_references = False
+            for f in self.fluid_sections:
+                if len(f['Object'].References) == 0:
+                    if has_no_references is True:
+                        message += "More than one fluid section has an empty references list (Only one empty references list is allowed!).\n"
+                    has_no_references = True
+            if self.mesh:
+                if self.mesh.FemMesh.FaceCount > 0 or self.mesh.FemMesh.VolumeCount > 0:
+                    message += "Fluid sections defined but FEM mesh has volume or shell elements.\n"
+                if self.mesh.FemMesh.EdgeCount == 0:
+                    message += "Fluid sections defined but FEM mesh has no edge elements.\n"
         return message
 
     ## Sets base_name
@@ -435,7 +468,8 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
         if inp_file_name is not None:
             self.inp_file_name = inp_file_name
         else:
-            self.inp_file_name = self.working_dir + '/' + self.base_name + '.inp'
+            # self.working_dir does have a slash at the end
+            self.inp_file_name = self.working_dir + self.base_name + '.inp'
 
     ## Sets analysis type.
     #  @param self The python object self
@@ -473,6 +507,9 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
                     except:
                         print('Could not set working directory to solver working directory.')
 
+        # check working_dir has a slash at the end, if not add one
+        self.working_dir = os.path.join(self.working_dir, '')
+
         if not (os.path.isdir(self.working_dir)):
             try:
                 os.makedirs(self.working_dir)
@@ -485,56 +522,25 @@ class FemTools(QtCore.QRunnable, QtCore.QObject):
         # Update inp file name
         self.set_inp_file_name()
 
-    ## Set the analysis result object
-    #  if no result object is provided, check if the analysis has result objects
-    #  if the analysis has exact one result object use this result object
-    #  @param self The python object self
-    #  @param result object name
-    def use_results(self, results_name=None):
-        self.result_object = None
-        if results_name is not None:
-            for m in self.analysis.Member:
-                if m.isDerivedFrom("Fem::FemResultObject") and m.Name == results_name:
-                    self.result_object = m
-                    break
-            if not self.result_object:
-                raise Exception("{} doesn't exist".format(results_name))
-        else:
-            has_results = False
-            for m in self.analysis.Member:
-                if m.isDerivedFrom("Fem::FemResultObject"):
-                    self.result_object = m
-                    if has_results is True:
-                        self.result_object = None
-                        raise Exception("No result name was provided, but more than one result objects in the analysis.")
-                    has_results = True
-            if not self.result_object:
-                raise Exception("No result object found in the analysis")
 
-    ## Returns minimum, average and maximum value for provided result type
-    #  @param self The python object self
-    #  @param result_type Type of FEM result, allowed are:
-    #  - U1, U2, U3 - deformation
-    #  - Uabs - absolute deformation
-    #  - Sabs - Von Mises stress
-    #    Prin1 Principal stress 1
-    #    Prin2 Principal stress 2
-    #    Prin3 Principal stress 3
-    #    MaxSear maximum shear stress
-    #  - None - always return (0.0, 0.0, 0.0)
-    def get_stats(self, result_type):
-        stats = (0.0, 0.0, 0.0)
-        for m in self.analysis.Member:
-            if m.isDerivedFrom("Fem::FemResultObject"):
-                match = {"U1": (m.Stats[0], m.Stats[1], m.Stats[2]),
-                         "U2": (m.Stats[3], m.Stats[4], m.Stats[5]),
-                         "U3": (m.Stats[6], m.Stats[7], m.Stats[8]),
-                         "Uabs": (m.Stats[9], m.Stats[10], m.Stats[11]),
-                         "Sabs": (m.Stats[12], m.Stats[13], m.Stats[14]),
-                         "MaxPrin": (m.Stats[15], m.Stats[16], m.Stats[17]),
-                         "MidPrin": (m.Stats[18], m.Stats[19], m.Stats[20]),
-                         "MinPrin": (m.Stats[21], m.Stats[22], m.Stats[23]),
-                         "MaxShear": (m.Stats[24], m.Stats[25], m.Stats[26]),
-                         "None": (0.0, 0.0, 0.0)}
-                stats = match[result_type]
-        return stats
+# helper
+def get_refshape_type(fem_doc_object):
+    # returns the reference shape type
+    # for force object:
+    # in GUI defined frc_obj all frc_obj have at leas one ref_shape and ref_shape have all the same shape type
+    # for material object:
+    # in GUI defined material_obj could have no RefShape and RefShapes could be different type
+    # we gone need the RefShapes to be the same type inside one fem_doc_object
+    # TODO here: check if all RefShapes inside the object really have the same type
+    import FemMeshTools
+    if hasattr(fem_doc_object, 'References') and fem_doc_object.References:
+        first_ref_obj = fem_doc_object.References[0]
+        first_ref_shape = FemMeshTools.get_element(first_ref_obj[0], first_ref_obj[1][0])
+        st = first_ref_shape.ShapeType
+        print(fem_doc_object.Name + ' has ' + st + ' reference shapes.')
+        return st
+    else:
+        print(fem_doc_object.Name + ' has empty References.')
+        return ''
+
+##  @}

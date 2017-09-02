@@ -398,6 +398,21 @@
     </message>
 </context>
 <context>
+    <name>CmdMeshSectionByPlane</name>
+    <message>
+        <source>Mesh</source>
+        <translation>Mesh</translation>
+    </message>
+    <message>
+        <source>Create section from mesh and plane</source>
+        <translation>Crea una sezione da mesh e piano</translation>
+    </message>
+    <message>
+        <source>Section from mesh and plane</source>
+        <translation>Sezione da mesh e piano</translation>
+    </message>
+</context>
+<context>
     <name>CmdMeshSegmentation</name>
     <message>
         <source>Mesh</source>
@@ -735,6 +750,33 @@ Please run the command to repair folds first</source>
         <source>Folds</source>
         <translation>Pieghe</translation>
     </message>
+    <message>
+        <source>Settings...</source>
+        <translation>Impostazioni...</translation>
+    </message>
+</context>
+<context>
+    <name>MeshGui::DlgEvaluateSettings</name>
+    <message>
+        <source>Evaluation settings</source>
+        <translation>Impostazioni di valutazione</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Impostazioni</translation>
+    </message>
+    <message>
+        <source>Check for non-manifold points</source>
+        <translation>Verifica la presenza di punti di non-manifold</translation>
+    </message>
+    <message>
+        <source>Enable check for folds on surface</source>
+        <translation>Verifica la presenza di pieghe sulla superficie</translation>
+    </message>
+    <message>
+        <source>Only consider zero area faces as degenerated</source>
+        <translation>Considera come degenerate solo le facce con area zero</translation>
+    </message>
 </context>
 <context>
     <name>MeshGui::DlgRegularSolid</name>
@@ -859,6 +901,10 @@ Please run the command to repair folds first</source>
     <message>
         <source>mm</source>
         <translation type="obsolete">mm</translation>
+    </message>
+    <message>
+        <source>Export AMF files using compression</source>
+        <translation>Esporta i file AMF utilizzando la compressione</translation>
     </message>
 </context>
 <context>
@@ -1072,7 +1118,7 @@ Please run the command to repair folds first</source>
     </message>
     <message>
         <source>Minumum number of faces</source>
-        <translation>Numero minimo di facce</translation>
+        <translation type="obsolete">Numero minimo di facce</translation>
     </message>
     <message>
         <source>Cylinder</source>
@@ -1111,7 +1157,7 @@ Please run the command to repair folds first</source>
     </message>
     <message>
         <source>Clear</source>
-        <translation>Cancella</translation>
+        <translation>Pulisci</translation>
     </message>
     <message>
         <source>Respect only visible triangles</source>
@@ -1145,11 +1191,11 @@ Please run the command to repair folds first</source>
     <name>Mesh_TrimByPlane</name>
     <message>
         <source>Select plane</source>
-        <translation>Seleziona piano</translation>
+        <translation type="obsolete">Seleziona piano</translation>
     </message>
     <message>
         <source>Please select a plane at which you trim the mesh.</source>
-        <translation>Seleziona un piano con il quale tagliare la mesh.</translation>
+        <translation type="obsolete">Seleziona un piano con il quale tagliare la mesh.</translation>
     </message>
 </context>
 <context>
@@ -1160,12 +1206,16 @@ Please run the command to repair folds first</source>
     </message>
     <message>
         <source>Unknwon error occured while running OpenSCAD.</source>
-        <translation>Errore sconosciuto durante l&apos;esecuzione di OpenSCAD.</translation>
+        <translation type="obsolete">Errore sconosciuto durante l&apos;esecuzione di OpenSCAD.</translation>
     </message>
     <message>
         <source>OpenSCAD cannot be found on your system.
 Please visit http://www.openscad.org/index.html to install it.</source>
         <translation>OpenSCAD non può essere trovato sul tuo sistema. Visita http://www.openscad.org/index.html per installarlo.</translation>
+    </message>
+    <message>
+        <source>Unknown error occurred while running OpenSCAD.</source>
+        <translation>Si è verificato un errore sconosciuto durante l&apos;esecuzione di OpenSCAD.</translation>
     </message>
 </context>
 <context>

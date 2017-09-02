@@ -33,6 +33,7 @@
 
 namespace TechDrawGui {
 class QGIView;
+class MDIViewPage;
 
 class TechDrawGuiExport ViewProviderDrawingView : public Gui::ViewProviderDocumentObject
 {
@@ -58,18 +59,22 @@ public:
 
     virtual void onChanged(const App::Property *prop);
     virtual void updateData(const App::Property*);
+    virtual void unsetEdit(int ModNum);
 
     QGIView* getQView(void);
+    MDIViewPage* getMDIViewPage() const;
 
     /** @name Restoring view provider from document load */
     //@{
     virtual void startRestoring();
     virtual void finishRestoring();
     //@}
+
     virtual TechDraw::DrawView* getViewObject() const;
 
 private:
     bool m_docReady;                                                   //sb MDI + QGraphicsScene ready
+
 };
 
 } // namespace TechDrawGui

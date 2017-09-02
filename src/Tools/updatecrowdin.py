@@ -54,7 +54,6 @@ import sys,os,xml.sax,pycurl,StringIO
 
 files = [ ["Arch.ts",              "/Mod/Arch/Resources/translations/Arch.ts"],
           ["Assembly.ts",          "/Mod/Assembly/Gui/Resources/translations/Assembly_de.ts"],
-          ["Complete.ts",          "/Mod/Complete/Gui/Resources/translations/Complete_de.ts"],
           ["draft.ts",             "/Mod/Draft/Resources/translations/Draft.ts"],
           ["Drawing.ts",           "/Mod/Drawing/Gui/Resources/translations/Drawing_de.ts"],
           ["Fem.ts",               "/Mod/Fem/Gui/Resources/translations/Fem.ts"],
@@ -75,8 +74,9 @@ files = [ ["Arch.ts",              "/Mod/Arch/Resources/translations/Arch.ts"],
           ["StartPage.ts",         "/Mod/Start/Gui/Resources/translations/StartPage.ts"],
           ["Test.ts",              "/Mod/Test/Gui/Resources/translations/Test_de.ts"],
           ["Web.ts",               "/Mod/Web/Gui/Resources/translations/Web.ts"],
-          ["Spreadsheet.ts",       "/Mod/Spreadsheet/Gui/Resources/translations/Spreadsheet.ts"], 
-          ["Path.ts",              "/Mod/Path/Gui/Resources/translations/Path.ts"], 
+          ["Spreadsheet.ts",       "/Mod/Spreadsheet/Gui/Resources/translations/Spreadsheet.ts"],
+          ["Path.ts",              "/Mod/Path/Gui/Resources/translations/Path.ts"],
+          ["Tux.ts",               "/Mod/Tux/Resources/translations/Tux.ts"],
           ]
 
 
@@ -161,7 +161,7 @@ if __name__ == "__main__":
         
     elif arg == "download":
         print "Downloading all.zip in current directory..."
-        cmd = "wget "+url+"download/all.zip"+key
+        cmd = "wget -O freecad.zip "+url+"download/all.zip"+key
         os.system(cmd)
         
     elif arg == "update":

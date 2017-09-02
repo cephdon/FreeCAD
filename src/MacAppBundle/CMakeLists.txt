@@ -22,7 +22,7 @@ if(HOMEBREW_PREFIX)
     foreach(PTH_FILE ${HOMEBREW_PTH_FILES})
         file(READ ${PTH_FILE} ADDITIONAL_DIR)
 
-	string(STRIP ${ADDITIONAL_DIR} ADDITIONAL_DIR)
+	string(STRIP "${ADDITIONAL_DIR}" ADDITIONAL_DIR)
         string(REGEX REPLACE "^${HOMEBREW_PREFIX}/Cellar/([A-Za-z0-9_]+).*$" "\\1" LIB_NAME ${ADDITIONAL_DIR})
         string(REGEX REPLACE ".*libexec(.*)/site-packages" "libexec/${LIB_NAME}\\1" NEW_SITE_DIR ${ADDITIONAL_DIR})
 
@@ -39,7 +39,33 @@ if(HOMEBREW_PREFIX)
     endforeach(PTH_FILE)
 endif()
 
-install(DIRECTORY ${QT_PLUGINS_DIR}/ DESTINATION ${CMAKE_INSTALL_LIBDIR}/qtplugins)
+if(BUILD_QT5)
+  set(QT_PLUGINS_DIR "${Qt5Core_DIR}/../../../plugins")
+  execute_process(COMMAND "xcode-select" "--print-path"
+                  OUTPUT_VARIABLE XCODE_PATH
+                  ERROR_QUIET
+		 )
+  string(STRIP ${XCODE_PATH} XCODE_PATH)
+
+  set(XCTEST_PATH "${XCODE_PATH}/Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework/Versions/Current")
+endif(BUILD_QT5)
+
+# Ensure the actual plugin files are installed instead of symlinks.
+file(GLOB _subdirs RELATIVE "${QT_PLUGINS_DIR}" "${QT_PLUGINS_DIR}/*")
+
+foreach(_subdir ${_subdirs})
+    if(IS_DIRECTORY "${QT_PLUGINS_DIR}/${_subdir}")
+        set(_resolved_files "")
+        file(GLOB _plugin_files RELATIVE "${QT_PLUGINS_DIR}/${_subdir}" "${QT_PLUGINS_DIR}/${_subdir}/*")
+
+        foreach(_plugin_file ${_plugin_files})
+            get_filename_component(_resolved_file "${QT_PLUGINS_DIR}/${_subdir}/${_plugin_file}" REALPATH)
+            list(APPEND _resolved_files ${_resolved_file})
+        endforeach()
+
+        install(FILES ${_resolved_files} DESTINATION "${CMAKE_INSTALL_LIBDIR}/qtplugins/${_subdir}")
+    endif()
+endforeach()
 
 #files installed by homebrew do not have write permission for regular user
 install(CODE "execute_process(COMMAND chmod -R a+w ${CMAKE_INSTALL_LIBDIR})")
@@ -53,6 +79,6 @@ install(CODE
     execute_process(
         COMMAND ${PYTHON_EXECUTABLE}
         ${CMAKE_SOURCE_DIR}/src/Tools/MakeMacBundleRelocatable.py
-        ${APP_PATH} ${HOMEBREW_PREFIX}${MACPORTS_PREFIX}/lib
+        ${APP_PATH} ${HOMEBREW_PREFIX}${MACPORTS_PREFIX}/lib ${XCTEST_PATH}
     )"
 )

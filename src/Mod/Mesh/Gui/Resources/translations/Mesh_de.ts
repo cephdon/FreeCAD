@@ -398,6 +398,21 @@
     </message>
 </context>
 <context>
+    <name>CmdMeshSectionByPlane</name>
+    <message>
+        <source>Mesh</source>
+        <translation>Netz</translation>
+    </message>
+    <message>
+        <source>Create section from mesh and plane</source>
+        <translation>Erstellen von Abschnitt aus Mesh und Ebene</translation>
+    </message>
+    <message>
+        <source>Section from mesh and plane</source>
+        <translation>Abschnitt aus Mesh und Ebene</translation>
+    </message>
+</context>
+<context>
     <name>CmdMeshSegmentation</name>
     <message>
         <source>Mesh</source>
@@ -736,6 +751,33 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
         <source>Folds</source>
         <translation>Falten</translation>
     </message>
+    <message>
+        <source>Settings...</source>
+        <translation>Einstellungen...</translation>
+    </message>
+</context>
+<context>
+    <name>MeshGui::DlgEvaluateSettings</name>
+    <message>
+        <source>Evaluation settings</source>
+        <translation>Auswertungseinstellungen</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <source>Check for non-manifold points</source>
+        <translation>Überprüfen auf nicht verteilte Punkte</translation>
+    </message>
+    <message>
+        <source>Enable check for folds on surface</source>
+        <translation>Aktivieren von Kontrolle auf Falten auf der Oberfläche</translation>
+    </message>
+    <message>
+        <source>Only consider zero area faces as degenerated</source>
+        <translation>Nur Null Flächen Faces als degeneriert betrachten</translation>
+    </message>
 </context>
 <context>
     <name>MeshGui::DlgRegularSolid</name>
@@ -749,7 +791,7 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation>Alt+S</translation>
+        <translation>Alt+I</translation>
     </message>
     <message>
         <source>Cl&amp;ose</source>
@@ -860,6 +902,10 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
     <message>
         <source>mm</source>
         <translation type="obsolete">mm</translation>
+    </message>
+    <message>
+        <source>Export AMF files using compression</source>
+        <translation>Export von AMF-Dateien mit Komprimierung</translation>
     </message>
 </context>
 <context>
@@ -1073,7 +1119,7 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
     </message>
     <message>
         <source>Minumum number of faces</source>
-        <translation>Minimale Anzahl von Dreiecken</translation>
+        <translation type="obsolete">Minimale Anzahl von Dreiecken</translation>
     </message>
     <message>
         <source>Cylinder</source>
@@ -1146,11 +1192,11 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
     <name>Mesh_TrimByPlane</name>
     <message>
         <source>Select plane</source>
-        <translation>Ebene auswählen</translation>
+        <translation type="obsolete">Ebene auswählen</translation>
     </message>
     <message>
         <source>Please select a plane at which you trim the mesh.</source>
-        <translation>Bitte wählen Sie eine Ebene, mit welcher Sie das Netz zuschneiden.</translation>
+        <translation type="obsolete">Bitte wählen Sie eine Ebene, mit welcher Sie das Netz zuschneiden.</translation>
     </message>
 </context>
 <context>
@@ -1161,13 +1207,17 @@ Bitte starten Sie vorher den Befehl zum Reparieren von Falten</translation>
     </message>
     <message>
         <source>Unknwon error occured while running OpenSCAD.</source>
-        <translation>Während der Ausführung von OpenSCAD ist ein unbekannter Fehler aufgetreten.</translation>
+        <translation type="obsolete">Während der Ausführung von OpenSCAD ist ein unbekannter Fehler aufgetreten.</translation>
     </message>
     <message>
         <source>OpenSCAD cannot be found on your system.
 Please visit http://www.openscad.org/index.html to install it.</source>
         <translation>OpenSCAD kann auf Ihrem System nicht gefunden werden.
 Bitte besuchen Sie http://www.openscad.org/index.html, um es zu installieren.</translation>
+    </message>
+    <message>
+        <source>Unknown error occurred while running OpenSCAD.</source>
+        <translation>Beim Ausführen von OpenSCAD ist ein unbekannter Fehler aufgetreten.</translation>
     </message>
 </context>
 <context>

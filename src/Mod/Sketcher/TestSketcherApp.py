@@ -23,11 +23,51 @@
 import FreeCAD, os, sys, unittest, Part, Sketcher
 App = FreeCAD
 
+def CreateRectangleSketch(SketchFeature, corner, lengths):
+    hmin, hmax = corner[0], corner[0] + lengths[0]
+    vmin, vmax = corner[1], corner[1] + lengths[1]
+
+    # add the geometry and grab the count offset
+    i = int(SketchFeature.GeometryCount)
+    SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(hmin,vmax),FreeCAD.Vector(hmax,vmax,0)))
+    SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(hmax,vmax,0),FreeCAD.Vector(hmax,vmin,0)))
+    SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(hmax,vmin,0),FreeCAD.Vector(hmin,vmin,0)))
+    SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(hmin,vmin,0),FreeCAD.Vector(hmin,vmax,0)))
+
+    # add the rectangular constraints
+    SketchFeature.addConstraint(Sketcher.Constraint('Coincident',i+0,2,i+1,1)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Coincident',i+1,2,i+2,1)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Coincident',i+2,2,i+3,1)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Coincident',i+3,2,i+0,1)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',i+0)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',i+2)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Vertical',i+1)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('Vertical',i+3)) 
+
+    # Fix the bottom left corner of the rectangle
+    SketchFeature.addConstraint(Sketcher.Constraint('DistanceX',i+2,2,corner[0])) 
+    SketchFeature.addConstraint(Sketcher.Constraint('DistanceY',i+2,2,corner[1])) 
+
+    # add dimensions
+    if lengths[0] == lengths[1]:
+        SketchFeature.addConstraint(Sketcher.Constraint('Equal',i+2,i+3)) 
+        SketchFeature.addConstraint(Sketcher.Constraint('Distance',i+0,hmax-hmin)) 
+    else:
+        SketchFeature.addConstraint(Sketcher.Constraint('Distance',i+1,vmax-vmin)) 
+        SketchFeature.addConstraint(Sketcher.Constraint('Distance',i+0,hmax-hmin)) 
+
+def CreateCircleSketch(SketchFeature, center, radius):
+    i = int(SketchFeature.GeometryCount)
+    SketchFeature.addGeometry(Part.Circle(App.Vector(*center), App.Vector(0,0,1), radius),False)
+    SketchFeature.addConstraint(Sketcher.Constraint('Radius',i,radius)) 
+    SketchFeature.addConstraint(Sketcher.Constraint('DistanceX',i,3,center[0])) 
+    SketchFeature.addConstraint(Sketcher.Constraint('DistanceY',i,3,center[1])) 
+
 def CreateBoxSketchSet(SketchFeature):
-	SketchFeature.addGeometry(Part.Line(FreeCAD.Vector(-99.230339,36.960674,0),FreeCAD.Vector(69.432587,36.960674,0)))
-	SketchFeature.addGeometry(Part.Line(FreeCAD.Vector(69.432587,36.960674,0),FreeCAD.Vector(69.432587,-53.196629,0)))
-	SketchFeature.addGeometry(Part.Line(FreeCAD.Vector(69.432587,-53.196629,0),FreeCAD.Vector(-99.230339,-53.196629,0)))
-	SketchFeature.addGeometry(Part.Line(FreeCAD.Vector(-99.230339,-53.196629,0),FreeCAD.Vector(-99.230339,36.960674,0)))
+	SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(-99.230339,36.960674,0),FreeCAD.Vector(69.432587,36.960674,0)))
+	SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(69.432587,36.960674,0),FreeCAD.Vector(69.432587,-53.196629,0)))
+	SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(69.432587,-53.196629,0),FreeCAD.Vector(-99.230339,-53.196629,0)))
+	SketchFeature.addGeometry(Part.LineSegment(FreeCAD.Vector(-99.230339,-53.196629,0),FreeCAD.Vector(-99.230339,36.960674,0)))
 	# add the constraints
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',0,2,1,1)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',1,2,2,1)) 
@@ -42,18 +82,18 @@ def CreateBoxSketchSet(SketchFeature):
 	SketchFeature.addConstraint(Sketcher.Constraint('Distance',0,187.573036)) 
 
 def CreateSlotPlateSet(SketchFeature):
-	SketchFeature.addGeometry(Part.Line(App.Vector(60.029362,-30.279360,0),App.Vector(-120.376335,-30.279360,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(60.029362,-30.279360,0),App.Vector(-120.376335,-30.279360,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',0)) 
-	SketchFeature.addGeometry(Part.Line(App.Vector(-120.376335,-30.279360,0),App.Vector(-70.193062,38.113884,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(-120.376335,-30.279360,0),App.Vector(-70.193062,38.113884,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',0,2,1,1)) 
-	SketchFeature.addGeometry(Part.Line(App.Vector(-70.193062,38.113884,0),App.Vector(60.241116,37.478645,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(-70.193062,38.113884,0),App.Vector(60.241116,37.478645,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',1,2,2,1)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',2)) 
 	SketchFeature.addGeometry(Part.ArcOfCircle(Part.Circle(App.Vector(60.039921,3.811391,0),App.Vector(0,0,1),35.127132),-1.403763,1.419522))
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',3,2,2,2)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',3,1,0,1)) 
-	SketchFeature.addConstraint(Sketcher.Constraint('Tangent',3,2)) 
-	SketchFeature.addConstraint(Sketcher.Constraint('Tangent',3,0)) 
+	SketchFeature.addConstraint(Sketcher.Constraint('Tangent',2,2,3,2))
+	SketchFeature.addConstraint(Sketcher.Constraint('Tangent',0,1,3,1))
 	SketchFeature.addConstraint(Sketcher.Constraint('Angle',0,2,1,1,0.947837)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Distance',0,184.127425)) 
 	SketchFeature.setDatum(9,200.000000)
@@ -70,11 +110,11 @@ def CreateSlotPlateSet(SketchFeature):
 
 def CreateSlotPlateInnerSet(SketchFeature):
 	SketchFeature.addGeometry(Part.Circle(App.Vector(195.055893,39.562252,0),App.Vector(0,0,1),29.846098))
-	SketchFeature.addGeometry(Part.Line(App.Vector(150.319031,13.449363,0),App.Vector(36.700474,13.139774,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(150.319031,13.449363,0),App.Vector(36.700474,13.139774,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',5)) 
-	SketchFeature.addGeometry(Part.Line(App.Vector(36.700474,13.139774,0),App.Vector(77.566010,63.292927,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(36.700474,13.139774,0),App.Vector(77.566010,63.292927,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',5,2,6,1)) 
-	SketchFeature.addGeometry(Part.Line(App.Vector(77.566010,63.292927,0),App.Vector(148.151917,63.602505,0)))
+	SketchFeature.addGeometry(Part.LineSegment(App.Vector(77.566010,63.292927,0),App.Vector(148.151917,63.602505,0)))
 	SketchFeature.addConstraint(Sketcher.Constraint('Coincident',6,2,7,1)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Horizontal',7)) 
 	SketchFeature.addConstraint(Sketcher.Constraint('Parallel',1,6)) 
@@ -118,4 +158,4 @@ class SketcherSolverTestCases(unittest.TestCase):
 	def tearDown(self):
 		#closing doc
 		FreeCAD.closeDocument("SketchSolverTest")
-		#print ("omit close document for debuging")
+		#print ("omit close document for debugging")

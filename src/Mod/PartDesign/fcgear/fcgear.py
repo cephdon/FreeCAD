@@ -19,8 +19,7 @@ from math import cos, sin, pi, acos, asin, atan, sqrt
 
 import FreeCAD, Part
 from FreeCAD import Base, Console
-import involute
-reload(involute)
+from . import involute
 rotate = involute.rotate
 
 
@@ -51,7 +50,7 @@ class FCWireBuilder(object):
         """Add a segment between self.pos and p"""
         p = rotate(p, self.theta)
         end = Base.Vector(*p)
-        self.wire.append(Part.Line(self.pos, end))
+        self.wire.append(Part.LineSegment(self.pos, end))
         self.pos = end
 
     def arc(self, p, r, sweep):
@@ -80,7 +79,7 @@ class FCWireBuilder(object):
 
 def midpoints(p1, p2, r):
     """A very ugly function that returns the midpoint of a p1 and p2
-    on the circle which radius is r and which pass throught p1 and
+    on the circle which radius is r and which pass through p1 and
     p2
 
     Return the 2 possible solutions

@@ -85,6 +85,12 @@ bool Measurement::has3DReferences()
     return (References3D.getSize() > 0);
 }
 
+//add a 3D reference (obj+sub) to end of list
+int Measurement::addReference3D(App::DocumentObject *obj, const std::string& subName)
+{
+    return addReference3D(obj,subName.c_str());
+}
+
 ///add a 3D reference (obj+sub) to end of list
 int Measurement::addReference3D(App::DocumentObject *obj, const char* subName)
 {
@@ -132,11 +138,11 @@ MeasureType Measurement::getType()
             try {
                 refSubShape = refShape.getSubShape((*subEl).c_str());
             }
-            catch (Standard_Failure) {
+            catch (Standard_Failure& e) {
                 std::stringstream errorMsg;
-                Handle_Standard_Failure e = Standard_Failure::Caught();
-                errorMsg << "Measurement - getType - " << e->GetMessageString() << std::endl;
-                throw Base::Exception(e->GetMessageString());
+        
+                errorMsg << "Measurement - getType - " << e.GetMessageString() << std::endl;
+                throw Base::Exception(e.GetMessageString());
             }
 
             switch (refSubShape.ShapeType()) {
@@ -215,9 +221,9 @@ TopoDS_Shape Measurement::getShape(App::DocumentObject *obj , const char *subNam
         try {
             refSubShape = refShape.getSubShape(subName);
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            throw Base::Exception(e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            throw Base::Exception(e.GetMessageString());
         }
         return refSubShape;
     }
@@ -364,7 +370,7 @@ Base::Vector3d Measurement::delta() const
 
     if(measureType == Points) {
         if(numRefs == 2) {
-            // Keep Seperate case for two points to reduce need for complex algorithm
+            // Keep separate case for two points to reduce need for complex algorithm
             TopoDS_Shape shape1 = getShape(objects.at(0), subElements.at(0).c_str());
             TopoDS_Shape shape2 = getShape(objects.at(1), subElements.at(1).c_str());
 

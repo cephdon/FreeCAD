@@ -23,10 +23,65 @@
 #ifndef APP_FEATUREPYTHONPYIMP_H
 #define APP_FEATUREPYTHONPYIMP_H
 
-#include <map>
-#include <string>
-#include <Base/Console.h>
-#include <App/DocumentObjectPy.h>
+#include <Base/BaseClass.h>
+#include <Base/Interpreter.h>
+#include <App/PropertyContainerPy.h>
+
+#define PYTHON_TYPE_DEF(_class_, _subclass_) \
+    class _class_ : public _subclass_ \
+    { \
+    public: \
+        static PyTypeObject Type; \
+    public: \
+        _class_(Base::BaseClass *pcObject, PyTypeObject *T = &Type); \
+        virtual ~_class_(); \
+    };
+
+#if PY_MAJOR_VERSION >= 3
+#define PYTHON_TYPE_IMP(_class_, _subclass_) \
+    PyTypeObject _class_::Type = { \
+        PyVarObject_HEAD_INIT(&PyType_Type, 0) \
+        ""#_class_"",  \
+        sizeof(_class_),  \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        Py_TPFLAGS_BASETYPE|Py_TPFLAGS_DEFAULT, \
+        ""#_class_"", \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        &_subclass_::Type, \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
+    }; \
+    _class_::_class_(Base::BaseClass *pcObject, PyTypeObject *T) \
+        : _subclass_(reinterpret_cast<_subclass_::PointerType>(pcObject), T) \
+    { \
+    } \
+    _class_::~_class_() \
+    { \
+    }
+
+#else
+
+#define PYTHON_TYPE_IMP(_class_, _subclass_) \
+    PyTypeObject _class_::Type = { \
+        PyObject_HEAD_INIT(&PyType_Type) \
+        0, \
+        ""#_class_"",  \
+        sizeof(_class_),  \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_CLASS, \
+        ""#_class_"", \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, \
+        &_subclass_::Type, \
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
+    }; \
+    _class_::_class_(Base::BaseClass *pcObject, PyTypeObject *T) \
+        : _subclass_(reinterpret_cast<_subclass_::PointerType>(pcObject), T) \
+    { \
+    } \
+    _class_::~_class_() \
+    { \
+    }
+
+#endif
 
 namespace App
 {
@@ -39,38 +94,20 @@ class FeaturePythonPyT : public FeaturePyT
 {
 public:
     static PyTypeObject   Type;
-    static PyMethodDef    Methods[];
 
 public:
-    FeaturePythonPyT(DocumentObject *pcObject, PyTypeObject *T = &Type);
+    FeaturePythonPyT(Base::BaseClass *pcObject, PyTypeObject *T = &Type);
     virtual ~FeaturePythonPyT();
 
     /** @name callbacks and implementers for the python object methods */
     //@{
-    static  int __setattr(PyObject *PyObj, char *attr, PyObject *value);
-    /// callback for the addProperty() method
-    static PyObject * staticCallback_addProperty (PyObject *self, PyObject *args);
-    /// implementer for the addProperty() method
-    PyObject*  addProperty(PyObject *args);
-    /// callback for the removeProperty() method
-    static PyObject * staticCallback_removeProperty (PyObject *self, PyObject *args);
-    /// implementer for the removeProperty() method
-    PyObject*  removeProperty(PyObject *args);
-    /// callback for the supportedProperties() method
-    static PyObject * staticCallback_supportedProperties (PyObject *self, PyObject *args);
-    /// implementer for the supportedProperties() method
-    PyObject*  supportedProperties(PyObject *args);
+    static  int __setattro(PyObject *PyObj, PyObject *attro, PyObject *value);
     //@}
-
-    /// getter method for special attributes (e.g. dynamic ones)
-    PyObject *getCustomAttributes(const char* attr) const;
-    /// setter for special attributes (e.g. dynamic ones)
-    int setCustomAttributes(const char* attr, PyObject *obj);
     PyObject *_getattr(char *attr);              // __getattr__ function
     int _setattr(char *attr, PyObject *value);        // __setattr__ function
 
 protected:
-    std::map<std::string, PyObject*> dyn_methods;
+    PyObject * dict_methods;
 
 private:
 };

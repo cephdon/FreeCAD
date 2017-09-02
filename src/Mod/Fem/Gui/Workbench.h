@@ -21,8 +21,8 @@
  ***************************************************************************/
 
 
-#ifndef IMAGE_WORKBENCH_H
-#define IMAGE_WORKBENCH_H
+#ifndef FEM_WORKBENCH_H
+#define FEM_WORKBENCH_H
 
 #include <Gui/Workbench.h>
 
@@ -38,6 +38,7 @@ class FemGuiExport Workbench : public Gui::StdWorkbench
 public:
   Workbench();
   virtual ~Workbench();
+  void setupContextMenu(const char* recipient, Gui::MenuItem*) const;
 
 protected:
   Gui::ToolBarItem* setupToolBars() const;
@@ -47,4 +48,4 @@ protected:
 } // namespace FemGui
 
 
-#endif // IMAGE_WORKBENCH_H
+#endif // FEM_WORKBENCH_H

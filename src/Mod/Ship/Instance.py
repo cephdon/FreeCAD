@@ -41,77 +41,69 @@ class Ship:
         solids -- Set of solids which will compound the ship hull.
         """
         # Add an unique property to identify the Ship instances
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "True if it is a valid ship instance, False otherwise",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyBool",
                         "IsShip",
                         "Ship",
                         tooltip).IsShip = True
         # Add the main dimensions
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Ship length [m]",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyLength",
                         "Length",
                         "Ship",
                         tooltip).Length = 0.0
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Ship breadth [m]",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyLength",
                         "Breadth",
                         "Ship",
                         tooltip).Breadth = 0.0
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Ship draft [m]",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyLength",
                         "Draft",
                         "Ship",
                         tooltip).Draft = 0.0
         # Add the subshapes
         obj.Shape = Part.makeCompound(solids)
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Set of external faces of the ship hull",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("Part::PropertyPartShape",
                         "ExternalFaces",
                         "Ship",
                         tooltip)
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Set of weight instances",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyStringList",
                         "Weights",
                         "Ship",
                         tooltip).Weights = []
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Set of tank instances",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyStringList",
                         "Tanks",
                         "Ship",
                         tooltip).Tanks = []
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "Ship",
             "Set of load conditions",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyStringList",
                         "LoadConditions",
                         "Ship",
@@ -265,7 +257,7 @@ class ViewProviderShip:
     def setDisplayMode(self, mode):
         """Map the display mode defined in attach with those defined in
         getDisplayModes. Since they have the same names nothing needs to be
-        done. This method is optinal.
+        done. This method is optional.
 
         Keyword arguments:
         mode -- Mode to be activated.

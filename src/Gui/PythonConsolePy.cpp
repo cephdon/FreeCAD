@@ -46,6 +46,7 @@ void PythonStdout::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&PythonStdout::write,"write()");
     add_varargs_method("flush",&PythonStdout::flush,"flush()");
+    add_noargs_method("isatty",&PythonStdout::isatty,"isatty()");
 }
 
 PythonStdout::PythonStdout(PythonConsole *pc)
@@ -79,9 +80,15 @@ Py::Object PythonStdout::write(const Py::Tuple& args)
     try {
         Py::Object output(args[0]);
         if (PyUnicode_Check(output.ptr())) {
+#if PY_MAJOR_VERSION >= 3
+            PyObject* unicode = PyUnicode_AsEncodedString(output.ptr(), "utf-8", 0);
+            if (unicode) {
+                const char* string = PyBytes_AsString(unicode);
+#else
             PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
             if (unicode) {
                 const char* string = PyString_AsString(unicode);
+#endif
                 int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
                 pyConsole->insertPythonOutput(QString::fromUtf8(string, maxlen));
                 Py_DECREF(unicode);
@@ -107,6 +114,11 @@ Py::Object PythonStdout::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object PythonStdout::isatty()
+{
+    return Py::False();
+}
+
 // -------------------------------------------------------------------------
 
 void PythonStderr::init_type()
@@ -117,6 +129,7 @@ void PythonStderr::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&PythonStderr::write,"write()");
     add_varargs_method("flush",&PythonStderr::flush,"flush()");
+    add_noargs_method("isatty",&PythonStderr::isatty,"isatty()");
 }
 
 PythonStderr::PythonStderr(PythonConsole *pc)
@@ -150,9 +163,15 @@ Py::Object PythonStderr::write(const Py::Tuple& args)
     try {
         Py::Object output(args[0]);
         if (PyUnicode_Check(output.ptr())) {
+#if PY_MAJOR_VERSION >= 3
+            PyObject* unicode = PyUnicode_AsEncodedString(output.ptr(), "utf-8", 0);
+            if (unicode) {
+                const char* string = PyBytes_AsString(unicode);
+#else
             PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
             if (unicode) {
                 const char* string = PyString_AsString(unicode);
+#endif
                 int maxlen = qstrlen(string) > 10000 ? 10000 : -1;
                 pyConsole->insertPythonError(QString::fromUtf8(string, maxlen));
                 Py_DECREF(unicode);
@@ -178,6 +197,11 @@ Py::Object PythonStderr::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object PythonStderr::isatty()
+{
+    return Py::False();
+}
+
 // -------------------------------------------------------------------------
 
 void OutputStdout::init_type()
@@ -188,6 +212,7 @@ void OutputStdout::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&OutputStdout::write,"write()");
     add_varargs_method("flush",&OutputStdout::flush,"flush()");
+    add_noargs_method("isatty",&OutputStdout::isatty,"isatty()");
 }
 
 OutputStdout::OutputStdout()
@@ -220,9 +245,15 @@ Py::Object OutputStdout::write(const Py::Tuple& args)
     try {
         Py::Object output(args[0]);
         if (PyUnicode_Check(output.ptr())) {
+#if PY_MAJOR_VERSION >= 3
+            PyObject* unicode = PyUnicode_AsEncodedString(output.ptr(), "utf-8", 0);
+            if (unicode) {
+                const char* string = PyBytes_AsString(unicode);
+#else
             PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
             if (unicode) {
                 const char* string = PyString_AsString(unicode);
+#endif
                 Base::Console().Message("%s",string);
                 Py_DECREF(unicode);
             }
@@ -246,6 +277,12 @@ Py::Object OutputStdout::flush(const Py::Tuple&)
     return Py::None();
 }
 
+Py::Object OutputStdout::isatty()
+{
+    return Py::False();
+}
+
+
 // -------------------------------------------------------------------------
 
 void OutputStderr::init_type()
@@ -256,6 +293,7 @@ void OutputStderr::init_type()
     behaviors().supportRepr();
     add_varargs_method("write",&OutputStderr::write,"write()");
     add_varargs_method("flush",&OutputStderr::flush,"flush()");
+    add_noargs_method("isatty",&OutputStderr::isatty,"isatty()");
 }
 
 OutputStderr::OutputStderr()
@@ -288,9 +326,15 @@ Py::Object OutputStderr::write(const Py::Tuple& args)
     try {
         Py::Object output(args[0]);
         if (PyUnicode_Check(output.ptr())) {
+#if PY_MAJOR_VERSION >= 3
+            PyObject* unicode = PyUnicode_AsEncodedString(output.ptr(), "utf-8", 0);
+            if (unicode) {
+                const char* string = PyBytes_AsString(unicode);
+#else
             PyObject* unicode = PyUnicode_AsEncodedObject(output.ptr(), "utf-8", "strict");
             if (unicode) {
                 const char* string = PyString_AsString(unicode);
+#endif
                 Base::Console().Error("%s",string);
                 Py_DECREF(unicode);
             }
@@ -313,6 +357,12 @@ Py::Object OutputStderr::flush(const Py::Tuple&)
 {
     return Py::None();
 }
+
+Py::Object OutputStderr::isatty()
+{
+    return Py::False();
+}
+
 
 // -------------------------------------------------------------------------
 

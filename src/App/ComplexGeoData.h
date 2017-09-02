@@ -62,6 +62,10 @@ class AppExport ComplexGeoData: public Base::Persistence, public Base::Handled
 public:
     struct Line  {uint32_t I1; uint32_t I2;};
     struct Facet {uint32_t I1; uint32_t I2; uint32_t I3;};
+    struct Domain {
+        std::vector<Base::Vector3d> points;
+        std::vector<Facet> facets;
+    };
 
     /// Constructor
     ComplexGeoData(void);
@@ -145,6 +149,11 @@ public:
     /** Get faces from object with given accuracy */
     virtual void getFaces(std::vector<Base::Vector3d> &Points,std::vector<Facet> &faces,
         float Accuracy, uint16_t flags=0) const;
+    /** Get the center of gravity
+     * If this method is implemented then true is returned and the center of gravity.
+     * The default implementation only returns false.
+     */
+    virtual bool getCenterOfGravity(Base::Vector3d& center) const;
     //@}
 
 protected:

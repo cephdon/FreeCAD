@@ -24,6 +24,14 @@
 
 "FreeCAD Draft Workbench - DWG importer/exporter"
 
+## @package importDWG
+#  \ingroup DRAFT
+#  \brief DWG file importer & exporter
+#
+#  This module provides support for importing and exporting Autodesk DWG files.
+#  This module is only a thin layer that uses the Teigha Converter application
+#  to convert to/from DXF. Then the real work is done by importDXF
+
 if open.__module__ == '__builtin__':
     pythonopen = open # to distinguish python built-in open function from the one declared here
 
@@ -92,6 +100,10 @@ def convertToDxf(dwgfilename):
         basename = os.path.basename(dwgfilename)
         cmdline = '"%s" "%s" "%s" "ACAD2000" "DXF" "0" "1" "%s"' % (teigha, indir, outdir, basename)
         print("Converting: " + cmdline)
+        if isinstance(cmdline,unicode):
+            import sys
+            encoding = sys.getfilesystemencoding()
+            cmdline = cmdline.encode(encoding)
         subprocess.call(cmdline,  shell=True)     #os.system(cmdline)
         result = outdir + os.sep + os.path.splitext(basename)[0] + ".dxf"
         if os.path.exists(result):

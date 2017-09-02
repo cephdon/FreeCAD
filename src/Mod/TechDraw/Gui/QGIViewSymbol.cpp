@@ -45,6 +45,7 @@
 
 #include "QGCustomSvg.h"
 #include "QGIViewSymbol.h"
+#include "Rez.h"
 
 using namespace TechDrawGui;
 
@@ -59,7 +60,7 @@ QGIViewSymbol::QGIViewSymbol()
 
     m_svgItem = new QGCustomSvg();
     addToGroup(m_svgItem);
-    m_svgItem->setPos(0.,0.);
+    m_svgItem->centerAt(0.,0.);
 }
 
 QGIViewSymbol::~QGIViewSymbol()
@@ -121,23 +122,23 @@ void QGIViewSymbol::drawSvg()
 //note: svg's are overscaled by (72 pixels(pts actually) /in)*(1 in/25.4 mm) = 2.834645669   (could be 96/25.4(CSS)? 110/25.4?)
 //due to 1 sceneUnit (1mm) = 1 pixel for some QtSvg functions
 
-    m_svgItem->setScale(viewSymbol->Scale.getValue());
+    double rezfactor = Rez::getRezFactor();
+    double scaling = viewSymbol->Scale.getValue() * rezfactor;
+    m_svgItem->setScale(scaling);
 
-    QString qs(QString::fromUtf8(viewSymbol->Symbol.getValue()));
-    symbolToSvg(qs);
+    QByteArray qba(viewSymbol->Symbol.getValue(),strlen(viewSymbol->Symbol.getValue()));
+    symbolToSvg(qba);
 }
 
-void QGIViewSymbol::symbolToSvg(QString qs)
+void QGIViewSymbol::symbolToSvg(QByteArray qba)
 {
-    if (qs.isEmpty()) {
+    if (qba.isEmpty()) {
         return;
     }
 
-    QByteArray qba;
-    qba.append(qs);
     prepareGeometryChange();
     if (!m_svgItem->load(&qba)) {
-        Base::Console().Error("Error - Could not load Symbol into SVG renderer for %s\n", getViewObject()->getNameInDocument());
+        Base::Console().Error("Error - Could not load Symbol into SVG renderer for %s\n", getViewName());
     }
-    m_svgItem->setPos(0.,0.);
+    m_svgItem->centerAt(0.,0.);
 }

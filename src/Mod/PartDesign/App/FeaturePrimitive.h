@@ -28,13 +28,14 @@
 #include <App/PropertyUnits.h>
 
 #include "FeatureAddSub.h"
+#include <Mod/Part/App/AttachExtension.h>
 
 namespace PartDesign
 {
 
-class PartDesignExport FeaturePrimitive : public PartDesign::FeatureAddSub
+class PartDesignExport FeaturePrimitive : public PartDesign::FeatureAddSub, public Part::AttachExtension
 {
-    PROPERTY_HEADER(PartDesign::FeaturePrimitive);
+    PROPERTY_HEADER_WITH_EXTENSIONS(PartDesign::FeaturePrimitive);
 
 public:
     enum Type {
@@ -53,17 +54,15 @@ public:
     virtual const char* getViewProviderName(void) const {
         return "PartDesignGui::ViewProviderPrimitive";
     }
-    Type         getPrimitiveType() {return primitiveType;};      
+    Type         getPrimitiveType() {return primitiveType;}
     TopoDS_Shape refineShapeIfActive(const TopoDS_Shape& oldShape) const;    
     virtual void onChanged(const App::Property* prop);
-    
-    /// The references datum defining the primtive location
-    App::PropertyLink CoordinateSystem;
+    virtual PyObject* getPyObject();
     
     /// Do nothing, just to suppress warning, must be redefined in derived classes
     virtual App::DocumentObjectExecReturn* execute() {
         return PartDesign::FeatureAddSub::execute();
-    };
+    }
 protected:
     //make the boolean ops with the primitives provided by the derived features
     App::DocumentObjectExecReturn* execute(const TopoDS_Shape& primitiveShape);

@@ -49,12 +49,15 @@
 #include <Mod/TechDraw/App/DrawView.h>
 #include <Mod/TechDraw/App/DrawViewPart.h>
 #include <Mod/TechDraw/App/DrawHatch.h>
+#include <Mod/TechDraw/App/DrawGeomHatch.h>
 #include <Mod/TechDraw/App/DrawPage.h>
 #include <Mod/TechDraw/App/DrawUtil.h>
 #include <Mod/TechDraw/Gui/QGVPage.h>
 
 #include "DrawGuiUtil.h"
 #include "MDIViewPage.h"
+#include "TaskGeomHatch.h"
+#include "ViewProviderGeomHatch.h"
 #include "ViewProviderPage.h"
 
 using namespace TechDrawGui;
@@ -75,8 +78,8 @@ CmdTechDrawNewHatch::CmdTechDrawNewHatch()
 {
     sAppModule      = "TechDraw";
     sGroup          = QT_TR_NOOP("TechDraw");
-    sMenuText       = QT_TR_NOOP("Insert a hatched area into a view");
-    sToolTipText    = QT_TR_NOOP("Insert a hatched area into a view");
+    sMenuText       = QT_TR_NOOP("Hatch a Face using image file");
+    sToolTipText    = QT_TR_NOOP("Hatch a Face using image file");
     sWhatsThis      = "TechDraw_NewHatch";
     sStatusTip      = sToolTipText;
     sPixmap         = "actions/techdraw-hatch";
@@ -127,6 +130,128 @@ bool CmdTechDrawNewHatch::isActive(void)
 }
 
 //===========================================================================
+// TechDraw_NewGeomHatch
+//===========================================================================
+
+DEF_STD_CMD_A(CmdTechDrawNewGeomHatch);
+
+CmdTechDrawNewGeomHatch::CmdTechDrawNewGeomHatch()
+  : Command("TechDraw_NewGeomHatch")
+{
+    sAppModule      = "TechDraw";
+    sGroup          = QT_TR_NOOP("TechDraw");
+    sMenuText       = QT_TR_NOOP("Apply geometric hatch to a Face");
+    sToolTipText    = QT_TR_NOOP("Apply geometric hatch to a Face");
+    sWhatsThis      = "TechDraw_NewGeomHatch";
+    sStatusTip      = sToolTipText;
+    sPixmap         = "actions/techdraw-geomhatch";
+}
+
+void CmdTechDrawNewGeomHatch::activated(int iMsg)
+{
+    Q_UNUSED(iMsg);
+    if (!_checkSelectionHatch(this)) {                 //same requirements as hatch - page, DrawViewXXX, face
+        return;
+    }
+
+    std::vector<Gui::SelectionObject> selection = getSelection().getSelectionEx();
+    auto objFeat( dynamic_cast<TechDraw::DrawViewPart *>(selection[0].getObject()) );
+    if( objFeat == nullptr ) {
+        return;
+    }
+    const std::vector<std::string> &subNames = selection[0].getSubNames();
+    TechDraw::DrawPage* page = objFeat->findParentPage();
+    std::string PageName = page->getNameInDocument();
+
+    std::string FeatName = getUniqueObjectName("GeomHatch");
+    std::stringstream featLabel;
+    featLabel << FeatName << "FX" << TechDraw::DrawUtil::getIndexFromName(subNames.at(0));
+
+    openCommand("Create GeomHatch");
+    doCommand(Doc,"App.activeDocument().addObject('TechDraw::DrawGeomHatch','%s')",FeatName.c_str());
+    doCommand(Doc,"App.activeDocument().%s.Label = '%s'",FeatName.c_str(),featLabel.str().c_str());
+
+    auto geomhatch( static_cast<TechDraw::DrawGeomHatch *>(getDocument()->getObject(FeatName.c_str())) );
+    geomhatch->Source.setValue(objFeat, subNames);
+    Gui::ViewProvider* vp = Gui::Application::Instance->getDocument(getDocument())->getViewProvider(geomhatch);
+    TechDrawGui::ViewProviderGeomHatch* hvp = dynamic_cast<TechDrawGui::ViewProviderGeomHatch*>(vp);
+    if (!hvp) {
+        Base::Console().Log("ERROR - CommandDecorate - GeomHatch has no ViewProvider\n");
+        return;
+    }
+
+    // dialog to fill in hatch values
+    Gui::Control().showDialog(new TaskDlgGeomHatch(geomhatch,hvp,true));
+
+
+    commitCommand();
+
+    //Horrible hack to force Tree update  ??still required??
+    double x = objFeat->X.getValue();
+    objFeat->X.setValue(x);
+    getDocument()->recompute();
+}
+
+bool CmdTechDrawNewGeomHatch::isActive(void)
+{
+    bool havePage = DrawGuiUtil::needPage(this);
+    bool haveView = DrawGuiUtil::needView(this);
+    return (havePage && haveView);
+}
+
+//===========================================================================
+// TechDraw_Image
+//===========================================================================
+
+DEF_STD_CMD_A(CmdTechDrawImage);
+
+CmdTechDrawImage::CmdTechDrawImage()
+  : Command("TechDraw_Image")
+{
+    // setting the Gui eye-candy
+    sGroup        = QT_TR_NOOP("TechDraw");
+    sMenuText     = QT_TR_NOOP("Insert bitmap image");
+    sToolTipText  = QT_TR_NOOP("Inserts a bitmap from a file in the active drawing");
+    sWhatsThis    = "TechDraw_Image";
+    sStatusTip    = QT_TR_NOOP("Inserts a bitmap from a file in the active drawing");
+    sPixmap       = "actions/techdraw-image";
+}
+
+void CmdTechDrawImage::activated(int iMsg)
+{
+    Q_UNUSED(iMsg);
+    TechDraw::DrawPage* page = DrawGuiUtil::findPage(this);
+    if (!page) {
+        return;
+    }
+    std::string PageName = page->getNameInDocument();
+
+    // Reading an image
+    std::string defaultDir = App::Application::getResourceDir();
+    QString qDir = QString::fromUtf8(defaultDir.data(),defaultDir.size());
+    QString fileName = Gui::FileDialog::getOpenFileName(Gui::getMainWindow(),
+                                                   QString::fromUtf8(QT_TR_NOOP("Select an Image File")),
+                                                   qDir,
+                                                   QString::fromUtf8(QT_TR_NOOP("Image (*.png *.jpg *.jpeg)")));
+
+    if (!fileName.isEmpty())
+    {
+        std::string FeatName = getUniqueObjectName("Image");
+        openCommand("Create Image");
+        doCommand(Doc,"App.activeDocument().addObject('TechDraw::DrawViewImage','%s')",FeatName.c_str());
+        doCommand(Doc,"App.activeDocument().%s.ImageFile = '%s'",FeatName.c_str(),fileName.toUtf8().constData());
+        doCommand(Doc,"App.activeDocument().%s.addView(App.activeDocument().%s)",PageName.c_str(),FeatName.c_str());
+        updateActive();
+        commitCommand();
+    }
+}
+
+bool CmdTechDrawImage::isActive(void)
+{
+    return DrawGuiUtil::needPage(this);
+}
+
+//===========================================================================
 // TechDraw_ToggleFrame
 //===========================================================================
 
@@ -169,7 +294,7 @@ void CmdTechDrawToggleFrame::activated(int iMsg)
 bool CmdTechDrawToggleFrame::isActive(void)
 {
     bool havePage = DrawGuiUtil::needPage(this);
-    bool haveView = DrawGuiUtil::needView(this);
+    bool haveView = DrawGuiUtil::needView(this,false);
     return (havePage && haveView);
 }
 
@@ -178,6 +303,8 @@ void CreateTechDrawCommandsDecorate(void)
     Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
 
     rcCmdMgr.addCommand(new CmdTechDrawNewHatch());
+    rcCmdMgr.addCommand(new CmdTechDrawNewGeomHatch());
+    rcCmdMgr.addCommand(new CmdTechDrawImage());
     rcCmdMgr.addCommand(new CmdTechDrawToggleFrame());
 }
 

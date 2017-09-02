@@ -198,14 +198,14 @@ FreeCADGui_embedToWindow(PyObject * /*self*/, PyObject *args)
 #if defined(Q_OS_WIN)
     void* window = 0;
     str >> window;
-    WId winid = (WId)window;
+    HWND winid = (HWND)window;
 
     LONG oldLong = GetWindowLong(winid, GWL_STYLE);
     SetWindowLong(winid, GWL_STYLE,
     oldLong | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
     //SetWindowLong(widget->winId(), GWL_STYLE,
     //    WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-    SetParent(widget->winId(), winid);
+    SetParent((HWND)widget->winId(), winid);
 
     QEvent embeddingEvent(QEvent::EmbeddingControl);
     QApplication::sendEvent(widget, &embeddingEvent);
@@ -319,15 +319,29 @@ QWidget* setupMainWindow()
     return Gui::getMainWindow();
 }
 
-PyMODINIT_FUNC initFreeCADGui()
+PyMOD_INIT_FUNC(FreeCADGui)
 {
     try {
         Base::Interpreter().loadModule("FreeCAD");
         App::Application::Config()["AppIcon"] = "freecad";
         App::Application::Config()["SplashScreen"] = "freecadsplash";
-        App::Application::Config()["CopyrightInfo"] = "\xc2\xa9 Juergen Riegel, Werner Mayer, Yorik van Havre 2001-2015\n";
-        Gui::Application::initApplication();
-        Py_InitModule("FreeCADGui", FreeCADGui_methods);
+        App::Application::Config()["CopyrightInfo"] = "\xc2\xa9 Juergen Riegel, Werner Mayer, Yorik van Havre 2001-2017\n";
+        // it's possible that the GUI is already initialized when the Gui version of the executable
+        // is started in command mode
+        if (Base::Type::fromName("Gui::BaseView").isBad())
+            Gui::Application::initApplication();
+#if PY_MAJOR_VERSION >= 3
+        static struct PyModuleDef FreeCADGuiModuleDef = {
+            PyModuleDef_HEAD_INIT,
+            "FreeCADGui", "FreeCAD GUI module\n", -1,
+            FreeCADGui_methods,
+            NULL, NULL, NULL, NULL
+        };
+        PyObject* module = PyModule_Create(&FreeCADGuiModuleDef);
+        return module;
+#else
+        Py_InitModule3("FreeCADGui", FreeCADGui_methods, "FreeCAD GUI module\n");
+#endif
     }
     catch (const Base::Exception& e) {
         PyErr_Format(PyExc_ImportError, "%s\n", e.what());
@@ -335,5 +349,8 @@ PyMODINIT_FUNC initFreeCADGui()
     catch (...) {
         PyErr_SetString(PyExc_ImportError, "Unknown runtime error occurred");
     }
+#if PY_MAJOR_VERSION >= 3
+    return 0;
+#endif
 }
 

@@ -9,18 +9,24 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
     ${XercesC_INCLUDE_DIRS}
-    ${QT_QTCORE_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
     ${EIGEN3_INCLUDE_DIR}
 )
 
-
 set(Mesh_LIBS
     ${Boost_LIBRARIES}
-    ${QT_QTCORE_LIBRARY}
     FreeCADBase
     FreeCADApp
 )
+
+if (BUILD_QT5)
+    include_directories(
+        ${Qt5Concurrent_INCLUDE_DIRS}
+    )
+    list(APPEND Mesh_LIBS
+        ${Qt5Concurrent_LIBRARIES}
+    )
+endif()
 
 generate_from_xml(FacetPy)
 generate_from_xml(MeshFeaturePy)
@@ -310,6 +316,8 @@ SET(Mesh_SRCS
     ${Mesh_XML_SRCS}
     AppMesh.cpp
     AppMeshPy.cpp
+    Exporter.cpp
+    Exporter.h
     Facet.cpp
     Facet.h
     FacetPyImp.cpp

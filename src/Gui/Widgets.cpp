@@ -23,6 +23,7 @@
 
 #include "PreCompiled.h"
 #ifndef _PreComp_
+# include <QAction>
 # include <QColorDialog>
 # include <QDesktopWidget>
 # include <QDialogButtonBox>
@@ -229,12 +230,12 @@ QString ActionSelector::availableLabel() const
 
 void ActionSelector::retranslateUi()
 {
-    labelAvailable->setText(QApplication::translate("Gui::ActionSelector", "Available:", 0, QApplication::UnicodeUTF8));
-    labelSelected->setText(QApplication::translate("Gui::ActionSelector", "Selected:", 0, QApplication::UnicodeUTF8));
-    addButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Add", 0, QApplication::UnicodeUTF8));
-    removeButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Remove", 0, QApplication::UnicodeUTF8));
-    upButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Move up", 0, QApplication::UnicodeUTF8));
-    downButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Move down", 0, QApplication::UnicodeUTF8));
+    labelAvailable->setText(QApplication::translate("Gui::ActionSelector", "Available:"));
+    labelSelected->setText(QApplication::translate("Gui::ActionSelector", "Selected:"));
+    addButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Add"));
+    removeButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Remove"));
+    upButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Move up"));
+    downButton->setToolTip(QApplication::translate("Gui::ActionSelector", "Move down"));
 }
 
 void ActionSelector::changeEvent(QEvent* event)
@@ -436,6 +437,64 @@ void AccelLineEdit::keyPressEvent ( QKeyEvent * e)
     setText(txtLine);
     keyPressedCount++;
 }
+
+// ------------------------------------------------------------------------------
+
+#if QT_VERSION >= 0x050200
+ClearLineEdit::ClearLineEdit (QWidget * parent)
+  : QLineEdit(parent)
+{
+    clearAction = this->addAction(QIcon(QString::fromLatin1(":/icons/edit-cleartext.svg")),
+                                        QLineEdit::TrailingPosition);
+    connect(clearAction, SIGNAL(triggered()), this, SLOT(clear()));
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(updateClearButton(const QString&)));
+}
+
+void ClearLineEdit::resizeEvent(QResizeEvent *e)
+{
+    QLineEdit::resizeEvent(e);
+}
+
+void ClearLineEdit::updateClearButton(const QString& text)
+{
+    clearAction->setVisible(!text.isEmpty());
+}
+#else
+ClearLineEdit::ClearLineEdit (QWidget * parent)
+  : QLineEdit(parent)
+{
+    clearButton = new QToolButton(this);
+    QPixmap pixmap(BitmapFactory().pixmapFromSvg(":/icons/edit-cleartext.svg", QSize(18, 18)));
+    clearButton->setIcon(QIcon(pixmap));
+    clearButton->setIconSize(pixmap.size());
+    clearButton->setCursor(Qt::ArrowCursor);
+    clearButton->setStyleSheet(QString::fromLatin1("QToolButton { border: none; padding: 0px; }"));
+    clearButton->hide();
+    connect(clearButton, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(this, SIGNAL(textChanged(const QString&)),
+            this, SLOT(updateClearButton(const QString&)));
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    setStyleSheet(QString::fromLatin1("QLineEdit { padding-right: %1px; } ")
+                  .arg(clearButton->sizeHint().width() + frameWidth + 1));
+    QSize msz = minimumSizeHint();
+    setMinimumSize(qMax(msz.width(), clearButton->sizeHint().height() + frameWidth * 2 + 2),
+                   msz.height());
+}
+
+void ClearLineEdit::resizeEvent(QResizeEvent *)
+{
+    QSize sz = clearButton->sizeHint();
+    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
+    clearButton->move(rect().right() - frameWidth - sz.width(),
+                      (rect().bottom() + 1 - sz.height())/2);
+}
+
+void ClearLineEdit::updateClearButton(const QString& text)
+{
+    clearButton->setVisible(!text.isEmpty());
+}
+#endif
 
 // ------------------------------------------------------------------------------
 

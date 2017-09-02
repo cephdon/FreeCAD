@@ -113,7 +113,7 @@ void Sheet::clearAll()
     std::vector<std::string> propNames = props.getDynamicPropertyNames();
 
     for (std::vector<std::string>::const_iterator i = propNames.begin(); i != propNames.end(); ++i)
-        props.removeDynamicProperty((*i).c_str());
+        this->removeDynamicProperty((*i).c_str());
 
     propAddress.clear();
     cellErrors.clear();
@@ -460,7 +460,7 @@ void Sheet::removeAliases()
     std::map<CellAddress, std::string>::iterator i = removedAliases.begin();
 
     while (i != removedAliases.end()) {
-        props.removeDynamicProperty(i->second.c_str());
+        this->removeDynamicProperty(i->second.c_str());
         ++i;
     }
     removedAliases.clear();
@@ -476,7 +476,7 @@ void Sheet::onSettingDocument()
 }
 
 /**
-  * Set the property for cell \key to a PropertyFloat with the value \a value.
+  * Set the property for cell \p key to a PropertyFloat with the value \a value.
   * If the Property exists, but of wrong type, the previous Property is destroyed and recreated as the correct type.
   *
   * @param key   The address of the cell we want to create a Property for
@@ -491,7 +491,7 @@ Property * Sheet::setFloatProperty(CellAddress key, double value)
 
     if (!prop || prop->getTypeId() != PropertyFloat::getClassTypeId()) {
         if (prop) {
-            props.removeDynamicProperty(key.toString().c_str());
+            this->removeDynamicProperty(key.toString().c_str());
             propAddress.erase(prop);
         }
         floatProp = freecad_dynamic_cast<PropertyFloat>(props.addDynamicProperty("App::PropertyFloat", key.toString().c_str(), 0, 0, Prop_ReadOnly | Prop_Hidden | Prop_Transient));
@@ -506,7 +506,7 @@ Property * Sheet::setFloatProperty(CellAddress key, double value)
 }
 
 /**
-  * Set the property for cell \key to a PropertyQuantity with \a value and \a unit.
+  * Set the property for cell \p key to a PropertyQuantity with \a value and \a unit.
   * If the Property exists, but of wrong type, the previous Property is destroyed and recreated as the correct type.
   *
   * @param key   The address of the cell we want to create a Property for
@@ -522,7 +522,7 @@ Property * Sheet::setQuantityProperty(CellAddress key, double value, const Base:
 
     if (!prop || prop->getTypeId() != PropertySpreadsheetQuantity::getClassTypeId()) {
         if (prop) {
-            props.removeDynamicProperty(key.toString().c_str());
+            this->removeDynamicProperty(key.toString().c_str());
             propAddress.erase(prop);
         }
         Property * p = props.addDynamicProperty("Spreadsheet::PropertySpreadsheetQuantity", key.toString().c_str(), 0, 0, Prop_ReadOnly | Prop_Hidden | Prop_Transient);
@@ -541,7 +541,7 @@ Property * Sheet::setQuantityProperty(CellAddress key, double value, const Base:
 }
 
 /**
-  * Set the property for cell \key to a PropertyString with \a value.
+  * Set the property for cell \p key to a PropertyString with \a value.
   * If the Property exists, but of wrong type, the previous Property is destroyed and recreated as the correct type.
   *
   * @param key   The address of the cell we want to create a Property for
@@ -556,7 +556,7 @@ Property * Sheet::setStringProperty(CellAddress key, const std::string & value)
 
     if (!stringProp) {
         if (prop) {
-            props.removeDynamicProperty(key.toString().c_str());
+            this->removeDynamicProperty(key.toString().c_str());
             propAddress.erase(prop);
         }
         stringProp = freecad_dynamic_cast<PropertyString>(props.addDynamicProperty("App::PropertyString", key.toString().c_str(), 0, 0, Prop_ReadOnly | Prop_Hidden | Prop_Transient));
@@ -590,7 +590,7 @@ void Sheet::updateAlias(CellAddress key)
         if (aliasProp) {
             // Type of alias and property must always be the same
             if (aliasProp->getTypeId() != prop->getTypeId()) {
-                props.removeDynamicProperty(alias.c_str());
+                this->removeDynamicProperty(alias.c_str());
                 aliasProp = 0;
             }
         }
@@ -711,7 +711,7 @@ void Sheet::recomputeCell(CellAddress p)
         if (cell)
             cell->setException(e.what());
 
-        // Mark as erronous
+        // Mark as erroneous
         cellErrors.insert(p);
     }
 
@@ -800,7 +800,7 @@ DocumentObjectExecReturn *Sheet::execute(void)
             while (i != VertexList.end()) {
                 Cell * cell = cells.getValue(i->first);
 
-                // Mark as erronous
+                // Mark as erroneous
                 cellErrors.insert(i->first);
 
                 if (cell)
@@ -882,7 +882,7 @@ void Sheet::clear(CellAddress address, bool /*all*/)
     // Remove alias, if defined
     std::string aliasStr;
     if (cell && cell->getAlias(aliasStr))
-        props.removeDynamicProperty(aliasStr.c_str());
+        this->removeDynamicProperty(aliasStr.c_str());
 
     cells.clear(address);
 
@@ -896,7 +896,7 @@ void Sheet::clear(CellAddress address, bool /*all*/)
     docDeps.setValues(dv);
 
     propAddress.erase(prop);
-    props.removeDynamicProperty(addr.c_str());
+    this->removeDynamicProperty(addr.c_str());
 }
 
 /**
@@ -916,7 +916,7 @@ void Sheet::getSpans(CellAddress address, int &rows, int &cols) const
 /**
   * Determine whether this cell is merged with another or not.
   *
-  * @param adderss
+  * @param address
   *
   * @returns True if cell is merged, false if not.
   *
@@ -950,7 +950,7 @@ int Sheet::getColumnWidth(int col) const
 }
 
 /**
- * @brief Set row height of row given by index in \row to \a height.
+ * @brief Set row height of row given by index in \p row to \a height.
  * @param row Row index.
  * @param height New height of row.
  */
@@ -1164,7 +1164,7 @@ std::string Sheet::getAddressFromAlias(const std::string &alias) const
 }
 
 /**
- * @brief Determine whether a given alias candiate is valid or not.
+ * @brief Determine whether a given alias candidate is valid or not.
  *
  * A candidate is valid is the string is syntactically correct,
  * and the alias does not conflict with an existing property.

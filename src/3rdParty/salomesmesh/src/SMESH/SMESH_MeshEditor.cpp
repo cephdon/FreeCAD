@@ -4592,8 +4592,13 @@ void SMESH_MeshEditor::sweepElement(const SMDS_MeshElement*               elem,
         std::swap( itNN[0],    itNN[1] );
         std::swap( prevNod[0], prevNod[1] );
         std::swap( nextNod[0], nextNod[1] );
-	
-        std::swap( isSingleNode[0], isSingleNode[1] );
+
+        // See #0002784 for error message
+        //std::swap( isSingleNode[0], isSingleNode[1] );
+        bool temp = isSingleNode[0];
+        isSingleNode[0] = isSingleNode[1];
+        isSingleNode[1] = temp;
+
         if ( nbSame > 0 )
           sames[0] = 1 - sames[0];
         iNotSameNode = 1 - iNotSameNode;
@@ -11044,8 +11049,8 @@ bool SMESH_MeshEditor::AffectedElemGroupsInRegion( const TIDSortedElemSet& theEl
   else
   {
     const double aTol = Precision::Confusion();
-    auto_ptr< BRepClass3d_SolidClassifier> bsc3d;
-    auto_ptr<_FaceClassifier>              aFaceClassifier;
+    unique_ptr< BRepClass3d_SolidClassifier> bsc3d;
+    unique_ptr<_FaceClassifier>              aFaceClassifier;
     if ( theShape.ShapeType() == TopAbs_SOLID )
     {
       bsc3d.reset( new BRepClass3d_SolidClassifier(theShape));;
@@ -11109,8 +11114,8 @@ bool SMESH_MeshEditor::DoubleNodesInRegion( const TIDSortedElemSet& theElems,
     return false;
 
   const double aTol = Precision::Confusion();
-  auto_ptr< BRepClass3d_SolidClassifier> bsc3d;
-  auto_ptr<_FaceClassifier>              aFaceClassifier;
+  unique_ptr< BRepClass3d_SolidClassifier> bsc3d;
+  unique_ptr<_FaceClassifier>              aFaceClassifier;
   if ( theShape.ShapeType() == TopAbs_SOLID )
   {
     bsc3d.reset( new BRepClass3d_SolidClassifier(theShape));;
@@ -11629,18 +11634,18 @@ bool SMESH_MeshEditor::DoubleNodesOnGroupBoundaries( const std::vector<TIDSorted
           vector<int> orderDom = itn->second;
           vector<vtkIdType> orderedNodes;
           for (int idom = 0; idom <orderDom.size(); idom++)
-            orderedNodes.push_back( nodeDomains[node][orderDom[idom]] );
-            SMDS_MeshFace* face = this->GetMeshDS()->AddFaceFromVtkIds(orderedNodes);
+              orderedNodes.push_back( nodeDomains[node][orderDom[idom]] );
+          SMDS_MeshFace* face = this->GetMeshDS()->AddFaceFromVtkIds(orderedNodes);
 
-            stringstream grpname;
-            grpname << "m2j_";
-            grpname << 0 << "_" << 0;
-            int idg;
-            string namegrp = grpname.str();
-            if (!mapOfJunctionGroups.count(namegrp))
+          stringstream grpname;
+          grpname << "m2j_";
+          grpname << 0 << "_" << 0;
+          int idg;
+          string namegrp = grpname.str();
+          if (!mapOfJunctionGroups.count(namegrp))
               mapOfJunctionGroups[namegrp] = this->myMesh->AddGroup(SMDSAbs_Face, namegrp.c_str(), idg);
-            SMESHDS_Group *sgrp = dynamic_cast<SMESHDS_Group*>(mapOfJunctionGroups[namegrp]->GetGroupDS());
-            if (sgrp)
+          SMESHDS_Group *sgrp = dynamic_cast<SMESHDS_Group*>(mapOfJunctionGroups[namegrp]->GetGroupDS());
+          if (sgrp)
               sgrp->Add(face->GetID());
         }
 

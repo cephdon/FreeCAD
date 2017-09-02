@@ -29,6 +29,13 @@ __title__="FreeCAD Working Plane utility"
 __author__ = "Ken Cline"
 __url__ = "http://www.freecadweb.org"
 
+## @package WorkingPlane
+#  \ingroup DRAFT
+#  \brief This module handles the Working Plane and grid of the Draft module.
+#
+#  This module contains the plane class which provides a virtual plane in FreeCAD
+#  and a couple of utility functions
+
 '''
 This module provides a class called plane to assist in selecting and maintaining a working plane.
 '''
@@ -51,6 +58,9 @@ class plane:
 
     def __repr__(self):
         return "Workplane x="+str(DraftVecUtils.rounded(self.u))+" y="+str(DraftVecUtils.rounded(self.v))+" z="+str(DraftVecUtils.rounded(self.axis))
+
+    def copy(self):
+        return plane(u=self.u,v=self.v,w=self.axis,pos=self.position)
 
     def offsetToPoint(self, p, direction=None):
         '''
@@ -116,10 +126,12 @@ class plane:
         self.doc = FreeCAD.ActiveDocument
         self.axis = axis;
         self.axis.normalize()
-        if (DraftVecUtils.equals(axis, Vector(1,0,0))):
+        if axis.getAngle(Vector(1,0,0)) < 0.00001:
+            self.axis = Vector(1,0,0)
             self.u = Vector(0,1,0)
             self.v = Vector(0,0,1)
-        elif (DraftVecUtils.equals(axis, Vector(-1,0,0))):
+        elif axis.getAngle(Vector(-1,0,0)) < 0.00001:
+            self.axis = Vector(-1,0,0)
             self.u = Vector(0,-1,0)
             self.v = Vector(0,0,1)
         elif upvec:
@@ -244,6 +256,12 @@ class plane:
         else:
             return False
 
+    def alignTo3Points(self,p1,p2,p3,offset=0):
+        import Part
+        w = Part.makePolygon([p1,p2,p3,p1])
+        f = Part.Face(w)
+        return self.alignToFace(f,offset)
+
     def alignToSelection(self, offset):
         '''If selection uniquely defines a plane, align working plane to it.  Return success (bool)'''
         import FreeCADGui
@@ -302,12 +320,14 @@ class plane:
                 0.0,0.0,0.0,1.0)
         return FreeCAD.Placement(m)
 
-    def setFromPlacement(self,pl):
-        "sets the working plane from a placement (rotaton ONLY)"
+    def setFromPlacement(self,pl,rebase=False):
+        "sets the working plane from a placement (rotaton ONLY, unless rebaee=True)"
         rot = FreeCAD.Placement(pl).Rotation
         self.u = rot.multVec(FreeCAD.Vector(1,0,0))
         self.v = rot.multVec(FreeCAD.Vector(0,1,0))
         self.axis = rot.multVec(FreeCAD.Vector(0,0,1))
+        if rebase:
+            self.position = pl.Base
         
     def inverse(self):
         "inverts the direction of the working plane"

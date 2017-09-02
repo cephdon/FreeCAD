@@ -46,5 +46,3 @@ int PartFeaturePy::setCustomAttributes(const char* , PyObject *)
 {
     return 0; 
 }
-
-

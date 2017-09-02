@@ -25,6 +25,7 @@
 
 #include "SubSystem.h"
 #include <boost/concept_check.hpp>
+#include <boost/graph/graph_concepts.hpp>
 
 namespace GCS
 {
@@ -180,8 +181,12 @@ namespace GCS
         int addConstraintArcRules(Arc &a, int tagId=0);
         int addConstraintPointOnCircle(Point &p, Circle &c, int tagId=0);
         int addConstraintPointOnEllipse(Point &p, Ellipse &e, int tagId=0);
-        int addConstraintEllipticalArcRangeToEndPoints(Point &p, ArcOfEllipse &a, double *angle, int tagId=0);
+        int addConstraintPointOnHyperbolicArc(Point &p, ArcOfHyperbola &e, int tagId=0);
+        int addConstraintPointOnParabolicArc(Point &p, ArcOfParabola &e, int tagId=0);
         int addConstraintArcOfEllipseRules(ArcOfEllipse &a, int tagId=0);
+        int addConstraintCurveValue(Point &p, Curve &a, double *u, int tagId=0);
+        int addConstraintArcOfHyperbolaRules(ArcOfHyperbola &a, int tagId=0);
+        int addConstraintArcOfParabolaRules(ArcOfParabola &a, int tagId=0);
         int addConstraintPointOnArc(Point &p, Arc &a, int tagId=0);
         int addConstraintPerpendicularLine2Arc(Point &p1, Point &p2, Arc &a,
                                                int tagId=0);
@@ -205,8 +210,10 @@ namespace GCS
         int addConstraintEqualLength(Line &l1, Line &l2, double *length, int tagId=0);
         int addConstraintEqualRadius(Circle &c1, Circle &c2, int tagId=0);
         int addConstraintEqualRadii(Ellipse &e1, Ellipse &e2, int tagId=0);
+        int addConstraintEqualRadii(ArcOfHyperbola &a1, ArcOfHyperbola &a2, int tagId=0);
         int addConstraintEqualRadius(Circle &c1, Arc &a2, int tagId=0);
         int addConstraintEqualRadius(Arc &a1, Arc &a2, int tagId=0);
+        int addConstraintEqualFocus(ArcOfParabola &a1, ArcOfParabola &a2, int tagId=0);
         int addConstraintP2PSymmetric(Point &p1, Point &p2, Line &l, int tagId=0);
         int addConstraintP2PSymmetric(Point &p1, Point &p2, Point &p, int tagId=0);
         int addConstraintSnellsLaw(Curve &ray1, Curve &ray2,
@@ -221,6 +228,12 @@ namespace GCS
         int addConstraintInternalAlignmentEllipseMinorDiameter(Ellipse &e, Point &p1, Point &p2, int tagId=0);
         int addConstraintInternalAlignmentEllipseFocus1(Ellipse &e, Point &p1, int tagId=0);
         int addConstraintInternalAlignmentEllipseFocus2(Ellipse &e, Point &p1, int tagId=0);
+        int addConstraintInternalAlignmentPoint2Hyperbola(Hyperbola &e, Point &p1, InternalAlignmentType alignmentType, int tagId=0);
+        int addConstraintInternalAlignmentHyperbolaMajorDiameter(Hyperbola &e, Point &p1, Point &p2, int tagId=0);
+        int addConstraintInternalAlignmentHyperbolaMinorDiameter(Hyperbola &e, Point &p1, Point &p2, int tagId=0);
+        int addConstraintInternalAlignmentHyperbolaFocus(Hyperbola &e, Point &p1, int tagId=0);
+        int addConstraintInternalAlignmentParabolaFocus(Parabola &e, Point &p1, int tagId=0);
+        int addConstraintInternalAlignmentBSplineControlPoint(BSpline &b, Circle &c, int poleindex, int tag=0);
 
         double calculateAngleViaPoint(Curve &crv1, Curve &crv2, Point &p);
         double calculateAngleViaPoint(Curve &crv1, Curve &crv2, Point &p1, Point &p2);

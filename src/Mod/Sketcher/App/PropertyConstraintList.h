@@ -67,13 +67,30 @@ public:
         return "SketcherGui::PropertyConstraintListItem";
     }
 
-    /** Sets the property
-     */
+    /*!
+      Sets a single constraint to the property at a certain
+      position. The value is cloned inernally so it's in the
+      responsibility of the caller to free the memory.
+    */
     void set1Value(const int idx, const Constraint*);
+    /*!
+      Sets a single constraint to the property.
+      The value is cloned inernally so it's in the
+      responsibility of the caller to free the memory.
+    */
     void setValue(const Constraint*);
+    /*!
+      Sets a vector of constraint to the property.
+      The values of the array are cloned inernally so it's
+      in the responsibility of the caller to free the memory.
+    */
     void setValues(const std::vector<Constraint*>&);
 
-    /// index operator
+    /*!
+     Index operator
+     \note If the geometry is invalid then the index operator
+           returns null. This must be checked by the caller.
+    */
     const Constraint *operator[] (const int idx) const {
         return invalidGeometry ? 0 : _lValueList[idx];
     }
@@ -99,7 +116,6 @@ public:
     void acceptGeometry(const std::vector<Part::Geometry *> &GeoList);
     void checkGeometry(const std::vector<Part::Geometry *> &GeoList);
     bool scanGeometry(const std::vector<Part::Geometry *> &GeoList) const;
-    bool isGeometryInvalid(){return invalidGeometry;}
 
     /// Return status of geometry for better error reporting
     bool hasInvalidGeometry() const { return invalidGeometry; }

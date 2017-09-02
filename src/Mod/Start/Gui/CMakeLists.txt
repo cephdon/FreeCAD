@@ -2,7 +2,6 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${Boost_INCLUDE_DIRS}
     ${COIN3D_INCLUDE_DIRS}
-    ${QT_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
     ${PYTHON_INCLUDE_DIRS}
     ${XercesC_INCLUDE_DIRS}
@@ -13,7 +12,11 @@ set(StartGui_LIBS
     FreeCADGui
 )
 
-qt4_add_resources(Start_QRC_SRCS Resources/Start.qrc)
+if(BUILD_QT5)
+    qt5_add_resources(Start_QRC_SRCS Resources/Start.qrc)
+else()
+    qt4_add_resources(Start_QRC_SRCS Resources/Start.qrc)
+endif()
 
 SET(StartGui_SRCS
     ${Start_QRC_SRCS}

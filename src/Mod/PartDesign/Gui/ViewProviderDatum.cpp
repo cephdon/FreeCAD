@@ -53,7 +53,7 @@
 #endif
 
 #include <App/DocumentObjectGroup.h>
-#include <App/GeoFeatureGroup.h>
+#include <App/GeoFeatureGroupExtension.h>
 #include <Gui/Control.h>
 #include <Gui/Command.h>
 #include <Gui/Application.h>
@@ -116,14 +116,22 @@ void ViewProviderDatum::attach(App::DocumentObject *obj)
 
     // TODO remove this field (2015-09-08, Fat-Zer)
     App::DocumentObject* o = getObject();
-    if (o->getTypeId() == PartDesign::Plane::getClassTypeId())
-        datumType = QObject::tr("Plane");
-    else if (o->getTypeId() == PartDesign::Line::getClassTypeId())
-        datumType = QObject::tr("Line");
-    else if (o->getTypeId() == PartDesign::Point::getClassTypeId())
-        datumType = QObject::tr("Point");
-    else if (o->getTypeId() == PartDesign::CoordinateSystem::getClassTypeId())
-        datumType = QObject::tr("CoordinateSystem");
+    if (o->getTypeId() == PartDesign::Plane::getClassTypeId()) {
+        datumType = QString::fromLatin1("Plane");
+        datumText = QObject::tr("Plane");
+    }
+    else if (o->getTypeId() == PartDesign::Line::getClassTypeId()) {
+        datumType = QString::fromLatin1("Line");
+        datumText = QObject::tr("Line");
+    }
+    else if (o->getTypeId() == PartDesign::Point::getClassTypeId()) {
+        datumType = QString::fromLatin1("Point");
+        datumText = QObject::tr("Point");
+    }
+    else if (o->getTypeId() == PartDesign::CoordinateSystem::getClassTypeId()) {
+        datumType = QString::fromLatin1("CoordinateSystem");
+        datumText = QObject::tr("Coordinate System");
+    }
 
     SoShapeHints* hints = new SoShapeHints();
     hints->shapeType.setValue(SoShapeHints::UNKNOWN_SHAPE_TYPE);
@@ -221,7 +229,7 @@ bool ViewProviderDatum::isSelectable(void) const
 void ViewProviderDatum::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
     QAction* act;
-    act = menu->addAction(QObject::tr("Edit datum ") + datumType, receiver, member);
+    act = menu->addAction(QObject::tr("Edit datum"), receiver, member);
     act->setData(QVariant((int)ViewProvider::Default));
 }
 
@@ -236,7 +244,7 @@ bool ViewProviderDatum::setEdit(int ModNum)
         // the task panel
         Gui::TaskView::TaskDialog *dlg = Gui::Control().activeDialog();
         TaskDlgDatumParameters *datumDlg = qobject_cast<TaskDlgDatumParameters *>(dlg);
-        if (datumDlg && datumDlg->getDatumView() != this)
+        if (datumDlg && datumDlg->getViewProvider() != this)
             datumDlg = 0; // another datum feature left open its task panel
         if (dlg && !datumDlg) {
             QMessageBox msgBox;
@@ -327,10 +335,12 @@ SbBox3f ViewProviderDatum::getRelevantBoundBox () const {
         objs = body->getFullModel ();
     } else {
         // Probe if we belongs to some group
-        App::DocumentObjectGroup* group =  App::DocumentObjectGroup::getGroupOfObject ( this->getObject () );
+        App::DocumentObject* group =  App::DocumentObjectGroup::getGroupOfObject ( this->getObject () );
 
         if(group) {
-            objs = group->getObjects ();
+            auto* ext = group->getExtensionByType<App::GroupExtension>();
+            if(ext) 
+                objs = ext->getObjects ();
         } else {
             // Fallback to whole document
             objs = this->getObject ()->getDocument ()->getObjects ();
@@ -355,7 +365,7 @@ SbBox3f ViewProviderDatum::getRelevantBoundBox () const {
 SbBox3f ViewProviderDatum::getRelevantBoundBox (
         SoGetBoundingBoxAction &bboxAction, const std::vector <App::DocumentObject *> &objs )
 {
-    SbBox3f bbox(0,0,0, 0,0,0);
+    SbBox3f bbox = defaultBoundBox();
 
     // Adds the bbox of given feature to the output
     for (auto obj :objs) {
@@ -378,6 +388,7 @@ SbBox3f ViewProviderDatum::getRelevantBoundBox (
         }
     }
 
+    // TODO: shrink bbox when all other elements are too small
     return bbox;
 }
 

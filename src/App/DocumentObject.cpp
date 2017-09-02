@@ -33,6 +33,7 @@
 #include "DocumentObjectGroup.h"
 #include "PropertyLinks.h"
 #include "PropertyExpressionEngine.h"
+#include "DocumentObjectExtension.h"
 #include <App/DocumentObjectPy.h>
 #include <boost/signals/connection.hpp>
 #include <boost/bind.hpp>
@@ -70,34 +71,47 @@ DocumentObject::~DocumentObject(void)
     }
 }
 
-namespace App {
-class ObjectExecution
-{
-public:
-    ObjectExecution(DocumentObject* o) : obj(o)
-    { obj->StatusBits.set(3); }
-    ~ObjectExecution()
-    { obj->StatusBits.reset(3); }
-private:
-    DocumentObject* obj;
-};
-}
-
 App::DocumentObjectExecReturn *DocumentObject::recompute(void)
 {
     // set/unset the execution bit
-    ObjectExecution exe(this);
+    ObjectStatusLocker<ObjectStatus, DocumentObject> exe(App::Recompute, this);
     return this->execute();
 }
 
 DocumentObjectExecReturn *DocumentObject::execute(void)
 {
+    //call all extensions
+    auto vector = getExtensionsDerivedFromType<App::DocumentObjectExtension>();
+    for(auto ext : vector) {
+        auto ret = ext->extensionExecute();
+        if (ret != StdReturn)
+            return ret;
+    }
+
     return StdReturn;
+}
+
+bool DocumentObject::recomputeFeature()
+{
+    Document* doc = this->getDocument();
+    if (doc)
+        doc->recomputeFeature(this);
+    return isValid();
 }
 
 short DocumentObject::mustExecute(void) const
 {
-    return (isTouched() ? 1 : 0);
+    if(isTouched())
+        return 1;
+
+    //ask all extensions
+    auto vector = getExtensionsDerivedFromType<App::DocumentObjectExtension>();
+    for(auto ext : vector) {
+        if(ext->extensionMustExecute())
+            return 1;
+    }
+    return 0;
+    
 }
 
 const char* DocumentObject::getStatusString(void) const
@@ -171,6 +185,7 @@ std::vector<DocumentObject*> DocumentObject::getOutList(void) const
     return ret;
 }
 
+#ifdef USE_OLD_DAG
 std::vector<App::DocumentObject*> DocumentObject::getInList(void) const
 {
     if (_pDoc)
@@ -179,9 +194,82 @@ std::vector<App::DocumentObject*> DocumentObject::getInList(void) const
         return std::vector<App::DocumentObject*>();
 }
 
+#else // ifndef USE_OLD_DAG
+
+std::vector<App::DocumentObject*> DocumentObject::getInList(void) const
+{
+    return _inList;
+}
+
+#endif // if USE_OLD_DAG
+
+
+void _getInListRecursive(std::vector<DocumentObject*>& objSet, const DocumentObject* obj, const DocumentObject* checkObj, int depth)
+{
+    for (const auto objIt : obj->getInList()){
+        // if the check object is in the recursive inList we have a cycle!
+        if (objIt == checkObj || depth <= 0){
+            std::cerr << "DocumentObject::getInListRecursive(): cyclic dependency detected!"<<std::endl;
+            throw Base::RuntimeError("DocumentObject::getInListRecursive(): cyclic dependency detected!");
+        }
+
+        objSet.push_back(objIt);
+        _getInListRecursive(objSet, objIt, checkObj,depth-1);
+    }
+}
+
+std::vector<App::DocumentObject*> DocumentObject::getInListRecursive(void) const
+{
+    // number of objects in document is a good estimate in result size
+    int maxDepth = getDocument()->countObjects() +2;
+    std::vector<App::DocumentObject*> result;
+    result.reserve(maxDepth);
+
+    // using a rcursie helper to collect all InLists
+    _getInListRecursive(result, this, this, maxDepth);
+
+    // remove duplicate entries and resize the vector
+    std::sort(result.begin(), result.end());
+    auto newEnd = std::unique(result.begin(), result.end());
+    result.resize(std::distance(result.begin(), newEnd));
+
+    return result;
+}
+
+void _getOutListRecursive(std::vector<DocumentObject*>& objSet, const DocumentObject* obj, const DocumentObject* checkObj, int depth)
+{
+    for (const auto objIt : obj->getOutList()){
+        // if the check object is in the recursive inList we have a cycle!
+        if (objIt == checkObj || depth <= 0){
+            std::cerr << "DocumentObject::getOutListRecursive(): cyclic dependency detected!" << std::endl;
+            throw Base::RuntimeError("DocumentObject::getOutListRecursive(): cyclic dependency detected!");
+        }
+        objSet.push_back(objIt);
+        _getOutListRecursive(objSet, objIt, checkObj,depth-1);
+    }
+}
+
+std::vector<App::DocumentObject*> DocumentObject::getOutListRecursive(void) const
+{
+    // number of objects in document is a good estimate in result size
+    int maxDepth = getDocument()->countObjects() + 2;
+    std::vector<App::DocumentObject*> result;
+    result.reserve(maxDepth);
+
+    // using a recursive helper to collect all OutLists
+    _getOutListRecursive(result, this, this, maxDepth);
+
+    // remove duplicate entries and resize the vector
+    std::sort(result.begin(), result.end());
+    auto newEnd = std::unique(result.begin(), result.end());
+    result.resize(std::distance(result.begin(), newEnd));
+
+    return result;
+}
+
 DocumentObjectGroup* DocumentObject::getGroup() const
 {
-    return DocumentObjectGroup::getGroupOfObject(this);
+    return dynamic_cast<DocumentObjectGroup*>(GroupExtension::getGroupOfObject(this));
 }
 
 bool DocumentObject::testIfLinkDAGCompatible(DocumentObject *linkTo) const
@@ -195,7 +283,7 @@ bool DocumentObject::testIfLinkDAGCompatible(const std::vector<DocumentObject *>
 {
     Document* doc = this->getDocument();
     if (!doc)
-        throw Base::Exception("DocumentObject::testIfLinkIsDAG: object is not in any document.");
+        throw Base::RuntimeError("DocumentObject::testIfLinkIsDAG: object is not in any document.");
     std::vector<App::DocumentObject*> deplist = doc->getDependencyList(linksTo);
     if( std::find(deplist.begin(),deplist.end(),this) != deplist.end() )
         //found this in dependency list
@@ -218,6 +306,86 @@ bool DocumentObject::testIfLinkDAGCompatible(PropertyLinkSub &linkTo) const
     return this->testIfLinkDAGCompatible(linkTo_in_vector);
 }
 
+bool DocumentObject::_isInInListRecursive(const DocumentObject* /*act*/,
+                                          const DocumentObject* test,
+                                          const DocumentObject* checkObj, int depth) const
+{
+#ifndef  USE_OLD_DAG
+    if (std::find(_inList.begin(), _inList.end(), test) != _inList.end())
+        return true;
+
+    for (auto obj : _inList){
+        // if the check object is in the recursive inList we have a cycle!
+        if (obj == checkObj || depth <= 0){
+            std::cerr << "DocumentObject::getOutListRecursive(): cyclic dependency detected!" << std::endl;
+            throw Base::RuntimeError("DocumentObject::getOutListRecursive(): cyclic dependency detected!");
+        }
+
+        if (_isInInListRecursive(obj, test, checkObj, depth - 1))
+            return true;
+    }
+#else
+    (void)test;
+    (void)checkObj;
+    (void)depth;
+#endif
+
+    return false;
+}
+
+bool DocumentObject::isInInListRecursive(DocumentObject *linkTo) const
+{
+    return _isInInListRecursive(this, linkTo, this, getDocument()->countObjects());
+}
+
+bool DocumentObject::isInInList(DocumentObject *linkTo) const
+{
+#ifndef  USE_OLD_DAG
+    if (std::find(_inList.begin(), _inList.end(), linkTo) != _inList.end())
+        return true;
+    else
+        return false;
+#else
+    (void)linkTo;
+    return false;
+#endif
+}
+
+bool DocumentObject::_isInOutListRecursive(const DocumentObject* act,
+                                           const DocumentObject* test,
+                                           const DocumentObject* checkObj, int depth) const
+{
+#ifndef  USE_OLD_DAG
+    std::vector <DocumentObject*> outList = act->getOutList();
+
+    if (std::find(outList.begin(), outList.end(), test) != outList.end())
+        return true;
+
+    for (auto obj : outList){
+        // if the check object is in the recursive inList we have a cycle!
+        if (obj == checkObj || depth <= 0){
+            std::cerr << "DocumentObject::isInOutListRecursive(): cyclic dependency detected!" << std::endl;
+            throw Base::RuntimeError("DocumentObject::isInOutListRecursive(): cyclic dependency detected!");
+        }
+
+        if (_isInOutListRecursive(obj, test, checkObj, depth - 1))
+            return true;
+    }
+#else
+    (void)act;
+    (void)test;
+    (void)checkObj;
+    (void)depth;
+#endif
+
+    return false;
+}
+
+bool DocumentObject::isInOutListRecursive(DocumentObject *linkTo) const
+{
+    return _isInOutListRecursive(this, linkTo, this, getDocument()->countObjects());
+}
+
 void DocumentObject::onLostLinkToObject(DocumentObject*)
 {
 
@@ -234,9 +402,14 @@ void DocumentObject::setDocument(App::Document* doc)
     onSettingDocument();
 }
 
+void DocumentObject::onAboutToRemoveProperty(const char* prop)
+{
+    if (_pDoc)
+        _pDoc->removePropertyOfObject(this, prop);
+}
+
 void DocumentObject::onBeforeChange(const Property* prop)
 {
-
     // Store current name in oldLabel, to be able to easily retrieve old name of document object later
     // when renaming expressions.
     if (prop == &Label)
@@ -255,10 +428,12 @@ void DocumentObject::onChanged(const Property* prop)
     if (prop == &Label && _pDoc && oldLabel != Label.getStrValue())
         _pDoc->signalRelabelObject(*this);
 
-    if (prop->getType() & Prop_Output)
-        return;
-    // set object touched
-    StatusBits.set(0);
+    // set object touched if it is an input property
+    if (!(prop->getType() & Prop_Output))
+        StatusBits.set(ObjectStatus::Touch);
+    
+    //call the parent for appropriate handling
+    TransactionalObject::onChanged(prop);
 }
 
 PyObject *DocumentObject::getPyObject(void)
@@ -278,7 +453,7 @@ std::vector<PyObject *> DocumentObject::getPySubObjects(const std::vector<std::s
 
 void DocumentObject::touch(void)
 {
-    StatusBits.set(0);
+    StatusBits.set(ObjectStatus::Touch);
 }
 
 /**
@@ -288,13 +463,13 @@ void DocumentObject::touch(void)
 
 bool DocumentObject::isTouched() const
 {
-    return ExpressionEngine.isTouched() || StatusBits.test(0);
+    return ExpressionEngine.isTouched() || StatusBits.test(ObjectStatus::Touch);
 }
 
 void DocumentObject::Save (Base::Writer &writer) const
 {
     writer.ObjectName = this->getNameInDocument();
-    App::PropertyContainer::Save(writer);
+    App::ExtensionContainer::Save(writer);
 }
 
 /**
@@ -369,4 +544,47 @@ void DocumentObject::connectRelabelSignals()
         onRelabledDocumentConnection.disconnect();
         onDeletedObjectConnection.disconnect();
     }
+}
+
+void DocumentObject::onSettingDocument()
+{
+    //call all extensions
+    auto vector = getExtensionsDerivedFromType<App::DocumentObjectExtension>();
+    for(auto ext : vector)
+        ext->onExtendedSettingDocument();
+}
+
+void DocumentObject::setupObject()
+{
+    //call all extensions
+    auto vector = getExtensionsDerivedFromType<App::DocumentObjectExtension>();
+    for(auto ext : vector)
+        ext->onExtendedSetupObject();
+}
+
+void DocumentObject::unsetupObject()
+{
+    //call all extensions
+    auto vector = getExtensionsDerivedFromType<App::DocumentObjectExtension>();
+    for(auto ext : vector)
+        ext->onExtendedUnsetupObject();
+}
+
+void App::DocumentObject::_removeBackLink(DocumentObject* rmvObj)
+{
+#ifndef USE_OLD_DAG
+       _inList.erase(std::remove(_inList.begin(), _inList.end(), rmvObj), _inList.end());
+#else
+    (void)rmvObj;
+#endif
+}
+
+void App::DocumentObject::_addBackLink(DocumentObject* newObj)
+{
+#ifndef USE_OLD_DAG
+    if ( std::find(_inList.begin(), _inList.end(), newObj) == _inList.end() )
+       _inList.push_back(newObj);
+#else
+    (void)newObj;
+#endif //USE_OLD_DAG    
 }

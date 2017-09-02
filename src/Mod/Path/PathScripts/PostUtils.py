@@ -33,19 +33,19 @@ FreeCADGui = None
 if FreeCAD.GuiUp:
     import FreeCADGui
 
-class OldHighlighter(QtGui.QSyntaxHighlighter):
-    def highlightBlock(self, text):
-        myClassFormat = QtGui.QTextCharFormat()
-        myClassFormat.setFontWeight(QtGui.QFont.Bold)
-        myClassFormat.setForeground(QtCore.Qt.green)
-        # the regex pattern to be colored
-        pattern = "(G.*?|M.*?)\\s"
-        expression = QtCore.QRegExp(pattern)
-        index = text.index(expression)
-        while index >= 0:
-            length = expression.matchedLength()
-            setFormat(index, length, myClassFormat)
-            index = text.index(expression, index + length)
+# class OldHighlighter(QtGui.QSyntaxHighlighter):
+#     def highlightBlock(self, text):
+#         myClassFormat = QtGui.QTextCharFormat()
+#         myClassFormat.setFontWeight(QtGui.QFont.Bold)
+#         myClassFormat.setForeground(QtCore.Qt.green)
+#         # the regex pattern to be colored
+#         pattern = "(G.*?|M.*?)\\s"
+#         expression = QtCore.QRegExp(pattern)
+#         index = text.index(expression)
+#         while index >= 0:
+#             length = expression.matchedLength()
+#             setFormat(index, length, myClassFormat)
+#             index = text.index(expression, index + length)
             
 
 
@@ -153,6 +153,11 @@ def editor(gcode):
     dia = GCodeEditorDialog()
     dia.editor.setText(gcode)
     result = dia.exec_()
+    if result:  # If user selected 'OK' get modified G Code
+        final = dia.editor.toPlainText()
+    else:
+        final = gcode
+    return final
 
 def fcoms(string,commentsym):
     ''' filter and rebuild comments with user preferred comment symbol'''

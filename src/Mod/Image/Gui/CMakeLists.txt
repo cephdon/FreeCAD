@@ -9,7 +9,6 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${COIN3D_INCLUDE_DIRS}
     ${OPENCV2_INCLUDE_DIR}
-    ${QT_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
     ${PYTHON_INCLUDE_DIRS}
     ${XercesC_INCLUDE_DIRS}
@@ -24,9 +23,18 @@ set(ImageGui_LIBS
 
 set(ImageGui_MOC_HDRS
     ImageView.h
-    GLImageBox.h
     ImageOrientationDialog.h
 )
+
+if(FREECAD_USE_QTOPENGL_WIDGET)
+    list(APPEND ImageGui_MOC_HDRS
+        OpenGLImageBox.h
+    )
+else()
+    list(APPEND ImageGui_MOC_HDRS
+        GLImageBox.h
+    )
+endif()
 
 fc_wrap_cpp(ImageGui_MOC_SRCS ${ImageGui_MOC_HDRS})
 SOURCE_GROUP("Moc" FILES ${ImageGui_MOC_SRCS})
@@ -35,12 +43,17 @@ SET(ImageGui_RES_SRCS
     Resources/Image.qrc
 )
 
-qt4_add_resources(ImageGui_QRC_SRCS ${ImageGui_RES_SRCS})
-
 set(ImageGui_UIC_SRCS
     ImageOrientationDialog.ui
 )
-qt4_wrap_ui(ImageGui_UIC_HDRS ${ImageGui_UIC_SRCS})
+
+if(BUILD_QT5)
+    qt5_add_resources(ImageGui_QRC_SRCS ${ImageGui_RES_SRCS})
+    qt5_wrap_ui(ImageGui_UIC_HDRS ${ImageGui_UIC_SRCS})
+else()
+    qt4_add_resources(ImageGui_QRC_SRCS ${ImageGui_RES_SRCS})
+    qt4_wrap_ui(ImageGui_UIC_HDRS ${ImageGui_UIC_SRCS})
+endif()
 
 SET(ImageGui_SRCS
 #   ${ImageGui_MOC_SRCS}
@@ -53,8 +66,6 @@ SET(ImageGui_SRCS
     ImageOrientationDialog.h
     ViewProviderImagePlane.cpp
     ViewProviderImagePlane.h
-    GLImageBox.cpp
-    GLImageBox.h
     Resources/Image.qrc
     ImageView.cpp
     ImageView.h
@@ -64,6 +75,18 @@ SET(ImageGui_SRCS
     Workbench.h
     XpmImages.h
 )
+
+if(FREECAD_USE_QTOPENGL_WIDGET)
+    list(APPEND ImageGui_SRCS
+        OpenGLImageBox.cpp
+        OpenGLImageBox.h
+    )
+else()
+    list(APPEND ImageGui_SRCS
+        GLImageBox.cpp
+        GLImageBox.h
+    )
+endif()
 
 add_library(ImageGui SHARED ${ImageGui_SRCS})
 target_link_libraries(ImageGui ${ImageGui_LIBS})

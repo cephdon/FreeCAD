@@ -54,18 +54,18 @@ class TaskHole:
             sketch = groove.Sketch
             plane = sketch.Support[0]
             axis = plane.References[0][0]     
-            body.removeFeature(self.feature)
+            body.removeObject(self.feature)
             document.removeObject(self.feature.Name)                      
-            body.removeFeature(groove)
+            body.removeObject(groove)
             document.removeObject(groove.Name)
-            body.removeFeature(sketch)
+            body.removeObject(sketch)
             try:
                 document.removeObject(sketch.Name)      
             except:
                 pass # This always throws an exception: "Sketch support has been deleted" from SketchObject::execute()
-            body.removeFeature(plane)
+            body.removeObject(plane)
             document.removeObject(plane.Name)
-            body.removeFeature(axis)
+            body.removeObject(axis)
             document.removeObject(axis.Name)            
         FreeCADGui.ActiveDocument.resetEdit()
         FreeCADGui.Control.closeDialog(self)
@@ -540,7 +540,7 @@ class TaskHole:
                 self.feature.Support = (feature, [element])       
             elif self.selectionMode == "LinearReference":
                 if shape.ShapeType == "Edge":
-                    if shape.Curve.__class__ != Part.Line:
+                    if shape.Curve.__class__ != Part.LineSegment:
                         FreeCAD.Console.PrintMessage("Selected edge must be linear\n")
                         return
                     if len(refs) > 1:
@@ -565,7 +565,7 @@ class TaskHole:
                 axis.Document.recompute()
             elif self.selectionMode == "LinearReference2":
                 if shape.ShapeType == "Edge":
-                    if shape.Curve.__class__ != Part.Line:
+                    if shape.Curve.__class__ != Part.LineSegment:
                         FreeCAD.Console.PrintMessage("Selected edge must be linear\n")
                         return
                     if len(refs) > 2:

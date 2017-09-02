@@ -28,7 +28,7 @@
 
 #include <Base/Tools.h>
 
-#include <Gui/propertyeditor/PropertyItem.h>
+#include <Gui/MetaTypes.h>
 #include "../App/PropertyConstraintList.h"
 #include "PropertyConstraintListItem.h"
 
@@ -36,7 +36,7 @@
 using namespace SketcherGui;
 using namespace Gui::PropertyEditor;
 
-TYPESYSTEM_SOURCE(SketcherGui::PropertyConstraintListItem, Gui::PropertyEditor::PropertyItem);
+PROPERTYITEM_SOURCE(SketcherGui::PropertyConstraintListItem)
 
 PropertyConstraintListItem::PropertyConstraintListItem()
 {
@@ -211,7 +211,7 @@ bool PropertyConstraintListItem::event (QEvent* ev)
             Sketcher::PropertyConstraintList* item;
 
             int id = 0;
-            if (this->parent()->getTypeId() == SketcherGui::PropertyConstraintListItem::getClassTypeId()) {
+            if (dynamic_cast<SketcherGui::PropertyConstraintListItem*>(this->parent())) {
                 item = static_cast<Sketcher::PropertyConstraintList*>(this->parent()->getFirstProperty());
             }
             else {

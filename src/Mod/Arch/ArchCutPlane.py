@@ -28,12 +28,20 @@ if FreeCAD.GuiUp:
     from PySide import QtCore, QtGui
     from DraftTools import translate
 else:
+    # \cond
     def translate(ctxt,txt):
         return txt
+    # \endcond
 
 __title__="FreeCAD CutPlane"
 __author__ = "Jonathan Wiedemann"
 __url__ = "http://www.freecadweb.org"
+
+## @package ArchCutPlane
+#  \ingroup ARCH
+#  \brief The Cut plane object and tools
+#
+#  This module handles the Cut Plane object
 
 def cutComponentwithPlane(archObject, cutPlane, sideFace):
     """cut object from a plan define by a face, Behind = 0 , front = 1"""
@@ -66,6 +74,13 @@ class _CommandCutPlane:
         return len(FreeCADGui.Selection.getSelection()) > 1
 
     def Activated(self):
+        sel = FreeCADGui.Selection.getSelectionEx()
+        if len(sel) != 2:
+            FreeCAD.Console.PrintError("You must select exactly two objects, the shape to be cut and the cut plane\n")
+            return
+        if not sel[1].SubObjects:
+            FreeCAD.Console.PrintError("You must select a face from the second object (cut plane), not the whole object\n")
+            return
         panel=_CutPlaneTaskPanel()
         FreeCADGui.Control.showDialog(panel)
 
@@ -87,14 +102,22 @@ class _CutPlaneTaskPanel:
         self.retranslateUi(self.form)
         self.previewCutVolume(self.combobox.currentIndex())
 
+    def isAllowedAlterSelection(self):
+        return False
+
     def accept(self):
         FreeCAD.ActiveDocument.removeObject(self.previewObj.Name)
         val = self.combobox.currentIndex()
-        FreeCAD.ActiveDocument.openTransaction(str(translate("Arch","Cutting")))
-        FreeCADGui.addModule("Arch")
-        FreeCADGui.doCommand("Arch.cutComponentwithPlane(FreeCADGui.Selection.getSelectionEx()[0],FreeCADGui.Selection.getSelectionEx()[1].SubObjects[0],"+ str(val) +")")
-        FreeCAD.ActiveDocument.commitTransaction()
-        FreeCAD.ActiveDocument.recompute()
+        s = FreeCADGui.Selection.getSelectionEx()
+        if len(s) > 1:
+            if s[1].SubObjects:
+                FreeCAD.ActiveDocument.openTransaction(str(translate("Arch","Cutting")))
+                FreeCADGui.addModule("Arch")
+                FreeCADGui.doCommand("Arch.cutComponentwithPlane(FreeCADGui.Selection.getSelectionEx()[0],FreeCADGui.Selection.getSelectionEx()[1].SubObjects[0],"+ str(val) +")")
+                FreeCAD.ActiveDocument.commitTransaction()
+                FreeCAD.ActiveDocument.recompute()
+                return True
+        FreeCAD.Console.PrintError("Wrong selection\n")
         return True
 
     def reject(self):
@@ -119,11 +142,11 @@ class _CutPlaneTaskPanel:
             self.previewObj.Shape = cutVolume
 
     def retranslateUi(self, TaskPanel):
-        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Arch", "Cut Plane", None, QtGui.QApplication.UnicodeUTF8))
-        self.title.setText(QtGui.QApplication.translate("Arch", "Cut Plane options", None, QtGui.QApplication.UnicodeUTF8))
-        self.infoText.setText(QtGui.QApplication.translate("Arch", "Wich side to cut", None, QtGui.QApplication.UnicodeUTF8))
-        self.combobox.addItems([QtGui.QApplication.translate("Arch", "Behind", None, QtGui.QApplication.UnicodeUTF8),
-                                    QtGui.QApplication.translate("Arch", "Front", None, QtGui.QApplication.UnicodeUTF8)])
+        TaskPanel.setWindowTitle(QtGui.QApplication.translate("Arch", "Cut Plane", None))
+        self.title.setText(QtGui.QApplication.translate("Arch", "Cut Plane options", None))
+        self.infoText.setText(QtGui.QApplication.translate("Arch", "Which side to cut", None))
+        self.combobox.addItems([QtGui.QApplication.translate("Arch", "Behind", None),
+                                    QtGui.QApplication.translate("Arch", "Front", None)])
 
 if FreeCAD.GuiUp:
     FreeCADGui.addCommand('Arch_CutPlane',_CommandCutPlane())

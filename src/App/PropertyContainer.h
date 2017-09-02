@@ -37,6 +37,7 @@ namespace App
 class Property;
 class PropertyContainer;
 class DocumentObject;
+class Extension;
 
 enum PropertyType 
 {
@@ -56,26 +57,45 @@ struct AppExport PropertyData
     const char * Docu;
     short Offset,Type;
   };
-  // vector of all properties
-  std::vector<PropertySpec> propertyData;
-  const PropertyData *parentPropertyData;
-
-  void addProperty(const PropertyContainer *container,const char* PropName, Property *Prop, const char* PropertyGroup= 0, PropertyType = Prop_None, const char* PropertyDocu= 0 );
-
-  const PropertySpec *findProperty(const PropertyContainer *container,const char* PropName) const;
-  const PropertySpec *findProperty(const PropertyContainer *container,const Property* prop) const;
   
-  const char* getName         (const PropertyContainer *container,const Property* prop) const;
-  short       getType         (const PropertyContainer *container,const Property* prop) const;
-  short       getType         (const PropertyContainer *container,const char* name)     const;
-  const char* getGroup        (const PropertyContainer *container,const char* name)     const;
-  const char* getGroup        (const PropertyContainer *container,const Property* prop) const;
-  const char* getDocumentation(const PropertyContainer *container,const char* name)     const;
-  const char* getDocumentation(const PropertyContainer *container,const Property* prop) const;
+  //purpose of this struct is to be constructible from all acceptable container types and to 
+  //be able to return the offset to a property from the accepted containers. This allows to use 
+  //one function implementation for multiple container types without losing all type safety by 
+  //accepting void*
+  struct OffsetBase
+  {
+      OffsetBase(const App::PropertyContainer* container) : m_container(container) {};
+      OffsetBase(const App::Extension* container) : m_container(container) {};
+      
+      short int getOffsetTo(const App::Property* prop) const {
+            return (short) ((char*)prop - (char*)m_container);
+      };
+      char* getOffset() const {return (char*) m_container;};
+      
+  private:
+      const void* m_container;
+  };
+  
+  // vector of all properties
+  std::vector<PropertySpec>  propertyData;
+  const PropertyData*        parentPropertyData;
 
-  Property *getPropertyByName(const PropertyContainer *container,const char* name) const;
-  void getPropertyMap(const PropertyContainer *container,std::map<std::string,Property*> &Map) const;
-  void getPropertyList(const PropertyContainer *container,std::vector<Property*> &List) const;
+  void addProperty(OffsetBase offsetBase,const char* PropName, Property *Prop, const char* PropertyGroup= 0, PropertyType = Prop_None, const char* PropertyDocu= 0 );
+  
+  const PropertySpec *findProperty(OffsetBase offsetBase,const char* PropName) const;
+  const PropertySpec *findProperty(OffsetBase offsetBase,const Property* prop) const;
+  
+  const char* getName         (OffsetBase offsetBase,const Property* prop) const;
+  short       getType         (OffsetBase offsetBase,const Property* prop) const;
+  short       getType         (OffsetBase offsetBase,const char* name)     const;
+  const char* getGroup        (OffsetBase offsetBase,const char* name)     const;
+  const char* getGroup        (OffsetBase offsetBase,const Property* prop) const;
+  const char* getDocumentation(OffsetBase offsetBase,const char* name)     const;
+  const char* getDocumentation(OffsetBase offsetBase,const Property* prop) const;
+
+  Property *getPropertyByName(OffsetBase offsetBase,const char* name) const;
+  void getPropertyMap(OffsetBase offsetBase,std::map<std::string,Property*> &Map) const;
+  void getPropertyList(OffsetBase offsetBase,std::vector<Property*> &List) const;
 };
 
 
@@ -176,6 +196,9 @@ protected:
   static const  PropertyData * getPropertyDataPtr(void); 
   virtual const PropertyData& getPropertyData(void) const; 
 
+  virtual void handleChangedPropertyName(Base::XMLReader &reader, const char * TypeName, const char *PropName);
+  virtual void handleChangedPropertyType(Base::XMLReader &reader, const char * TypeName, Property * prop);
+
 private:
   // forbidden
   PropertyContainer(const PropertyContainer&);
@@ -190,14 +213,14 @@ private:
   do { \
     this->_prop_.setValue _defaultval_;\
     this->_prop_.setContainer(this); \
-    propertyData.addProperty(this, #_prop_, &this->_prop_); \
+    propertyData.addProperty(static_cast<App::PropertyContainer*>(this), #_prop_, &this->_prop_); \
   } while (0)
 
 #define ADD_PROPERTY_TYPE(_prop_, _defaultval_, _group_,_type_,_Docu_) \
   do { \
     this->_prop_.setValue _defaultval_;\
     this->_prop_.setContainer(this); \
-    propertyData.addProperty(this, #_prop_, &this->_prop_, (_group_),(_type_),(_Docu_)); \
+    propertyData.addProperty(static_cast<App::PropertyContainer*>(this), #_prop_, &this->_prop_, (_group_),(_type_),(_Docu_)); \
   } while (0)
 
 
@@ -210,6 +233,14 @@ protected: \
 private: \
   static App::PropertyData propertyData 
 
+/// Like PROPERTY_HEADER, but with overridden methods declared as such
+#define PROPERTY_HEADER_WITH_OVERRIDE(_class_) \
+  TYPESYSTEM_HEADER_WITH_OVERRIDE(); \
+protected: \
+  static const App::PropertyData * getPropertyDataPtr(void); \
+  virtual const App::PropertyData &getPropertyData(void) const override; \
+private: \
+  static App::PropertyData propertyData 
 /// 
 #define PROPERTY_SOURCE(_class_, _parentclass_) \
 TYPESYSTEM_SOURCE_P(_class_);\
@@ -218,7 +249,7 @@ const App::PropertyData & _class_::getPropertyData(void) const{return propertyDa
 App::PropertyData _class_::propertyData; \
 void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
 
 #define PROPERTY_SOURCE_ABSTRACT(_class_, _parentclass_) \
@@ -228,7 +259,7 @@ const App::PropertyData & _class_::getPropertyData(void) const{return propertyDa
 App::PropertyData _class_::propertyData; \
 void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
 
 #define TYPESYSTEM_SOURCE_TEMPLATE(_class_) \
@@ -246,9 +277,8 @@ template<> const App::PropertyData * _class_::getPropertyDataPtr(void){return &p
 template<> const App::PropertyData & _class_::getPropertyData(void) const{return propertyData;} \
 template<> void _class_::init(void){\
   initSubclass(_class_::classTypeId, #_class_ , #_parentclass_, &(_class_::create) ); \
-  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr();\
+  _class_::propertyData.parentPropertyData = _parentclass_::getPropertyDataPtr(); \
 }
-
 
 } // namespace App
 

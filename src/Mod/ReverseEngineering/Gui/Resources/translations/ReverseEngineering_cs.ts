@@ -56,7 +56,7 @@
     <message>
         <location line="+1"/>
         <source>Poisson surface reconstruction</source>
-        <translation>Poissonova rekonstrukce plochy</translation>
+        <translation>Rekonstrukce Poissonovy plochy</translation>
     </message>
 </context>
 <context>
@@ -160,7 +160,7 @@
 <context>
     <name>ReenGui::FitBSplineSurfaceWidget</name>
     <message>
-        <location filename="../../FitBSplineSurface.cpp" line="+145"/>
+        <location filename="../../FitBSplineSurface.cpp" line="+146"/>
         <source>Wrong selection</source>
         <translation>Neplatný výběr</translation>
     </message>
@@ -190,12 +190,12 @@
     <message>
         <location line="+6"/>
         <source>Octree depth</source>
-        <translation type="unfinished">Octree depth</translation>
+        <translation>Hloubka stromu</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Solver divide</source>
-        <translation type="unfinished">Solver divide</translation>
+        <translation>Rozdělení řešení</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -203,7 +203,7 @@
         <translation>Vzorků na uzel</translation>
     </message>
     <message>
-        <location filename="../../Poisson.cpp" line="+108"/>
+        <location filename="../../Poisson.cpp" line="+109"/>
         <source>Input error</source>
         <translation>Chyba zadání</translation>
     </message>

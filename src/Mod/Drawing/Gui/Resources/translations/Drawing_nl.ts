@@ -4,7 +4,7 @@
 <context>
     <name>CmdDrawingAnnotation</name>
     <message>
-        <location filename="../../Command.cpp" line="+476"/>
+        <location filename="../../Command.cpp" line="+474"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -17,7 +17,7 @@
         <location line="+1"/>
         <location line="+2"/>
         <source>Inserts an Annotation view in the active drawing</source>
-        <translation type="unfinished">Inserts an Annotation view in the active drawing</translation>
+        <translation>Voeg een aantekening toe aan de actieve tekening</translation>
     </message>
 </context>
 <context>
@@ -30,7 +30,7 @@
     <message>
         <location line="+1"/>
         <source>&amp;Clip</source>
-        <translation type="unfinished">&amp;Clip</translation>
+        <translation>&amp;Clip</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -42,14 +42,14 @@
 <context>
     <name>CmdDrawingDraftView</name>
     <message>
-        <location line="+183"/>
+        <location line="+185"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Draft View</source>
-        <translation type="unfinished">&amp;Draft View</translation>
+        <translation>&amp;Concept weergave</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -61,7 +61,7 @@
 <context>
     <name>CmdDrawingExportPage</name>
     <message>
-        <location line="-90"/>
+        <location line="-92"/>
         <source>File</source>
         <translation>Bestand</translation>
     </message>
@@ -80,7 +80,7 @@
 <context>
     <name>CmdDrawingNewA3Landscape</name>
     <message>
-        <location line="-355"/>
+        <location line="-359"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -94,7 +94,7 @@
 <context>
     <name>CmdDrawingNewPage</name>
     <message>
-        <location line="-185"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -108,7 +108,7 @@
 <context>
     <name>CmdDrawingNewView</name>
     <message>
-        <location line="+219"/>
+        <location line="+214"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -126,7 +126,7 @@
 <context>
     <name>CmdDrawingOpen</name>
     <message>
-        <location line="-255"/>
+        <location line="-250"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -144,7 +144,7 @@
 <context>
     <name>CmdDrawingOpenBrowserView</name>
     <message>
-        <location line="+378"/>
+        <location line="+375"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -163,7 +163,7 @@
 <context>
     <name>CmdDrawingOrthoViews</name>
     <message>
-        <location line="-53"/>
+        <location line="-54"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -181,7 +181,7 @@
 <context>
     <name>CmdDrawingProjectShape</name>
     <message>
-        <location line="+284"/>
+        <location line="+287"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -200,14 +200,14 @@
 <context>
     <name>CmdDrawingSpreadsheetView</name>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Spreadsheet View</source>
-        <translation type="unfinished">&amp;Spreadsheet View</translation>
+        <translation>&amp;Rekenbladweergave</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -219,7 +219,7 @@
 <context>
     <name>CmdDrawingSymbol</name>
     <message>
-        <location line="-176"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Tekening</translation>
     </message>
@@ -238,7 +238,7 @@
 <context>
     <name>DrawingGui::DrawingView</name>
     <message>
-        <location filename="../../DrawingView.cpp" line="+212"/>
+        <location filename="../../DrawingView.cpp" line="+211"/>
         <source>&amp;Background</source>
         <translation>&amp;Achtergrond</translation>
     </message>
@@ -294,7 +294,7 @@
     <message>
         <location line="+1"/>
         <source>PDF file</source>
-        <translation type="unfinished">PDF file</translation>
+        <translation>PDF-bestand</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -347,20 +347,19 @@ Do you want to continue?</translation>
         <location line="+7"/>
         <location line="+8"/>
         <source>Different paper size</source>
-        <translation type="unfinished">Different paper size</translation>
+        <translation>Ander papierformaat</translation>
     </message>
     <message>
         <location line="-7"/>
         <location line="+8"/>
         <source>The printer uses a different paper size than the drawing.
 Do you want to continue?</source>
-        <translation type="unfinished">The printer uses a different paper size than the drawing.
-Do you want to continue?</translation>
+        <translation>De printer gebruikt een ander papierfromaat dan de tekening. Wilt u toch doorgaan?</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Opening file failed</source>
-        <translation type="unfinished">Opening file failed</translation>
+        <translation>Bestand openen mislukt</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -469,7 +468,7 @@ Do you want to continue?</translation>
     <message>
         <location line="+8"/>
         <source> Scale</source>
-        <translation type="unfinished"> Scale</translation>
+        <translation> Schaal</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -597,7 +596,7 @@ Do you want to continue?</translation>
     <message>
         <location line="+125"/>
         <source>Show hidden lines</source>
-        <translation type="unfinished">Show hidden lines</translation>
+        <translation>Toon verborgen lijnen</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -675,12 +674,12 @@ Do you want to continue?</translation>
     <message>
         <location line="+1"/>
         <source>There is currently no active document to complete the operation</source>
-        <translation type="unfinished">There is currently no active document to complete the operation</translation>
+        <translation>Er is momenteel geen actief document om de operatie te voltooien</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>No active view</source>
-        <translation type="unfinished">No active view</translation>
+        <translation>Geen actieve weergave</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -754,17 +753,17 @@ Do you want to continue?</translation>
         <translation>%1%2 %3</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Insert new %1%2 %3 drawing</source>
         <translation type="unfinished">Insert new %1%2 %3 drawing</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>%1%2 %3 (%4)</source>
         <translation>%1%2 %3 (%4)</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>Insert new %1%2 %3 (%4) drawing</source>
         <translation type="unfinished">Insert new %1%2 %3 (%4) drawing</translation>
     </message>
@@ -772,8 +771,8 @@ Do you want to continue?</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-174"/>
-        <location line="+519"/>
+        <location line="-169"/>
+        <location line="+517"/>
         <source>Choose an SVG file to open</source>
         <translation>Kies een SVG-bestand om te openen</translation>
     </message>
@@ -786,16 +785,16 @@ Do you want to continue?</translation>
         <translation type="obsolete">Scalable Vector Graphics (*.svg *.svgz)</translation>
     </message>
     <message>
-        <location line="-266"/>
-        <location line="+78"/>
-        <location line="+49"/>
-        <location line="+186"/>
-        <location line="+116"/>
+        <location line="-268"/>
+        <location line="+79"/>
+        <location line="+50"/>
+        <location line="+187"/>
+        <location line="+119"/>
         <source>Wrong selection</source>
         <translation>Verkeerde selectie</translation>
     </message>
     <message>
-        <location line="-428"/>
+        <location line="-434"/>
         <source>Select a Part object.</source>
         <translation>Selecteer een onderdeel-object.</translation>
     </message>
@@ -812,50 +811,50 @@ Do you want to continue?</translation>
         <translation type="obsolete">Maak een pagina om aanzichten toe te voegen.</translation>
     </message>
     <message>
-        <location line="-253"/>
-        <location line="+519"/>
-        <location line="+52"/>
+        <location line="-249"/>
+        <location line="+517"/>
+        <location line="+53"/>
         <source>Scalable Vector Graphic</source>
         <translation type="unfinished">Scalable Vector Graphic</translation>
     </message>
     <message>
-        <location line="-310"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-313"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>No page found</source>
-        <translation type="unfinished">No page found</translation>
+        <translation>Geen pagina gevonden</translation>
     </message>
     <message>
-        <location line="-425"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-431"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>Create a page first.</source>
-        <translation type="unfinished">Create a page first.</translation>
+        <translation>Maak eerst een pagina.</translation>
     </message>
     <message>
-        <location line="-357"/>
+        <location line="-362"/>
         <source>Select exactly one Part object.</source>
         <translation type="unfinished">Select exactly one Part object.</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+186"/>
+        <location line="+50"/>
+        <location line="+187"/>
         <source>Select one Page object.</source>
         <translation>Selecteer een pagina-object.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation>Alle bestanden</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+113"/>
         <source>Select exactly one Spreadsheet object.</source>
         <translation type="unfinished">Select exactly one Spreadsheet object.</translation>
     </message>
@@ -872,7 +871,7 @@ Do you want to continue?</translation>
         <translation type="obsolete">Alle bestanden (*.*)</translation>
     </message>
     <message>
-        <location line="-108"/>
+        <location line="-111"/>
         <source>Export page</source>
         <translation>Exporteer pagina</translation>
     </message>
@@ -907,19 +906,19 @@ Do you want to continue?</translation>
     </message>
     <message>
         <location filename="../../TaskOrthoViews.cpp" line="+51"/>
-        <location line="+907"/>
+        <location line="+926"/>
         <source>Make axonometric...</source>
         <translation>Axonometrisch maken...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Edit axonometric settings...</source>
         <translation type="unfinished">Edit axonometric settings...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Make orthographic</source>
         <translation type="unfinished">Make orthographic</translation>
     </message>

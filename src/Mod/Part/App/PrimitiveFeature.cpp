@@ -63,6 +63,8 @@
 
 
 #include "PrimitiveFeature.h"
+#include <Mod/Part/App/PartFeaturePy.h>
+#include <App/FeaturePythonPyImp.h>
 #include <Base/Console.h>
 #include <Base/Exception.h>
 #include <Base/Reader.h>
@@ -84,10 +86,11 @@ namespace Part {
 using namespace Part;
 
 
-PROPERTY_SOURCE_ABSTRACT(Part::Primitive, Part::AttachableObject)
+PROPERTY_SOURCE_ABSTRACT_WITH_EXTENSIONS(Part::Primitive, Part::Feature)
 
 Primitive::Primitive(void) 
 {
+    AttachExtension::initExtension(this);
     touch();
 }
 
@@ -98,6 +101,24 @@ Primitive::~Primitive()
 short Primitive::mustExecute(void) const
 {
     return Feature::mustExecute();
+}
+
+App::DocumentObjectExecReturn* Primitive::execute(void) {
+    return Part::Feature::execute();
+}
+
+namespace Part {
+    PYTHON_TYPE_DEF(PrimitivePy, PartFeaturePy)
+    PYTHON_TYPE_IMP(PrimitivePy, PartFeaturePy)
+}
+
+PyObject* Primitive::getPyObject()
+{
+    if (PythonObject.is(Py::_None())){
+        // ref counter is set to 1
+        PythonObject = Py::Object(new PrimitivePy(this),true);
+    }
+    return Py::new_reference_to(PythonObject);
 }
 
 void Primitive::Restore(Base::XMLReader &reader)
@@ -169,7 +190,7 @@ void Primitive::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Feature::onChanged(prop);
 }
 
 PROPERTY_SOURCE(Part::Vertex, Part::Primitive)
@@ -191,7 +212,7 @@ short Vertex::mustExecute() const
         Y.isTouched() ||
         Z.isTouched())
         return 1;
-    return Part::AttachableObject::mustExecute();
+    return Part::Primitive::mustExecute();
 }
 
 App::DocumentObjectExecReturn *Vertex::execute(void)
@@ -205,7 +226,7 @@ App::DocumentObjectExecReturn *Vertex::execute(void)
     const TopoDS_Vertex& vertex = MakeVertex.Vertex();
     this->Shape.setValue(vertex);
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 
@@ -221,7 +242,7 @@ void Vertex::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Primitive::onChanged(prop);
 }
 
 PROPERTY_SOURCE(Part::Line, Part::Primitive)
@@ -249,7 +270,7 @@ short Line::mustExecute() const
         Y2.isTouched() ||
         Z2.isTouched())
         return 1;
-    return Part::AttachableObject::mustExecute();
+    return Part::Primitive::mustExecute();
 }
 
 App::DocumentObjectExecReturn *Line::execute(void)
@@ -270,7 +291,7 @@ App::DocumentObjectExecReturn *Line::execute(void)
     const TopoDS_Edge& edge = mkEdge.Edge();
     this->Shape.setValue(edge);
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 void Line::onChanged(const App::Property* prop)
@@ -285,7 +306,7 @@ void Line::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Primitive::onChanged(prop);
 }
 
 PROPERTY_SOURCE(Part::Plane, Part::Primitive)
@@ -316,7 +337,7 @@ App::DocumentObjectExecReturn *Plane::execute(void)
 
     gp_Pnt pnt(0.0,0.0,0.0);
     gp_Dir dir(0.0,0.0,1.0);
-    Handle_Geom_Plane aPlane = new Geom_Plane(pnt, dir);
+    Handle(Geom_Plane) aPlane = new Geom_Plane(pnt, dir);
     BRepBuilderAPI_MakeFace mkFace(aPlane, 0.0, L, 0.0, W
 #if OCC_VERSION_HEX >= 0x060502
       , Precision::Confusion()
@@ -356,7 +377,7 @@ App::DocumentObjectExecReturn *Plane::execute(void)
     TopoDS_Shape ResultShape = mkFace.Shape();
     this->Shape.setValue(ResultShape);
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Sphere, Part::Primitive)
@@ -399,12 +420,12 @@ App::DocumentObjectExecReturn *Sphere::execute(void)
         TopoDS_Shape ResultShape = mkSphere.Shape();
         this->Shape.setValue(ResultShape);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Ellipsoid, Part::Primitive)
@@ -481,12 +502,12 @@ App::DocumentObjectExecReturn *Ellipsoid::execute(void)
         TopoDS_Shape ResultShape = mkTrsf.Shape();
         this->Shape.setValue(ResultShape);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Cylinder, Part::Primitive)
@@ -524,12 +545,12 @@ App::DocumentObjectExecReturn *Cylinder::execute(void)
         TopoDS_Shape ResultShape = mkCylr.Shape();
         this->Shape.setValue(ResultShape);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 App::PropertyIntegerConstraint::Constraints Prism::polygonRange = {3,INT_MAX,1};
@@ -582,12 +603,12 @@ App::DocumentObjectExecReturn *Prism::execute(void)
         BRepPrimAPI_MakePrism mkPrism(mkFace.Face(), gp_Vec(0,0,Height.getValue()));
         this->Shape.setValue(mkPrism.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 App::PropertyIntegerConstraint::Constraints RegularPolygon::polygon = {3,INT_MAX,1};
@@ -634,12 +655,12 @@ App::DocumentObjectExecReturn *RegularPolygon::execute(void)
         mkPoly.Add(gp_Pnt(v.x,v.y,v.z));
         this->Shape.setValue(mkPoly.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 
@@ -684,12 +705,12 @@ App::DocumentObjectExecReturn *Cone::execute(void)
         TopoDS_Shape ResultShape = mkCone.Shape();
         this->Shape.setValue(ResultShape);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Torus, Part::Primitive)
@@ -756,12 +777,12 @@ App::DocumentObjectExecReturn *Torus::execute(void)
 #endif
         this->Shape.setValue(ResultShape);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Helix, Part::Primitive)
@@ -798,7 +819,7 @@ void Helix::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Primitive::onChanged(prop);
 }
 
 short Helix::mustExecute() const
@@ -837,12 +858,12 @@ App::DocumentObjectExecReturn *Helix::execute(void)
 //        else
 //            this->Shape.setValue(helix.makeHelix(myPitch, myHeight, myRadius, myAngle, myLocalCS, myStyle));
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Spiral, Part::Primitive)
@@ -869,7 +890,7 @@ void Spiral::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Primitive::onChanged(prop);
 }
 
 short Spiral::mustExecute() const
@@ -901,7 +922,7 @@ App::DocumentObjectExecReturn *Spiral::execute(void)
             Standard_Failure::Raise("Number of rotations too small");
 
         gp_Ax2 cylAx2(gp_Pnt(0.0,0.0,0.0) , gp::DZ());
-        Handle_Geom_Surface surf = new Geom_ConicalSurface(gp_Ax3(cylAx2), myAngle, myRadius);
+        Handle(Geom_Surface) surf = new Geom_ConicalSurface(gp_Ax3(cylAx2), myAngle, myRadius);
 
         gp_Pnt2d aPnt(0, 0);
         gp_Dir2d aDir(2. * M_PI, myPitch);
@@ -923,7 +944,7 @@ App::DocumentObjectExecReturn *Spiral::execute(void)
         TopoDS_Wire wire = BRepBuilderAPI_MakeWire(edgeOnSurf);
         BRepLib::BuildCurves3d(wire);
 
-        Handle_Geom_Plane aPlane = new Geom_Plane(gp_Pnt(0.0,0.0,0.0), gp::DZ());
+        Handle(Geom_Plane) aPlane = new Geom_Plane(gp_Pnt(0.0,0.0,0.0), gp::DZ());
         Standard_Real range = (myNumRot+1) * myGrowth + 1 + myRadius;
         BRepBuilderAPI_MakeFace mkFace(aPlane, -range, range, -range, range
 #if OCC_VERSION_HEX >= 0x060502
@@ -933,16 +954,16 @@ App::DocumentObjectExecReturn *Spiral::execute(void)
         BRepProj_Projection proj(wire, mkFace.Face(), gp::DZ());
         this->Shape.setValue(proj.Shape());
 
-        AttachableObject::execute();
+        Primitive::execute();
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
 
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 PROPERTY_SOURCE(Part::Wedge, Part::Primitive)
@@ -1022,12 +1043,12 @@ App::DocumentObjectExecReturn *Wedge::execute(void)
         mkSolid.Add(mkWedge.Shell());
         this->Shape.setValue(mkSolid.Solid());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 void Wedge::onChanged(const App::Property* prop)
@@ -1070,11 +1091,16 @@ short Ellipse::mustExecute() const
         MajorRadius.isTouched() ||
         MinorRadius.isTouched())
         return 1;
-    return Part::AttachableObject::mustExecute();
+    return Part::Primitive::mustExecute();
 }
 
 App::DocumentObjectExecReturn *Ellipse::execute(void)
 {
+    if (this->MinorRadius.getValue() > this->MajorRadius.getValue())
+        return new App::DocumentObjectExecReturn("Minor radius greater than major radius");
+    if (this->MinorRadius.getValue() < Precision::Confusion())
+        return new App::DocumentObjectExecReturn("Minor radius of ellipse too small");
+
     gp_Elips ellipse;
     ellipse.SetMajorRadius(this->MajorRadius.getValue());
     ellipse.SetMinorRadius(this->MinorRadius.getValue());
@@ -1084,7 +1110,7 @@ App::DocumentObjectExecReturn *Ellipse::execute(void)
     const TopoDS_Edge& edge = clMakeEdge.Edge();
     this->Shape.setValue(edge);
 
-    return AttachableObject::execute();
+    return Primitive::execute();
 }
 
 void Ellipse::onChanged(const App::Property* prop)
@@ -1099,5 +1125,5 @@ void Ellipse::onChanged(const App::Property* prop)
             }
         }
     }
-    Part::AttachableObject::onChanged(prop);
+    Part::Primitive::onChanged(prop);
 }

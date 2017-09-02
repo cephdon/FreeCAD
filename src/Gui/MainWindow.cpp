@@ -35,6 +35,7 @@
 # include <QDesktopWidget>
 # include <QDockWidget>
 # include <QFontMetrics>
+# include <QKeySequence>
 # include <QLabel>
 # include <QMdiSubWindow>
 # include <QMessageBox>
@@ -44,6 +45,9 @@
 # include <QStatusBar>
 # include <QTimer>
 # include <QToolBar>
+#if QT_VERSION >= 0x050000
+# include <QUrlQuery>
+#endif
 # include <QWhatsThis>
 #endif
 
@@ -66,7 +70,6 @@
 #include "MainWindow.h"
 #include "Application.h"
 #include "Assistant.h"
-#include "DownloadDialog.h"
 #include "DownloadManager.h"
 #include "WaitCursor.h"
 
@@ -93,14 +96,12 @@
 #include "SelectionView.h"
 #include "MenuManager.h"
 //#include "ToolBox.h"
-#include "HelpView.h"
 #include "ReportView.h"
 #include "CombiView.h"
 #include "PythonConsole.h"
 #include "TaskView/TaskView.h"
 #include "DAGView/DAGView.h"
 
-#include "DlgTipOfTheDayImp.h"
 #include "DlgUndoRedo.h"
 #include "DlgOnlineHelpImp.h"
 
@@ -276,10 +277,10 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     // labels and progressbar
     d->status = new StatusBarObserver();
     d->actionLabel = new QLabel(statusBar());
-    d->actionLabel->setMinimumWidth(120);
+    // d->actionLabel->setMinimumWidth(120);
     d->sizeLabel = new QLabel(tr("Dimension"), statusBar());
     d->sizeLabel->setMinimumWidth(120);
-    statusBar()->addWidget(d->actionLabel, 0);
+    statusBar()->addWidget(d->actionLabel, 1);
     QProgressBar* progressBar = Gui::Sequencer::instance()->getProgressBar(statusBar());
     statusBar()->addPermanentWidget(progressBar, 0);
     statusBar()->addPermanentWidget(d->sizeLabel, 0);
@@ -293,7 +294,7 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
     d->activityTimer = new QTimer(this);
     d->activityTimer->setObjectName(QString::fromLatin1("activityTimer"));
     connect(d->activityTimer, SIGNAL(timeout()),this, SLOT(updateActions()));
-    d->activityTimer->setSingleShot(true);
+    d->activityTimer->setSingleShot(false);
     d->activityTimer->start(300);
 
     // show main window timer
@@ -370,7 +371,15 @@ MainWindow::MainWindow(QWidget * parent, Qt::WindowFlags f)
 
     // Python console
     PythonConsole* pcPython = new PythonConsole(this);
-    pcPython->setWordWrapMode(QTextOption::NoWrap);
+    ParameterGrp::handle hGrp = App::GetApplication().GetUserParameter().
+        GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("General");
+
+    if (hGrp->GetBool("PythonWordWrap", true)) {
+      pcPython->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
+    } else {
+      pcPython->setWordWrapMode(QTextOption::NoWrap);
+    }
+
     pcPython->setWindowIcon(Gui::BitmapFactory().iconFromTheme("applications-python"));
     pcPython->setObjectName
         (QString::fromLatin1(QT_TRANSLATE_NOOP("QDockWidget","Python console")));
@@ -460,57 +469,11 @@ void MainWindow::arrangeIcons()
 void MainWindow::tile()
 {
     d->mdiArea->tileSubWindows();
-
-// Warn about limitation in Qt4.8 involving multiple OpenGL widgets with Cocoa.
-#if defined(__APPLE__)
-    ParameterGrp::handle hGrp = App::GetApplication().GetUserParameter().
-        GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("MainWindow");
-
-    if(hGrp->GetBool("ShowAppleMdiWarning", true)) {
-        QMessageBox mb(this);
-        mb.setIcon(QMessageBox::Warning);
-        mb.setTextFormat(Qt::RichText);
-        mb.setText(tr("There is a rendering issue on MacOS."));
-        mb.setInformativeText(tr("See <a href=\"http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS\"> the wiki</a> for more information"));
-
-        QAbstractButton *suppressBtn;
-        suppressBtn = mb.addButton(tr("Don't show again"), QMessageBox::DestructiveRole);
-        mb.addButton(QMessageBox::Ok);
-
-        mb.exec();
-        if(mb.clickedButton() == suppressBtn) {
-            hGrp->SetBool("ShowAppleMdiWarning", false);
-        }
-    }
-#endif // defined(__APPLE__)
 }
 
 void MainWindow::cascade()
 {
     d->mdiArea->cascadeSubWindows();
-
-// See above in MainWindow::tile()
-#if defined(__APPLE__)
-    ParameterGrp::handle hGrp = App::GetApplication().GetUserParameter().
-        GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("MainWindow");
-
-    if(hGrp->GetBool("ShowAppleMdiWarning", true)) {
-        QMessageBox mb(this);
-        mb.setIcon(QMessageBox::Warning);
-        mb.setTextFormat(Qt::RichText);
-        mb.setText(tr("There is a rendering issue on MacOS."));
-        mb.setInformativeText(tr("See <a href=\"http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS\"> the wiki</a> for more information"));
-
-        QAbstractButton *suppressBtn;
-        suppressBtn = mb.addButton(tr("Don't show again"), QMessageBox::DestructiveRole);
-        mb.addButton(QMessageBox::Ok);
-
-        mb.exec();
-        if(mb.clickedButton() == suppressBtn) {
-            hGrp->SetBool("ShowAppleMdiWarning", false);
-        }
-    }
-#endif // defined(__APPLE__)
 }
 
 void MainWindow::closeActiveWindow ()
@@ -723,6 +686,16 @@ void MainWindow::addWindow(MDIView* view)
     child->setWidget(view);
     child->setWindowIcon(view->windowIcon());
     QMenu* menu = child->systemMenu();
+
+    // See StdCmdCloseActiveWindow (#0002631)
+    QList<QAction*> acts = menu->actions();
+    for (QList<QAction*>::iterator it = acts.begin(); it != acts.end(); ++it) {
+        if ((*it)->shortcut() == QKeySequence(QKeySequence::Close)) {
+            (*it)->setShortcuts(QList<QKeySequence>());
+            break;
+        }
+    }
+
     QAction* action = menu->addAction(tr("Close All"));
     connect(action, SIGNAL(triggered()), d->mdiArea, SLOT(closeAllSubWindows()));
     d->mdiArea->addSubWindow(child);
@@ -772,7 +745,7 @@ void MainWindow::removeWindow(Gui::MDIView* view)
 
     QWidget* parent = view->parentWidget();
     // The call of 'd->mdiArea->removeSubWindow(parent)' causes the QMdiSubWindow
-    // to loose its parent and thus the notification in QMdiSubWindow::closeEvent
+    // to lose its parent and thus the notification in QMdiSubWindow::closeEvent
     // of other mdi windows to get maximized if this window is maximized will fail.
     // However, we must let it here otherwise deleting MDI child views directly can
     // cause other problems.
@@ -1008,7 +981,7 @@ void MainWindow::showMainWindow()
     // starts a timer to check for the visibility of the main window and call
     // ShowWindow() if needed.
     // So far, this phenomena only appeared with Qt4.1.4
-#if defined(Q_WS_WIN) && (QT_VERSION == 0x040104)
+#if defined(Q_OS_WIN) && (QT_VERSION == 0x040104)
     WId id = this->winId();
     ShowWindow(id, SW_SHOW);
     std::cout << "Force to show main window" << std::endl;
@@ -1026,7 +999,11 @@ void MainWindow::processMessages(const QList<QByteArray> & msg)
             if (it->startsWith(action))
                 files.push_back(std::string(it->mid(action.size()).constData()));
         }
-        App::Application::processFiles(files);
+        files = App::Application::processFiles(files);
+        for (std::list<std::string>::iterator it = files.begin(); it != files.end(); ++it) {
+            QString filename = QString::fromUtf8(it->c_str(), it->size());
+            FileDialog::setWorkingDirectory(filename);
+        }
     }
     catch (const Base::SystemExitException&) {
     }
@@ -1036,7 +1013,12 @@ void MainWindow::delayedStartup()
 {
     // processing all command line files
     try {
-        App::Application::processCmdLineFiles();
+        std::list<std::string> files = App::Application::getCmdLineFiles();
+        files = App::Application::processFiles(files);
+        for (std::list<std::string>::iterator it = files.begin(); it != files.end(); ++it) {
+            QString filename = QString::fromUtf8(it->c_str(), it->size());
+            FileDialog::setWorkingDirectory(filename);
+        }
     }
     catch (const Base::SystemExitException&) {
         throw;
@@ -1071,15 +1053,9 @@ void MainWindow::appendRecentFile(const QString& filename)
 
 void MainWindow::updateActions()
 {
-    static QTime cLastCall;
-
-    if (cLastCall.elapsed() > 250 && isVisible()) {
+    if (isVisible()) {
         Application::Instance->commandManager().testActive();
-        cLastCall.start();
     }
-
-    d->activityTimer->setSingleShot(true);
-    d->activityTimer->start(300);	
 }
 
 void MainWindow::switchToTopLevelMode()
@@ -1258,24 +1234,6 @@ QPixmap MainWindow::splashImage() const
     }
 
     return splash_image;
-}
-
-void MainWindow::showTipOfTheDay(bool force)
-{
-    // tip of the day?
-    ParameterGrp::handle
-    hGrp = App::GetApplication().GetUserParameter().GetGroup("BaseApp")->
-            GetGroup("Preferences")->GetGroup("General");
-
-    const std::map<std::string,std::string>& config = App::Application::Config();
-    std::map<std::string, std::string>::const_iterator tp = config.find("HideTipOfTheDay");
-    bool tip = (tp == config.end());
-
-    tip = hGrp->GetBool("Tipoftheday", tip);
-    if (tip || force) {
-        Gui::Dialog::DlgTipOfTheDayImp dlg(instance);
-        dlg.exec();
-    }
 }
 
 /**
@@ -1483,8 +1441,15 @@ void MainWindow::loadUrls(App::Document* doc, const QList<QUrl>& url)
 //#ifndef QT_NO_OPENSSL
         else if (it->scheme().toLower() == QLatin1String("https")) {
             QUrl url = *it;
+#if QT_VERSION >= 0x050000
+            QUrlQuery urlq(url);
+            if (urlq.hasQueryItem(QLatin1String("sid"))) {
+                urlq.removeAllQueryItems(QLatin1String("sid"));
+                url.setQuery(urlq);
+#else
             if (it->hasEncodedQueryItem(QByteArray("sid"))) {
                 url.removeEncodedQueryItem(QByteArray("sid"));
+#endif
                 url.setScheme(QLatin1String("http"));
             }
             Gui::Dialog::DownloadManager* dm = Gui::Dialog::DownloadManager::getInstance();
@@ -1539,7 +1504,7 @@ void MainWindow::changeEvent(QEvent *e)
 void MainWindow::showMessage (const QString& message, int timeout)
 {
     QFontMetrics fm(statusBar()->font());
-    QString msg = fm.elidedText(message, Qt::ElideMiddle, this->width()/2);
+    QString msg = fm.elidedText(message, Qt::ElideMiddle, this->d->actionLabel->width());
 #if QT_VERSION <= 0x040600
     this->statusBar()->showMessage(msg, timeout);
 #else

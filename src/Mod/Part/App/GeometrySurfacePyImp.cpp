@@ -24,8 +24,13 @@
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <BRepBuilderAPI_MakeFace.hxx>
+# include <gp_Circ.hxx>
 # include <gp_Dir.hxx>
+# include <gp_Elips.hxx>
+# include <gp_Hypr.hxx>
+# include <gp_Parab.hxx>
 # include <gp_Vec.hxx>
+# include <gp_Lin.hxx>
 # include <Geom_Geometry.hxx>
 # include <Geom_Surface.hxx>
 # include <GeomConvert_ApproxSurface.hxx>
@@ -42,62 +47,184 @@
 
 #include "OCCError.h"
 #include "Geometry.h"
-#include "GeometrySurfacePy.h"
-#include "GeometrySurfacePy.cpp"
-#include "GeometryCurvePy.h"
-#include "BSplineSurfacePy.h"
+#include <Mod/Part/App/GeometrySurfacePy.h>
+#include <Mod/Part/App/GeometrySurfacePy.cpp>
+#include <Mod/Part/App/GeometryCurvePy.h>
+#include <Mod/Part/App/BSplineSurfacePy.h>
 
-#include "TopoShape.h"
-#include "TopoShapePy.h"
-#include "TopoShapeFacePy.h"
+#include <Mod/Part/App/LinePy.h>
+#include <Mod/Part/App/LineSegmentPy.h>
+#include <Mod/Part/App/BezierCurvePy.h>
+#include <Mod/Part/App/BSplineCurvePy.h>
+#include <Mod/Part/App/CirclePy.h>
+#include <Mod/Part/App/ArcOfCirclePy.h>
+#include <Mod/Part/App/EllipsePy.h>
+#include <Mod/Part/App/ArcOfEllipsePy.h>
+#include <Mod/Part/App/HyperbolaPy.h>
+#include <Mod/Part/App/ArcOfHyperbolaPy.h>
+#include <Mod/Part/App/ParabolaPy.h>
+#include <Mod/Part/App/ArcOfParabolaPy.h>
+#include <Mod/Part/App/OffsetCurvePy.h>
 
-// TODO: This should be somewhere globally, but where?
-// ------------------------------
-# include <Geom_Circle.hxx>
-# include <Geom_Ellipse.hxx>
-# include <Geom_Hyperbola.hxx>
-# include <Geom_Line.hxx>
-# include <Geom_OffsetCurve.hxx>
-# include <Geom_Parabola.hxx>
-# include <Geom_TrimmedCurve.hxx>
+#include <Mod/Part/App/TopoShape.h>
+#include <Mod/Part/App/TopoShapePy.h>
+#include <Mod/Part/App/TopoShapeFacePy.h>
 
-const Py::Object makeGeometryCurvePy(const Handle_Geom_Curve& c)
+namespace Part {
+const Py::Object makeGeometryCurvePy(const Handle(Geom_Curve)& c)
 {
     if (c->IsKind(STANDARD_TYPE(Geom_Circle))) {
-        Handle_Geom_Circle circ = Handle_Geom_Circle::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomCircle(circ)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_Ellipse))) {
-        Handle_Geom_Ellipse ell = Handle_Geom_Ellipse::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomEllipse(ell)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_Hyperbola))) {
-        Handle_Geom_Hyperbola hyp = Handle_Geom_Hyperbola::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomHyperbola(hyp)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
-        Handle_Geom_Line lin = Handle_Geom_Line::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomLine(lin)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_OffsetCurve))) {
-        Handle_Geom_OffsetCurve oc = Handle_Geom_OffsetCurve::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomOffsetCurve(oc)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_Parabola))) {
-        Handle_Geom_Parabola par = Handle_Geom_Parabola::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomParabola(par)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
-        Handle_Geom_TrimmedCurve trc = Handle_Geom_TrimmedCurve::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomTrimmedCurve(trc)));
-    } else/* if (c->IsKind(STANDARD_TYPE(Geom_BoundedCurve))) {
-        Handle_Geom_BoundedCurve bc = Handle_Geom_BoundedCurve::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomBoundedCurve(bc)));
-    } else */if (c->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
-        Handle_Geom_BezierCurve bezier = Handle_Geom_BezierCurve::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomBezierCurve(bezier)));
-    } else if (c->IsKind(STANDARD_TYPE(Geom_BSplineCurve))) {
-        Handle_Geom_BSplineCurve bspline = Handle_Geom_BSplineCurve::DownCast(c);
-        return Py::Object(new GeometryCurvePy(new GeomBSplineCurve(bspline)));
+        Handle(Geom_Circle) circ = Handle(Geom_Circle)::DownCast(c);
+        return Py::asObject(new CirclePy(new GeomCircle(circ)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Ellipse))) {
+        Handle(Geom_Ellipse) ell = Handle(Geom_Ellipse)::DownCast(c);
+        return Py::asObject(new EllipsePy(new GeomEllipse(ell)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Hyperbola))) {
+        Handle(Geom_Hyperbola) hyp = Handle(Geom_Hyperbola)::DownCast(c);
+        return Py::asObject(new HyperbolaPy(new GeomHyperbola(hyp)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+        Handle(Geom_Line) lin = Handle(Geom_Line)::DownCast(c);
+        return Py::asObject(new LinePy(new GeomLine(lin)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_OffsetCurve))) {
+        Handle(Geom_OffsetCurve) oc = Handle(Geom_OffsetCurve)::DownCast(c);
+        return Py::asObject(new OffsetCurvePy(new GeomOffsetCurve(oc)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Parabola))) {
+        Handle(Geom_Parabola) par = Handle(Geom_Parabola)::DownCast(c);
+        return Py::asObject(new ParabolaPy(new GeomParabola(par)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
+        Handle(Geom_TrimmedCurve) trc = Handle(Geom_TrimmedCurve)::DownCast(c);
+        return Py::asObject(new GeometryCurvePy(new GeomTrimmedCurve(trc)));
+    }
+    /*else if (c->IsKind(STANDARD_TYPE(Geom_BoundedCurve))) {
+        Handle(Geom_BoundedCurve) bc = Handle(Geom_BoundedCurve)::DownCast(c);
+        return Py::asObject(new GeometryCurvePy(new GeomBoundedCurve(bc)));
+    }*/
+    else if (c->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
+        Handle(Geom_BezierCurve) bezier = Handle(Geom_BezierCurve)::DownCast(c);
+        return Py::asObject(new BezierCurvePy(new GeomBezierCurve(bezier)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_BSplineCurve))) {
+        Handle(Geom_BSplineCurve) bspline = Handle(Geom_BSplineCurve)::DownCast(c);
+        return Py::asObject(new BSplineCurvePy(new GeomBSplineCurve(bspline)));
     }
 
-    PyErr_SetString(PyExc_Exception, "Unknown curve type");
-    return Py::Object();
+    std::string err = "Unhandled curve type ";
+    err += c->DynamicType()->Name();
+    throw Py::TypeError(err);
 }
+
+const Py::Object makeTrimmedCurvePy(const Handle(Geom_Curve)& c, double f,double l)
+{
+    if (c->IsKind(STANDARD_TYPE(Geom_Circle))) {
+        Handle(Geom_Circle) circ = Handle(Geom_Circle)::DownCast(c);
+        GeomArcOfCircle* arc = new GeomArcOfCircle();
+        Handle(Geom_TrimmedCurve) this_arc = Handle(Geom_TrimmedCurve)::DownCast
+            (arc->handle());
+        Handle(Geom_Circle) this_circ = Handle(Geom_Circle)::DownCast
+            (this_arc->BasisCurve());
+        this_circ->SetCirc(circ->Circ());
+        this_arc->SetTrim(f, l);
+        return Py::Object(new ArcOfCirclePy(arc),true);
+
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Ellipse))) {
+        Handle(Geom_Ellipse) ellp = Handle(Geom_Ellipse)::DownCast(c);
+        GeomArcOfEllipse* arc = new GeomArcOfEllipse();
+        Handle(Geom_TrimmedCurve) this_arc = Handle(Geom_TrimmedCurve)::DownCast
+            (arc->handle());
+        Handle(Geom_Ellipse) this_ellp = Handle(Geom_Ellipse)::DownCast
+            (this_arc->BasisCurve());
+        this_ellp->SetElips(ellp->Elips());
+        this_arc->SetTrim(f, l);
+        return Py::Object(new ArcOfEllipsePy(arc),true);
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Hyperbola))) {
+        Handle(Geom_Hyperbola) hypr = Handle(Geom_Hyperbola)::DownCast(c);
+        GeomArcOfHyperbola* arc = new GeomArcOfHyperbola();
+        Handle(Geom_TrimmedCurve) this_arc = Handle(Geom_TrimmedCurve)::DownCast
+            (arc->handle());
+        Handle(Geom_Hyperbola) this_hypr = Handle(Geom_Hyperbola)::DownCast
+            (this_arc->BasisCurve());
+        this_hypr->SetHypr(hypr->Hypr());
+        this_arc->SetTrim(f, l);
+        return Py::Object(new ArcOfHyperbolaPy(arc),true);
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+        Handle(Geom_Line) line = Handle(Geom_Line)::DownCast(c);
+        GeomLineSegment* segm = new GeomLineSegment();
+        Handle(Geom_TrimmedCurve) this_segm = Handle(Geom_TrimmedCurve)::DownCast
+            (segm->handle());
+        Handle(Geom_Line) this_line = Handle(Geom_Line)::DownCast
+            (this_segm->BasisCurve());
+        this_line->SetLin(line->Lin());
+        this_segm->SetTrim(f, l);
+        return Py::Object(new LineSegmentPy(segm),true);
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_Parabola))) {
+        Handle(Geom_Parabola) para = Handle(Geom_Parabola)::DownCast(c);
+        GeomArcOfParabola* arc = new GeomArcOfParabola();
+        Handle(Geom_TrimmedCurve) this_arc = Handle(Geom_TrimmedCurve)::DownCast
+            (arc->handle());
+        Handle(Geom_Parabola) this_para = Handle(Geom_Parabola)::DownCast
+            (this_arc->BasisCurve());
+        this_para->SetParab(para->Parab());
+        this_arc->SetTrim(f, l);
+        return Py::Object(new ArcOfParabolaPy(arc),true);
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
+        Handle(Geom_BezierCurve) bezier = Handle(Geom_BezierCurve)::DownCast(c->Copy());
+        bezier->Segment(f, l);
+        return Py::asObject(new BezierCurvePy(new GeomBezierCurve(bezier)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_BSplineCurve))) {
+        Handle(Geom_BSplineCurve) bspline = Handle(Geom_BSplineCurve)::DownCast(c->Copy());
+        bspline->Segment(f, l);
+        return Py::asObject(new BSplineCurvePy(new GeomBSplineCurve(bspline)));
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_OffsetCurve))) {
+        Handle(Geom_OffsetCurve) oc = Handle(Geom_OffsetCurve)::DownCast(c);
+        double v = oc->Offset();
+        gp_Dir dir = oc->Direction();
+        Py::Object off(makeTrimmedCurvePy(oc->BasisCurve(), f, l));
+
+        Py::Tuple args(3);
+        args.setItem(0, off);
+        args.setItem(1, Py::Float(v));
+
+        Py::Module baseModule("__FreeCADBase__");
+        Py::Callable method(baseModule.getAttr("Vector"));
+        Py::Tuple coords(3);
+        coords.setItem(0, Py::Float(dir.X()));
+        coords.setItem(1, Py::Float(dir.Y()));
+        coords.setItem(2, Py::Float(dir.Z()));
+        args.setItem(2, method.apply(coords));
+
+        Py::Module partModule(PyImport_ImportModule("Part"), true);
+        Py::Callable call(partModule.getAttr("OffsetCurve"));
+        return call.apply(args);
+    }
+    else if (c->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
+        Handle(Geom_TrimmedCurve) trc = Handle(Geom_TrimmedCurve)::DownCast(c);
+        return makeTrimmedCurvePy(trc->BasisCurve(), f, l);
+    }
+    /*else if (c->IsKind(STANDARD_TYPE(Geom_BoundedCurve))) {
+        Handle(Geom_BoundedCurve) bc = Handle(Geom_BoundedCurve)::DownCast(c);
+        return Py::asObject(new GeometryCurvePy(new GeomBoundedCurve(bc)));
+    }*/
+
+    std::string err = "Unhandled curve type ";
+    err += c->DynamicType()->Name();
+    throw Py::TypeError(err);
+}
+
+} // Part
+
 // ---------------------------------------
 
 using namespace Part;
@@ -124,8 +251,8 @@ int GeometrySurfacePy::PyInit(PyObject* /*args*/, PyObject* /*kwd*/)
 
 PyObject* GeometrySurfacePy::toShape(PyObject *args)
 {
-    Handle_Geom_Geometry g = getGeometryPtr()->handle();
-    Handle_Geom_Surface s = Handle_Geom_Surface::DownCast(g);
+    Handle(Geom_Geometry) g = getGeometryPtr()->handle();
+    Handle(Geom_Surface) s = Handle(Geom_Surface)::DownCast(g);
     try {
         if (!s.IsNull()) {
             double u1,u2,v1,v2;
@@ -141,9 +268,9 @@ PyObject* GeometrySurfacePy::toShape(PyObject *args)
             return new TopoShapeFacePy(new TopoShape(sh));
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 
@@ -153,8 +280,8 @@ PyObject* GeometrySurfacePy::toShape(PyObject *args)
 
 PyObject* GeometrySurfacePy::value(PyObject *args)
 {
-    Handle_Geom_Geometry g = getGeometryPtr()->handle();
-    Handle_Geom_Surface s = Handle_Geom_Surface::DownCast(g);
+    Handle(Geom_Geometry) g = getGeometryPtr()->handle();
+    Handle(Geom_Surface) s = Handle(Geom_Surface)::DownCast(g);
     try {
         if (!s.IsNull()) {
             double u,v;
@@ -164,9 +291,9 @@ PyObject* GeometrySurfacePy::value(PyObject *args)
             return new Base::VectorPy(Base::Vector3d(p.X(),p.Y(),p.Z()));
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 
@@ -176,8 +303,8 @@ PyObject* GeometrySurfacePy::value(PyObject *args)
 
 PyObject* GeometrySurfacePy::tangent(PyObject *args)
 {
-    Handle_Geom_Geometry g = getGeometryPtr()->handle();
-    Handle_Geom_Surface s = Handle_Geom_Surface::DownCast(g);
+    Handle(Geom_Geometry) g = getGeometryPtr()->handle();
+    Handle(Geom_Surface) s = Handle(Geom_Surface)::DownCast(g);
     try {
         if (!s.IsNull()) {
             double u,v;
@@ -185,7 +312,7 @@ PyObject* GeometrySurfacePy::tangent(PyObject *args)
                 return 0;
             gp_Dir dir;
             Py::Tuple tuple(2);
-            GeomLProp_SLProps prop(s,u,v,1,Precision::Confusion());
+            GeomLProp_SLProps prop(s,u,v,2,Precision::Confusion());
             if (prop.IsTangentUDefined()) {
                 prop.TangentU(dir);
                 tuple.setItem(0, Py::Vector(Base::Vector3d(dir.X(),dir.Y(),dir.Z())));
@@ -198,9 +325,130 @@ PyObject* GeometrySurfacePy::tangent(PyObject *args)
             return Py::new_reference_to(tuple);
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+
+    PyErr_SetString(PartExceptionOCCError, "Geometry is not a surface");
+    return 0;
+}
+
+PyObject* GeometrySurfacePy::normal(PyObject *args)
+{
+    try {
+        GeomSurface* s = getGeomSurfacePtr();
+        if (s) {
+            double u,v;
+            if (!PyArg_ParseTuple(args, "dd", &u,&v))
+                return 0;
+            gp_Dir d;
+            if (s->normal(u,v,d)) {
+                return new Base::VectorPy(Base::Vector3d(d.X(),d.Y(),d.Z()));
+            }
+            else {
+                PyErr_SetString(PyExc_RuntimeError, "normal at this point is not defined");
+                return 0;
+            }
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+
+    PyErr_SetString(PartExceptionOCCError, "Geometry is not a surface");
+    return 0;
+}
+
+PyObject* GeometrySurfacePy::isUmbillic(PyObject *args)
+{
+    try {
+        GeomSurface* s = getGeomSurfacePtr();
+        if (s) {
+            double u,v;
+            if (!PyArg_ParseTuple(args, "dd", &u,&v))
+                return 0;
+
+            bool val = s->isUmbillic(u,v);
+            return PyBool_FromLong(val ? 1 : 0);
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+
+    PyErr_SetString(PartExceptionOCCError, "Geometry is not a surface");
+    return 0;
+}
+
+PyObject* GeometrySurfacePy::curvatureDirections(PyObject *args)
+{
+    try {
+        GeomSurface* s = getGeomSurfacePtr();
+        if (s) {
+            double u,v;
+            if (!PyArg_ParseTuple(args, "dd", &u,&v))
+                return 0;
+
+            gp_Dir maxd, mind;
+            s->curvatureDirections(u,v,maxd,mind);
+
+            Py::Tuple tuple(2);
+            tuple.setItem(0, Py::Vector(Base::Vector3d(maxd.X(),maxd.Y(),maxd.Z())));
+            tuple.setItem(1, Py::Vector(Base::Vector3d(mind.X(),mind.Y(),mind.Z())));
+            return Py::new_reference_to(tuple);
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+
+    PyErr_SetString(PartExceptionOCCError, "Geometry is not a surface");
+    return 0;
+}
+
+PyObject* GeometrySurfacePy::curvature(PyObject *args)
+{
+    try {
+        GeomSurface* s = getGeomSurfacePtr();
+        if (s) {
+            double u,v;
+            char* type;
+            if (!PyArg_ParseTuple(args, "dds", &u,&v,&type))
+                return 0;
+
+            GeomSurface::Curvature t;
+            if (strcmp(type,"Max") == 0) {
+                t = GeomSurface::Maximum;
+            }
+            else if (strcmp(type,"Min") == 0) {
+                t = GeomSurface::Minimum;
+            }
+            else if (strcmp(type,"Mean") == 0) {
+                t = GeomSurface::Mean;
+            }
+            else if (strcmp(type,"Gauss") == 0) {
+                t = GeomSurface::Gaussian;
+            }
+            else {
+                PyErr_SetString(PyExc_ValueError, "unknown curvature type");
+                return 0;
+            }
+
+            double c = s->curvature(u,v,t);
+            return PyFloat_FromDouble(c);
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 
@@ -210,7 +458,7 @@ PyObject* GeometrySurfacePy::tangent(PyObject *args)
 
 PyObject* GeometrySurfacePy::parameter(PyObject *args)
 {
-    Handle_Geom_Surface surf = Handle_Geom_Surface
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)
         ::DownCast(getGeometryPtr()->handle());
     try {
         if (!surf.IsNull()) {
@@ -228,9 +476,9 @@ PyObject* GeometrySurfacePy::parameter(PyObject *args)
             return Py::new_reference_to(tuple);
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 
@@ -243,7 +491,7 @@ PyObject* GeometrySurfacePy::bounds(PyObject * args)
     if (!PyArg_ParseTuple(args, ""))
         return 0;
 
-    Handle_Geom_Surface surf = Handle_Geom_Surface
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)
         ::DownCast(getGeometryPtr()->handle());
     Py::Tuple bound(4);
     Standard_Real u1,u2,v1,v2;
@@ -255,12 +503,80 @@ PyObject* GeometrySurfacePy::bounds(PyObject * args)
     return Py::new_reference_to(bound);
 }
 
+PyObject* GeometrySurfacePy::uIso(PyObject * args)
+{
+    double v;
+    if (!PyArg_ParseTuple(args, "d", &v))
+        return 0;
+
+    try {
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
+            (getGeometryPtr()->handle());
+        Handle(Geom_Curve) c = surf->UIso(v);
+        if (c.IsNull()) {
+            PyErr_SetString(PyExc_RuntimeError, "failed to create u iso curve");
+            return 0;
+        }
+
+        if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+            Handle(Geom_Line) aLine = Handle(Geom_Line)::DownCast(c);
+            GeomLine* line = new GeomLine();
+            Handle(Geom_Line) this_curv = Handle(Geom_Line)::DownCast
+                (line->handle());
+            this_curv->SetLin(aLine->Lin());
+            return new LinePy(line);
+        }
+        else {
+            return Py::new_reference_to(makeGeometryCurvePy(c));
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+}
+
+PyObject* GeometrySurfacePy::vIso(PyObject * args)
+{
+    double v;
+    if (!PyArg_ParseTuple(args, "d", &v))
+        return 0;
+
+    try {
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
+            (getGeometryPtr()->handle());
+        Handle(Geom_Curve) c = surf->VIso(v);
+        if (c.IsNull()) {
+            PyErr_SetString(PyExc_RuntimeError, "failed to create v iso curve");
+            return 0;
+        }
+
+        if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+            Handle(Geom_Line) aLine = Handle(Geom_Line)::DownCast(c);
+            GeomLine* line = new GeomLine();
+            Handle(Geom_Line) this_curv = Handle(Geom_Line)::DownCast
+                (line->handle());
+            this_curv->SetLin(aLine->Lin());
+            return new LinePy(line);
+        }
+        else {
+            return Py::new_reference_to(makeGeometryCurvePy(c));
+        }
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+}
+
 PyObject* GeometrySurfacePy::isUPeriodic(PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ""))
         return 0;
 
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
         (getGeometryPtr()->handle());
     Standard_Boolean val = surf->IsUPeriodic();
     return PyBool_FromLong(val ? 1 : 0);
@@ -271,7 +587,7 @@ PyObject* GeometrySurfacePy::isVPeriodic(PyObject * args)
     if (!PyArg_ParseTuple(args, ""))
         return 0;
 
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
         (getGeometryPtr()->handle());
     Standard_Boolean val = surf->IsVPeriodic();
     return PyBool_FromLong(val ? 1 : 0);
@@ -282,7 +598,7 @@ PyObject* GeometrySurfacePy::isUClosed(PyObject * args)
     if (!PyArg_ParseTuple(args, ""))
         return 0;
 
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
         (getGeometryPtr()->handle());
     Standard_Boolean val = surf->IsUClosed();
     return PyBool_FromLong(val ? 1 : 0);
@@ -293,7 +609,7 @@ PyObject* GeometrySurfacePy::isVClosed(PyObject * args)
     if (!PyArg_ParseTuple(args, ""))
         return 0;
 
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
         (getGeometryPtr()->handle());
     Standard_Boolean val = surf->IsVClosed();
     return PyBool_FromLong(val ? 1 : 0);
@@ -305,14 +621,14 @@ PyObject* GeometrySurfacePy::UPeriod(PyObject * args)
         return 0;
 
     try {
-        Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
             (getGeometryPtr()->handle());
         Standard_Real val = surf->UPeriod();
         return PyFloat_FromDouble(val);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 }
@@ -323,21 +639,21 @@ PyObject* GeometrySurfacePy::VPeriod(PyObject * args)
         return 0;
 
     try {
-        Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
             (getGeometryPtr()->handle());
         Standard_Real val = surf->VPeriod();
         return PyFloat_FromDouble(val);
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 }
 
 Py::String GeometrySurfacePy::getContinuity(void) const
 {
-    GeomAbs_Shape c = Handle_Geom_Surface::DownCast
+    GeomAbs_Shape c = Handle(Geom_Surface)::DownCast
         (getGeometryPtr()->handle())->Continuity();
     std::string str;
     switch (c) {
@@ -412,7 +728,7 @@ PyObject* GeometrySurfacePy::toBSpline(PyObject * args)
         absV = GeomAbs_G2;
 
     try {
-        Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
             (getGeometryPtr()->handle());
         GeomConvert_ApproxSurface cvt(surf, tol3d, absU, absV, maxDegU, maxDegV, maxSegm, prec);
         if (cvt.IsDone() && cvt.HasResult()) {
@@ -422,9 +738,9 @@ PyObject* GeometrySurfacePy::toBSpline(PyObject * args)
             Standard_Failure::Raise("Cannot convert to B-Spline surface");
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
     }
 
     return 0;
@@ -444,36 +760,36 @@ int GeometrySurfacePy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj
 
 PyObject* GeometrySurfacePy::intersectSS(PyObject *args)
 {
-    Handle_Geom_Surface surf1 = Handle_Geom_Surface::DownCast(getGeometryPtr()->handle());
+    Handle(Geom_Surface) surf1 = Handle(Geom_Surface)::DownCast(getGeometryPtr()->handle());
     try {
         if (!surf1.IsNull()) {
             PyObject *p;
             double prec = Precision::Confusion();
             if (!PyArg_ParseTuple(args, "O!|d", &(Part::GeometrySurfacePy::Type), &p, &prec))
                 return 0;
-            Handle_Geom_Surface surf2 = Handle_Geom_Surface::DownCast(static_cast<GeometryPy*>(p)->getGeometryPtr()->handle());
+            Handle(Geom_Surface) surf2 = Handle(Geom_Surface)::DownCast(static_cast<GeometryPy*>(p)->getGeometryPtr()->handle());
             GeomAPI_IntSS intersector(surf1, surf2, prec);
             if (!intersector.IsDone()) {
-                PyErr_SetString(PyExc_Exception, "Intersection of surfaces failed");
+                PyErr_SetString(PyExc_RuntimeError, "Intersection of surfaces failed");
                 return 0;
             }
 
             Py::List result;
             for (int i = 1; i <= intersector.NbLines(); i++) {
-                Handle_Geom_Curve line = intersector.Line(i);
+                Handle(Geom_Curve) line = intersector.Line(i);
                 result.append(makeGeometryCurvePy(line));
             }
 
             return Py::new_reference_to(result);
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PyExc_Exception, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PyExc_RuntimeError, e.GetMessageString());
         return 0;
     }
 
-    PyErr_SetString(PyExc_Exception, "intersectSS(): Geometry is not a surface");
+    PyErr_SetString(PyExc_TypeError, "intersectSS(): Geometry is not a surface");
     return 0;
 }
 
@@ -481,7 +797,7 @@ PyObject* GeometrySurfacePy::intersectSS(PyObject *args)
 
 PyObject* GeometrySurfacePy::intersect(PyObject *args)
 {
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast(getGeometryPtr()->handle());
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast(getGeometryPtr()->handle());
     try {
         if (!surf.IsNull()) {
             PyObject *p;
@@ -504,12 +820,12 @@ PyObject* GeometrySurfacePy::intersect(PyObject *args)
             }
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PyExc_Exception, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PyExc_RuntimeError, e.GetMessageString());
         return 0;
     }
 
-    PyErr_SetString(PyExc_Exception, "intersect(): Geometry is not a surface");
+    PyErr_SetString(PyExc_TypeError, "intersect(): Geometry is not a surface");
     return 0;
 }

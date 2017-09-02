@@ -183,7 +183,7 @@ App::PropertyFloatConstraint::Constraints ViewProviderFemMesh::floatRange = {1.0
 
 ViewProviderFemMesh::ViewProviderFemMesh()
 {
-    sPixmap = "fem-fem-mesh-from-shape";
+    sPixmap = "fem-femmesh-from-shape";
 
     ADD_PROPERTY(PointColor,(App::Color(0.7f,0.7f,0.7f)));
     ADD_PROPERTY(PointSize,(5.0f));
@@ -194,6 +194,7 @@ ViewProviderFemMesh::ViewProviderFemMesh()
     ShapeColor.setValue(App::Color(1.0f,0.7f,0.0f));
     ADD_PROPERTY(BackfaceCulling,(true));
     ADD_PROPERTY(ShowInner, (false));
+    ADD_PROPERTY(MaxFacesShowInner,(50000));
 
     onlyEdges = false;
 
@@ -368,7 +369,7 @@ void ViewProviderFemMesh::updateData(const App::Property* prop)
         ViewProviderFEMMeshBuilder builder;
         resetColorByNodeId();
         resetDisplacementByNodeId();
-        builder.createMesh(prop, pcCoords, pcFaces, pcLines, vFaceElementIdx, vNodeElementIdx, onlyEdges, ShowInner.getValue());
+        builder.createMesh(prop, pcCoords, pcFaces, pcLines, vFaceElementIdx, vNodeElementIdx, onlyEdges, ShowInner.getValue(), MaxFacesShowInner.getValue());
     }
     Gui::ViewProviderGeometryObject::updateData(prop);
 }
@@ -394,7 +395,7 @@ void ViewProviderFemMesh::onChanged(const App::Property* prop)
     else if (prop == &ShowInner ) {
         // recalc mesh with new settings
         ViewProviderFEMMeshBuilder builder;
-        builder.createMesh(&(dynamic_cast<Fem::FemMeshObject*>(this->pcObject)->FemMesh), pcCoords, pcFaces, pcLines, vFaceElementIdx, vNodeElementIdx, onlyEdges, ShowInner.getValue());
+        builder.createMesh(&(dynamic_cast<Fem::FemMeshObject*>(this->pcObject)->FemMesh), pcCoords, pcFaces, pcLines, vFaceElementIdx, vNodeElementIdx, onlyEdges, ShowInner.getValue(), MaxFacesShowInner.getValue());
     }
     else if (prop == &LineWidth) {
         pcDrawStyle->lineWidth = LineWidth.getValue();
@@ -689,7 +690,7 @@ void ViewProviderFEMMeshBuilder::buildNodes(const App::Property* prop, std::vect
         std::vector<unsigned long> vFaceElementIdx;
         std::vector<unsigned long> vNodeElementIdx;
         bool onlyEdges;
-        createMesh(prop, pcPointsCoord, pcFaces,pcLines,vFaceElementIdx,vNodeElementIdx,onlyEdges,false);
+        createMesh(prop, pcPointsCoord, pcFaces,pcLines,vFaceElementIdx,vNodeElementIdx,onlyEdges,false,0);
     }
 }
 
@@ -716,7 +717,8 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
                                             std::vector<unsigned long> &vFaceElementIdx,
                                             std::vector<unsigned long> &vNodeElementIdx,
                                             bool &onlyEdges,
-                                            bool ShowInner) const
+                                            bool ShowInner,
+                                            int MaxFacesShowInner) const
 {
 
     const Fem::PropertyFemMesh* mesh = static_cast<const Fem::PropertyFemMesh*>(prop);
@@ -727,7 +729,12 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     int numNodes = data->NbNodes();
     int numEdges = data->NbEdges();
 
-    if(numFaces+numNodes+numEdges == 0) return;
+    if (numFaces+numNodes+numEdges == 0) {
+        coords->point.setNum(0);
+        faces->coordIndex.setNum(0);
+        lines->coordIndex.setNum(0);
+        return;
+    }
     Base::TimeInfo Start;
     Base::Console().Log("Start: ViewProviderFEMMeshBuilder::createMesh() =================================\n");
 
@@ -917,7 +924,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     int FaceSize = facesHelper.size();
 
 
-    if( FaceSize < 5000){
+    if( FaceSize < MaxFacesShowInner){
         Base::Console().Log("    %f: Start eliminate internal faces SIMPLE\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()));
 
         // search for double (inside) faces and hide them
@@ -1094,7 +1101,7 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     vFaceElementIdx.resize(triangleCount);
     int index=0,indexIdx=0;
     int32_t* indices = faces->coordIndex.startEditing();
-    // iterate all not hided element faces, allways assure CLOCKWISE triangle ordering to allow backface culling
+    // iterate all not hided element faces, always assure CLOCKWISE triangle ordering to allow backface culling
     for(int l=0; l< FaceSize;l++){
         if(! facesHelper[l].hide){
             switch( facesHelper[l].Element->NbNodes()){
@@ -2463,4 +2470,16 @@ void ViewProviderFEMMeshBuilder::createMesh(const App::Property* prop,
     Base::Console().Log("    %f: Finish =========================================================\n",Base::TimeInfo::diffTimeF(Start,Base::TimeInfo()));
 
 
+}
+
+
+// Python feature -----------------------------------------------------------------------
+
+namespace Gui {
+/// @cond DOXERR
+PROPERTY_SOURCE_TEMPLATE(FemGui::ViewProviderFemMeshPython, FemGui::ViewProviderFemMesh)
+/// @endcond
+
+// explicit template instantiation
+template class FemGuiExport ViewProviderPythonFeatureT<ViewProviderFemMesh>;
 }

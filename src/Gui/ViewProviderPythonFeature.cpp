@@ -52,7 +52,6 @@
 #endif
 
 #include "ViewProviderPythonFeature.h"
-#include "ViewProviderPythonFeaturePy.h"
 #include "Tree.h"
 #include "Window.h"
 #include "Application.h"
@@ -412,7 +411,8 @@ std::vector<Base::Vector3d> ViewProviderPythonFeatureImp::getSelectionShape(cons
     return std::vector<Base::Vector3d>();
 }
 
-bool ViewProviderPythonFeatureImp::setEdit(int ModNum)
+ViewProviderPythonFeatureImp::ValueT
+ViewProviderPythonFeatureImp::setEdit(int ModNum)
 {
     // Run the onChanged method of the proxy object.
     Base::PyGILStateLocker lock;
@@ -426,7 +426,8 @@ bool ViewProviderPythonFeatureImp::setEdit(int ModNum)
                     Py::Tuple args(1);
                     args.setItem(0, Py::Int(ModNum));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
                 else {
                     Py::Callable method(vp.getAttr(std::string("setEdit")));
@@ -434,7 +435,8 @@ bool ViewProviderPythonFeatureImp::setEdit(int ModNum)
                     args.setItem(0, Py::Object(object->getPyObject(), true));
                     args.setItem(1, Py::Int(ModNum));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
             }
         }
@@ -444,10 +446,11 @@ bool ViewProviderPythonFeatureImp::setEdit(int ModNum)
         e.ReportException();
     }
 
-    return false;
+    return NotImplemented;
 }
 
-bool ViewProviderPythonFeatureImp::unsetEdit(int ModNum)
+ViewProviderPythonFeatureImp::ValueT
+ViewProviderPythonFeatureImp::unsetEdit(int ModNum)
 {
     // Run the onChanged method of the proxy object.
     Base::PyGILStateLocker lock;
@@ -461,7 +464,8 @@ bool ViewProviderPythonFeatureImp::unsetEdit(int ModNum)
                     Py::Tuple args(1);
                     args.setItem(0, Py::Int(ModNum));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
                 else {
                     Py::Callable method(vp.getAttr(std::string("unsetEdit")));
@@ -469,7 +473,8 @@ bool ViewProviderPythonFeatureImp::unsetEdit(int ModNum)
                     args.setItem(0, Py::Object(object->getPyObject(), true));
                     args.setItem(1, Py::Int(ModNum));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
             }
         }
@@ -479,10 +484,11 @@ bool ViewProviderPythonFeatureImp::unsetEdit(int ModNum)
         e.ReportException();
     }
 
-    return false;
+    return NotImplemented;
 }
 
-bool ViewProviderPythonFeatureImp::doubleClicked(void)
+ViewProviderPythonFeatureImp::ValueT
+ViewProviderPythonFeatureImp::doubleClicked(void)
 {
     // Run the onChanged method of the proxy object.
     Base::PyGILStateLocker lock;
@@ -496,14 +502,16 @@ bool ViewProviderPythonFeatureImp::doubleClicked(void)
                     Py::Tuple args;
                     //args.setItem(0, Py::Int(ModNum));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
                 else {
                     Py::Callable method(vp.getAttr(std::string("doubleClicked")));
                     Py::Tuple args(1);
                     args.setItem(0, Py::Object(object->getPyObject(), true));
                     Py::Boolean ok(method.apply(args));
-                    return (bool)ok;
+                    bool value = (bool)ok;
+                    return value ? Accepted : Rejected;
                 }
             }
         }
@@ -513,7 +521,7 @@ bool ViewProviderPythonFeatureImp::doubleClicked(void)
         e.ReportException();
     }
 
-    return false;
+    return NotImplemented;
 }
 
 void ViewProviderPythonFeatureImp::setupContextMenu(QMenu* menu)
@@ -528,6 +536,7 @@ void ViewProviderPythonFeatureImp::setupContextMenu(QMenu* menu)
                 if (vp.hasAttr("__object__")) {
                     PythonWrapper wrap;
                     wrap.loadGuiModule();
+                    wrap.loadWidgetsModule();
                     Py::Callable method(vp.getAttr(std::string("setupContextMenu")));
                     Py::Tuple args(1);
                     args.setItem(0, wrap.fromQWidget(menu, "QMenu"));
@@ -536,6 +545,7 @@ void ViewProviderPythonFeatureImp::setupContextMenu(QMenu* menu)
                 else {
                     PythonWrapper wrap;
                     wrap.loadGuiModule();
+                    wrap.loadWidgetsModule();
                     Py::Callable method(vp.getAttr(std::string("setupContextMenu")));
                     Py::Tuple args(2);
                     args.setItem(0, Py::Object(object->getPyObject(), true));
@@ -994,6 +1004,31 @@ ViewProviderPythonFeatureImp::dropObject(App::DocumentObject* obj)
 
     return Rejected;
 }
+
+bool ViewProviderPythonFeatureImp::isShow() const
+{
+    // Run the onChanged method of the proxy object.
+    Base::PyGILStateLocker lock;
+    try {
+        App::Property* proxy = object->getPropertyByName("Proxy");
+        if (proxy && proxy->getTypeId() == App::PropertyPythonObject::getClassTypeId()) {
+            Py::Object vp = static_cast<App::PropertyPythonObject*>(proxy)->getValue();
+            if (vp.hasAttr(std::string("isShow"))) {
+                Py::Callable method(vp.getAttr(std::string("isShow")));
+                Py::Tuple args;
+                Py::Boolean ok(method.apply(args));
+                return static_cast<bool>(ok) ? true : false;
+            }
+        }
+    }
+    catch (Py::Exception&) {
+        Base::PyException e; // extract the Python error text
+        e.ReportException();
+    }
+
+    return false;
+}
+
 
 // ---------------------------------------------------------
 

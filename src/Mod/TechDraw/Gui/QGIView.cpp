@@ -1,5 +1,3 @@
-
-
 /***************************************************************************
  *   Copyright (c) 2012-2013 Luke Parry <l.parry@warwick.ac.uk>            *
  *                                                                         *
@@ -46,24 +44,40 @@
 #include <Base/Console.h>
 #include <Gui/Selection.h>
 #include <Gui/Command.h>
+#include <Gui/Application.h>
+#include <Gui/Document.h>
+#include <Gui/ViewProvider.h>
 
+
+#include "Rez.h"
 #include "QGCustomBorder.h"
 #include "QGCustomLabel.h"
 #include "QGIView.h"
 #include "QGCustomBorder.h"
 #include "QGCustomLabel.h"
+#include "QGCustomText.h"
+#include "QGICaption.h"
 #include "QGCustomClip.h"
 #include "QGIViewClip.h"
 
 #include <Mod/TechDraw/App/DrawViewClip.h>
+#include <Mod/TechDraw/App/DrawProjGroup.h>
+#include <Mod/TechDraw/App/DrawProjGroupItem.h>
 
 using namespace TechDrawGui;
 
+const float labelCaptionFudge = 0.2f;   // temp fiddle for devel
+
+
 QGIView::QGIView()
     :QGraphicsItemGroup(),
+     viewObj(nullptr),
      locked(false),
      borderVisible(true),
      m_innerView(false)
+     //isAligned(false)
+     //alignMode("")
+     //alignAnchor(nullptr)
 {
     setCacheMode(QGraphicsItem::NoCache);
     setHandlesChildEvents(false);
@@ -78,7 +92,8 @@ QGIView::QGIView()
     m_pen.setColor(m_colCurrent);
 
     //Border/Label styling
-    m_font.setPointSize(5.0);     //scene units (mm), not points
+    m_font.setPointSize(getPrefFontSize());     //scene units (mm), not points
+
     m_decorPen.setStyle(Qt::DashLine);
     m_decorPen.setWidth(0); // 0 => 1px "cosmetic pen"
 
@@ -86,6 +101,8 @@ QGIView::QGIView()
     addToGroup(m_label);
     m_border = new QGCustomBorder();
     addToGroup(m_border);
+    m_caption = new QGICaption();
+    addToGroup(m_caption);
 
     isVisible(true);
 }
@@ -93,6 +110,9 @@ QGIView::QGIView()
 
 void QGIView::alignTo(QGraphicsItem*item, const QString &alignment)
 {
+//    isAligned = true;
+//    alignMode  = alignment.toStdString();
+//    alignAnchor = item;
     alignHash.clear();
     alignHash.insert(alignment, item);
 }
@@ -108,26 +128,33 @@ QVariant QGIView::itemChange(GraphicsItemChange change, const QVariant &value)
         }
 
         // TODO  find a better data structure for this
-        if(alignHash.size() == 1) {
-            QGraphicsItem*item = alignHash.begin().value();
-            QString alignMode   = alignHash.begin().key();
+        // this is just a pair isn't it?
+        if (getViewObject()->isDerivedFrom(TechDraw::DrawProjGroupItem::getClassTypeId())) {
+            TechDraw::DrawProjGroupItem* dpgi = static_cast<TechDraw::DrawProjGroupItem*>(getViewObject());
+            TechDraw::DrawProjGroup* dpg = dpgi->getGroup();
+            if ((dpg != nullptr) && dpg->AutoDistribute.getValue()) {
+                if(alignHash.size() == 1) {   //if aligned.
+                    QGraphicsItem*item = alignHash.begin().value();
+                    QString alignMode   = alignHash.begin().key();
 
-            if(alignMode == QString::fromLatin1("Vertical")) {
-                newPos.setX(item->pos().x());
-            } else if(alignMode == QString::fromLatin1("Horizontal")) {
-                newPos.setY(item->pos().y());
-            } else if(alignMode == QString::fromLatin1("45slash")) {
-                double dist = ( (newPos.x() - item->pos().x()) +
-                                (item->pos().y() - newPos.y()) ) / 2.0;
+                    if(alignMode == QString::fromLatin1("Vertical")) {
+                        newPos.setX(item->pos().x());
+                    } else if(alignMode == QString::fromLatin1("Horizontal")) {
+                        newPos.setY(item->pos().y());
+                    } else if(alignMode == QString::fromLatin1("45slash")) {
+                        double dist = ( (newPos.x() - item->pos().x()) +
+                                        (item->pos().y() - newPos.y()) ) / 2.0;
 
-                newPos.setX( item->pos().x() + dist);
-                newPos.setY( item->pos().y() - dist );
-            } else if(alignMode == QString::fromLatin1("45backslash")) {
-                double dist = ( (newPos.x() - item->pos().x()) +
-                                (newPos.y() - item->pos().y()) ) / 2.0;
+                        newPos.setX( item->pos().x() + dist);
+                        newPos.setY( item->pos().y() - dist );
+                    } else if(alignMode == QString::fromLatin1("45backslash")) {
+                        double dist = ( (newPos.x() - item->pos().x()) +
+                                        (newPos.y() - item->pos().y()) ) / 2.0;
 
-                newPos.setX( item->pos().x() + dist);
-                newPos.setY( item->pos().y() + dist );
+                        newPos.setX( item->pos().x() + dist);
+                        newPos.setY( item->pos().y() + dist );
+                    }
+                }
             }
         }
         return newPos;
@@ -166,11 +193,9 @@ void QGIView::mouseReleaseEvent(QGraphicsSceneMouseEvent * event)
         if (!isInnerView()) {
             double tempX = x(),
                    tempY = getY();
-            getViewObject()->X.setValue(tempX);
-            getViewObject()->Y.setValue(tempY);
+            getViewObject()->setPosition(Rez::appX(tempX),Rez::appX(tempY));
         } else {
-            getViewObject()->X.setValue(x());
-            getViewObject()->Y.setValue(getYInClip(y()));
+            getViewObject()->setPosition(Rez::appX(x()),Rez::appX(getYInClip(y())));
         }
         getViewObject()->setMouseMove(false);
     }
@@ -190,7 +215,6 @@ void QGIView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         //}
     }
     drawBorder();
-    //update();
 }
 
 void QGIView::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
@@ -202,7 +226,6 @@ void QGIView::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
         m_colCurrent = getNormalColor();
     }
     drawBorder();
-    //update();
 }
 
 void QGIView::setPosition(qreal x, qreal y)
@@ -222,7 +245,7 @@ double QGIView::getYInClip(double y)
         if (parentView) {
             auto parentFeat( dynamic_cast<TechDraw::DrawViewClip*>(parentView->getViewObject()) );
             if (parentFeat) {
-                return parentFeat->Height.getValue() - y;
+                return Rez::guiX(parentFeat->Height.getValue()) - y;
             }
         }
     }
@@ -237,16 +260,17 @@ void QGIView::updateView(bool update)
     if (update ||
         getViewObject()->X.isTouched() ||
         getViewObject()->Y.isTouched()) {
-        double featX = getViewObject()->X.getValue();
-        double featY = getViewObject()->Y.getValue();
+        double featX = Rez::guiX(getViewObject()->X.getValue());
+        double featY = Rez::guiX(getViewObject()->Y.getValue());
         setPosition(featX,featY);
     }
 
     if (update ||
-        getViewObject()->Rotation.isTouched()) {
+        getViewObject()->Rotation.isTouched() ) {
         //NOTE: QPainterPaths have to be rotated individually. This transform handles Rotation for everything else.
         //Scale is handled in GeometryObject for DVP & descendents
         //Objects not descended from DVP must setScale for themselves
+        //note that setTransform(,,rotation,,) is not the same as setRotation!!!
         double rot = getViewObject()->Rotation.getValue();
         QPointF centre = boundingRect().center();
         setTransform(QTransform().translate(centre.x(), centre.y()).rotate(-rot).translate(-centre.x(), -centre.y()));
@@ -263,7 +287,9 @@ const char * QGIView::getViewName() const
 
 TechDraw::DrawView * QGIView::getViewObject() const
 {
-     return viewObj;
+    //DocumentObject* obj = doc->getObject(viewName.c_str());
+    //TechDraw::DrawView* dv = static_cast<TechDraw::DrawView*>(obj);
+    return viewObj;
 }
 
 void QGIView::setViewFeature(TechDraw::DrawView *obj)
@@ -273,72 +299,98 @@ void QGIView::setViewFeature(TechDraw::DrawView *obj)
 
     viewObj = obj;
     viewName = obj->getNameInDocument();
-
-    // Set the QGIGroup initial position based on the DrawView
-    float x = obj->X.getValue();
-    float y = obj->Y.getValue();
-    setPosition(x, y);
+    
+    //mark the actual QGraphicsItem so we can check what's in the scene later
+    setData(0,QString::fromUtf8("QGIV"));
+    setData(1,QString::fromUtf8(obj->getNameInDocument()));
 }
 
 void QGIView::toggleCache(bool state)
 {
     // temp for devl. chaching was hiding problems WF
-    setCacheMode((state)? NoCache : NoCache);
+    //setCacheMode((state)? NoCache : NoCache);
+    Q_UNUSED(state);
+    setCacheMode(NoCache);
 }
-
 
 void QGIView::toggleBorder(bool state)
 {
     borderVisible = state;
-    drawBorder();
+    QGIView::draw();
 }
+
 void QGIView::draw()
 {
     if (isVisible()) {
+        drawBorder();
         show();
     } else {
         hide();
     }
 }
 
+void QGIView::drawCaption()
+{
+    prepareGeometryChange();
+    QRectF displayArea = customChildrenBoundingRect();
+    m_caption->setDefaultTextColor(m_colCurrent);
+    m_font.setFamily(getPrefFont());
+    m_font.setPointSize(getPrefFontSize());     //scene units (mm), not points
+    m_caption->setFont(m_font);
+    QString captionStr = QString::fromUtf8(getViewObject()->Caption.getValue());
+    m_caption->setPlainText(captionStr);
+    QRectF captionArea = m_caption->boundingRect();
+    QPointF displayCenter = displayArea.center();
+    m_caption->setX(displayCenter.x() - captionArea.width()/2.);
+    double labelHeight = (1 - labelCaptionFudge) * m_label->boundingRect().height();
+    if (borderVisible || viewObj->KeepLabel.getValue()) {            //place below label if label visible
+        m_caption->setY(displayArea.bottom() + labelHeight);
+    } else {
+        m_caption->setY(displayArea.bottom() + labelCaptionFudge * getPrefFontSize());
+    }
+    m_caption->show();
+}
+
 void QGIView::drawBorder()
 {
-    if (!borderVisible) {
+    drawCaption();
+    //show neither
+    if (!borderVisible && !viewObj->KeepLabel.getValue()) {
          m_label->hide();
          m_border->hide();
         return;
     }
 
+    //show both or show label
     //double margin = 2.0;
     m_label->hide();
     m_border->hide();
 
     m_label->setDefaultTextColor(m_colCurrent);
     m_font.setFamily(getPrefFont());
+    m_font.setPointSize(getPrefFontSize());     //scene units (mm), not points
     m_label->setFont(m_font);
     QString labelStr = QString::fromUtf8(getViewObject()->Label.getValue());
     m_label->setPlainText(labelStr);
     QRectF labelArea = m_label->boundingRect();
     double labelWidth = m_label->boundingRect().width();
-    double labelHeight = m_label->boundingRect().height();
+    double labelHeight = (1 - labelCaptionFudge) * m_label->boundingRect().height();
 
-    m_border->hide();
     m_decorPen.setColor(m_colCurrent);
     m_border->setPen(m_decorPen);
 
     QRectF displayArea = customChildrenBoundingRect();
     double displayWidth = displayArea.width();
     double displayHeight = displayArea.height();
+    QPointF displayCenter = displayArea.center();
+    m_label->setX(displayCenter.x() - labelArea.width()/2.);
+    m_label->setY(displayArea.bottom());
 
     double frameWidth = displayWidth;
     if (labelWidth > displayWidth) {
         frameWidth = labelWidth;
     }
     double frameHeight = labelHeight + displayHeight;
-    QPointF displayCenter = displayArea.center();
-
-    m_label->setX(displayCenter.x() - labelArea.width()/2.);
-    m_label->setY(displayArea.bottom());
 
     QRectF frameArea = QRectF(displayCenter.x() - frameWidth/2.,
                               displayArea.top(),
@@ -349,13 +401,17 @@ void QGIView::drawBorder()
     m_border->setPos(0.,0.);
 
     m_label->show();
-    m_border->show();
+    if (borderVisible) {
+        m_border->show();
+    }
 }
 
 void QGIView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QStyleOptionGraphicsItem myOption(*option);
     myOption.state &= ~QStyle::State_Selected;
+
+    //painter->drawRect(boundingRect());          //good for debugging
 
     QGraphicsItemGroup::paint(painter, &myOption, widget);
 }
@@ -365,12 +421,16 @@ QRectF QGIView::customChildrenBoundingRect() {
     int dimItemType = QGraphicsItem::UserType + 106;  // TODO: Magic number warning.
     int borderItemType = QGraphicsItem::UserType + 136;  // TODO: Magic number warning
     int labelItemType = QGraphicsItem::UserType + 135;  // TODO: Magic number warning
+    int captionItemType = QGraphicsItem::UserType + 180;  // TODO: Magic number warning
     QRectF result;
     for (QList<QGraphicsItem*>::iterator it = children.begin(); it != children.end(); ++it) {
         if ( ((*it)->type() != dimItemType) &&
              ((*it)->type() != borderItemType) &&
-             ((*it)->type() != labelItemType) ) {
-            result = result.united((*it)->boundingRect());
+             ((*it)->type() != labelItemType)  &&
+             ((*it)->type() != captionItemType) ) {
+            QRectF childRect = mapFromItem(*it,(*it)->boundingRect()).boundingRect();
+            result = result.united(childRect);
+            //result = result.united((*it)->boundingRect());
         }
     }
     return result;
@@ -396,6 +456,15 @@ QGIView* QGIView::getQGIVByName(std::string name)
     }
     return 0;
 }
+
+/* static */
+Gui::ViewProvider* QGIView::getViewProvider(App::DocumentObject* obj)
+{
+    Gui::Document* guiDoc = Gui::Application::Instance->getDocument(obj->getDocument());
+    Gui::ViewProvider* result = guiDoc->getViewProvider(obj);
+    return result;
+}
+
 
 QColor QGIView::getNormalColor()
 {
@@ -434,9 +503,17 @@ Base::Reference<ParameterGrp> QGIView::getParmGroupCol()
 QString QGIView::getPrefFont()
 {
     Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter().
-                                         GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/TechDraw");
+                                         GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/TechDraw/Labels");
     std::string fontName = hGrp->GetASCII("LabelFont", "Sans");
     return QString::fromStdString(fontName);
+}
+
+double QGIView::getPrefFontSize()
+{
+    Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter().
+                                         GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/TechDraw/Labels");
+    double fontSize = hGrp->GetFloat("LabelSize", 5.0);
+    return Rez::guiX(fontSize);
 }
 
 void QGIView::dumpRect(char* text, QRectF r) {

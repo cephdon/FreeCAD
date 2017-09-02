@@ -92,10 +92,13 @@ void MDIView::deleteSelf()
     // #0001023: Crash when quitting after using Windows > Tile
     // Use deleteLater() instead of delete operator.
     QWidget* parent = this->parentWidget();
-    if (qobject_cast<QMdiSubWindow*>(parent))
-        parent->deleteLater();
-    else
-        this->deleteLater();
+    if (qobject_cast<QMdiSubWindow*>(parent)) {
+        // https://forum.freecadweb.org/viewtopic.php?f=22&t=23070
+        parent->close();
+    }
+    else {
+        this->close();
+    }
 
     // detach from document
     if (_pcDocument)
@@ -178,7 +181,7 @@ void MDIView::closeEvent(QCloseEvent *e)
         }
 
         // Note: When using QMdiArea we must not use removeWindow()
-        // because otherwise the QMdiSubWindow will loose its parent
+        // because otherwise the QMdiSubWindow will lose its parent
         // and thus the notification in QMdiSubWindow::closeEvent of
         // other mdi windows to get maximized if this window
         // is maximized will fail.

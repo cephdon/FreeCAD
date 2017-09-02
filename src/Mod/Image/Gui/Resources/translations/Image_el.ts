@@ -4,7 +4,7 @@
 <context>
     <name>CmdCreateImagePlane</name>
     <message>
-        <location filename="../../Command.cpp" line="+93"/>
+        <location filename="../../Command.cpp" line="+97"/>
         <source>Image</source>
         <translation>Εικόνα</translation>
     </message>
@@ -16,7 +16,7 @@
     <message>
         <location line="+1"/>
         <source>Create a planar image in the 3D space</source>
-        <translation type="unfinished">Create a planar image in the 3D space</translation>
+        <translation>Δημιουργήστε μια επίπεδη εικόνα στο τρισδιάστατο χώρο</translation>
     </message>
     <message>
         <source>create a planar image in the 3D space</source>
@@ -26,7 +26,7 @@
 <context>
     <name>CmdImageOpen</name>
     <message>
-        <location line="-44"/>
+        <location line="-46"/>
         <source>Image</source>
         <translation>Εικόνα</translation>
     </message>
@@ -38,20 +38,22 @@
     <message>
         <location line="+1"/>
         <source>Open image view</source>
-        <translation type="unfinished">Open image view</translation>
+        <translation>Άνοιγμα εικόνας προβολή</translation>
     </message>
 </context>
 <context>
     <name>ImageGui::GLImageBox</name>
     <message>
-        <location filename="../../GLImageBox.cpp" line="+325"/>
+        <location filename="../../GLImageBox.cpp" line="+331"/>
+        <location filename="../../OpenGLImageBox.cpp" line="+385"/>
         <source>Undefined type of colour space for image viewing</source>
         <translation>Μη ορισμός χρωματικού περιβάλλοντος για την προβολή της εικόνας</translation>
     </message>
     <message>
         <location line="-1"/>
+        <location filename="../../OpenGLImageBox.cpp" line="-1"/>
         <source>Image pixel format</source>
-        <translation type="unfinished">Image pixel format</translation>
+        <translation>Μορφή pixel εικόνας</translation>
     </message>
 </context>
 <context>
@@ -95,7 +97,7 @@
 <context>
     <name>ImageGui::ImageView</name>
     <message>
-        <location filename="../../ImageView.cpp" line="+77"/>
+        <location filename="../../ImageView.cpp" line="+107"/>
         <source>&amp;Fit image</source>
         <translation type="unfinished">&amp;Fit image</translation>
     </message>
@@ -107,12 +109,12 @@
     <message>
         <location line="+4"/>
         <source>&amp;1:1 scale</source>
-        <translation type="unfinished">&amp;1:1 scale</translation>
+        <translation>&amp; κλίμακας 1:1</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Display the image at a 1:1 scale</source>
-        <translation type="unfinished">Display the image at a 1:1 scale</translation>
+        <translation>Εμφάνιση της εικόνας σε κλίμακα 1:1</translation>
     </message>
     <message>
         <source>&amp;Original color</source>
@@ -180,32 +182,40 @@
         <translation type="obsolete">Images (*.png *.xpm *.jpg *.bmp)</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="+18"/>
-        <location line="+41"/>
+        <location filename="../../Command.cpp" line="+20"/>
+        <location line="+43"/>
         <source>Choose an image file to open</source>
         <translation>Επιλέξτε ένα αρχείο εικόνας για άνοιγμα</translation>
     </message>
     <message>
-        <location line="-48"/>
-        <location line="+41"/>
+        <location line="-50"/>
+        <location line="+43"/>
         <source>Images</source>
         <translation>Εικόνες</translation>
     </message>
     <message>
-        <location line="-36"/>
-        <location line="+41"/>
+        <location line="-38"/>
+        <location line="+43"/>
         <source>All files</source>
         <translation>Όλα τα αρχεία</translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Error open image</source>
-        <translation>Σφάλμα ανοίγματος εικόνας</translation>
+        <source>Error opening image</source>
+        <translation type="unfinished">Error opening image</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Could not load the chosen image</source>
+        <translation type="unfinished">Could not load the chosen image</translation>
+    </message>
+    <message>
+        <source>Error open image</source>
+        <translation type="obsolete">Σφάλμα ανοίγματος εικόνας</translation>
+    </message>
+    <message>
         <source>Could not load the choosen image</source>
-        <translation>Δεν ήταν δυνατή η φόρτωση της επιλεγμένης εικόνας</translation>
+        <translation type="obsolete">Δεν ήταν δυνατή η φόρτωση της επιλεγμένης εικόνας</translation>
     </message>
 </context>
 <context>

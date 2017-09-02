@@ -29,6 +29,7 @@
 #include "Utils.h"
 #include <boost/tokenizer.hpp>
 #include <Base/Reader.h>
+#include <Base/Quantity.h>
 #include <Base/Writer.h>
 #include <App/Expression.h>
 #include "Sheet.h"
@@ -71,10 +72,8 @@ const int Cell::ALIGNMENT_VERTICAL   = 0xf0;
 
 /**
   * Construct a CellContent object.
-  *
-  * @param _row   The row of the cell in the spreadsheet that contains is.
-  * @param _col   The column of the cell in the spreadsheet that contains is.
-  * @param _owner The spreadsheet that owns this cell.
+  * @param _address  The address of the cell (i.e. row and column)
+  * @param _owner    The spreadsheet that owns this cell.
   *
   */
 
@@ -235,7 +234,7 @@ void Cell::setContent(const char * value)
             errno = 0;
             double float_value = strtod(value, &end);
             if (!*end && errno == 0)
-                expr = new App::NumberExpression(owner->sheet(), float_value);
+                expr = new App::NumberExpression(owner->sheet(), Quantity(float_value));
             else {
                 try {
                     expr = ExpressionParser::parse(owner->sheet(), value);
@@ -757,7 +756,7 @@ std::string Cell::encodeAlignment(int alignment)
 }
 
 /**
-  * Encode \a color as a #rrggbbaa string.
+  * Encode \a color as a \#rrggbbaa string.
   *
   * @param color Color to encode.
   *
@@ -804,7 +803,7 @@ std::string Cell::encodeStyle(const std::set<std::string> & style)
 }
 
 /**
-  * Decode a string of the format #rrggbb or #rrggbbaa into a Color.
+  * Decode a string of the format \#rrggbb or \#rrggbbaa into a Color.
   *
   * @param color        The color to decode.
   * @param defaultColor A default color in case the decoding fails.

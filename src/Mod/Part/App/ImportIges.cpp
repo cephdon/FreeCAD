@@ -90,7 +90,7 @@ int Part::ImportIgesParts(App::Document *pcDoc, const char* FileName)
 
 #if 1
         std::string aName = fi.fileNamePure();
-        Handle_Message_ProgressIndicator pi = new ProgressIndicator(100);
+        Handle(Message_ProgressIndicator) pi = new ProgressIndicator(100);
         pi->NewScope(100, "Reading IGES file...");
         pi->Show();
         aReader.WS()->MapReader()->SetProgress(pi);
@@ -137,7 +137,7 @@ int Part::ImportIgesParts(App::Document *pcDoc, const char* FileName)
         builder.MakeCompound(comp);
 
         // get all entities
-        Handle_TColStd_HSequenceOfTransient aRootList=aReader.GiveList("xst-transferrable-roots");
+        Handle(TColStd_HSequenceOfTransient) aRootList=aReader.GiveList("xst-transferrable-roots");
         Base::SequencerLauncher seq("Reading IGES file...", aRootList->Length());
         Standard_Integer j;
         for (j=1; j<=aRootList->Length(); j++) {
@@ -203,9 +203,8 @@ int Part::ImportIgesParts(App::Document *pcDoc, const char* FileName)
         }
 #endif
     }
-    catch (Standard_Failure) {
-        Handle(Standard_Failure) aFail = Standard_Failure::Caught();
-        throw Base::Exception(aFail->GetMessageString());
+    catch (Standard_Failure& e) {
+        throw Base::Exception(e.GetMessageString());
     }
 
     return 0;

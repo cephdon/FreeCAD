@@ -30,6 +30,7 @@
 
 #include <Gui/TaskView/TaskView.h>
 #include <Gui/Selection.h>
+#include <Gui/DocumentObserver.h>
 
 #include "TaskFeatureParameters.h"
 #include "TaskTransformedMessages.h"
@@ -64,7 +65,7 @@ public:
      * will go out of sync, and crashes may result.
      */
     ComboLinks(QComboBox &combo);
-    ComboLinks() {_combo = 0; doc = 0;};
+    ComboLinks() {_combo = 0; doc = 0;}
     void setCombo(QComboBox &combo) {assert(_combo == 0); this->_combo = &combo; _combo->clear();}
 
     /**
@@ -97,9 +98,9 @@ public:
      */
     int setCurrentLink(const App::PropertyLinkSub &lnk);
 
-    QComboBox& combo(void) const {assert(_combo); return *_combo;};
+    QComboBox& combo(void) const {assert(_combo); return *_combo;}
 
-    ~ComboLinks() {_combo = 0; clear();};
+    ~ComboLinks() {_combo = 0; clear();}
 private:
     QComboBox* _combo;
     App::Document* doc;
@@ -114,7 +115,9 @@ private:
   Because in the second case there is no ViewProvider, some special methods are required to
   access the underlying FeatureTransformed object in two different ways.
   **/
-class TaskTransformedParameters : public Gui::TaskView::TaskBox, public Gui::SelectionObserver
+class TaskTransformedParameters : public Gui::TaskView::TaskBox,
+                                  public Gui::SelectionObserver,
+                                  public Gui::DocumentObserver
 {
     Q_OBJECT
 
@@ -184,10 +187,12 @@ protected:
     int getUpdateViewTimeout() const;
 
 protected:
+    /** Notifies when the object is about to be removed. */
+    virtual void slotDeletedObject(const Gui::ViewProviderDocumentObject& Obj);
     virtual void changeEvent(QEvent *e) = 0;
     virtual void onSelectionChanged(const Gui::SelectionChanges& msg) = 0;
     virtual void clearButtons()=0;
-    static void removeItemFromListWidget(QListWidget* widget, const char* itemstr);
+    static void removeItemFromListWidget(QListWidget* widget, const QString& itemstr);
 
     void fillAxisCombo(ComboLinks &combolinks, Part::Part2DObject *sketch);
     void fillPlanesCombo(ComboLinks &combolinks, Part::Part2DObject *sketch);

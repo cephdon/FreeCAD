@@ -122,10 +122,14 @@ void TaskMirroredParameters::setupUI()
     std::vector<App::DocumentObject*> originals = pcMirrored->Originals.getValues();
 
     // Fill data into dialog elements
-    for (std::vector<App::DocumentObject*>::const_iterator i = originals.begin(); i != originals.end(); ++i)
-    {
-        if ((*i) != NULL)
-            ui->listWidgetFeatures->addItem(QString::fromLatin1((*i)->getNameInDocument()));
+    for (std::vector<App::DocumentObject*>::const_iterator i = originals.begin(); i != originals.end(); ++i) {
+        const App::DocumentObject* obj = *i;
+        if (obj != NULL) {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setText(QString::fromUtf8(obj->Label.getValue()));
+            item->setData(Qt::UserRole, QString::fromLatin1(obj->getNameInDocument()));
+            ui->listWidgetFeatures->addItem(item);
+        }
     }
     // ---------------------
 
@@ -135,6 +139,9 @@ void TaskMirroredParameters::setupUI()
     App::DocumentObject* sketch = getSketchObject();
     if (sketch && sketch->isDerivedFrom(Part::Part2DObject::getClassTypeId())) {
         this->fillPlanesCombo(planeLinks,static_cast<Part::Part2DObject*>(sketch));
+    }
+    else {
+        this->fillPlanesCombo(planeLinks, NULL);
     }
 
     //show the parts coordinate system planes for selection
@@ -162,7 +169,7 @@ void TaskMirroredParameters::updateUI()
     PartDesign::Mirrored* pcMirrored = static_cast<PartDesign::Mirrored*>(getObject());
 
     if (planeLinks.setCurrentLink(pcMirrored->MirrorPlane) == -1){
-        //failed to set current, because the link isnt in the list yet
+        //failed to set current, because the link isn't in the list yet
         planeLinks.addLink(pcMirrored->MirrorPlane, getRefStr(pcMirrored->MirrorPlane.getValue(),pcMirrored->MirrorPlane.getSubValues()));
         planeLinks.setCurrentLink(pcMirrored->MirrorPlane);
     }
@@ -175,29 +182,37 @@ void TaskMirroredParameters::onSelectionChanged(const Gui::SelectionChanges& msg
     if (msg.Type == Gui::SelectionChanges::AddSelection) {
 
         if (originalSelected(msg)) {
-            if (selectionMode == addFeature)
-                ui->listWidgetFeatures->addItem(QString::fromLatin1(msg.pObjectName));
-            else
-                removeItemFromListWidget(ui->listWidgetFeatures, msg.pObjectName);
+            Gui::SelectionObject selObj(msg);
+            App::DocumentObject* obj = selObj.getObject();
+            Q_ASSERT(obj);
+
+            QString label = QString::fromUtf8(obj->Label.getValue());
+            QString objectName = QString::fromLatin1(msg.pObjectName);
+
+            if (selectionMode == addFeature) {
+                QListWidgetItem* item = new QListWidgetItem();
+                item->setText(label);
+                item->setData(Qt::UserRole, objectName);
+                ui->listWidgetFeatures->addItem(item);
+            }
+            else {
+                removeItemFromListWidget(ui->listWidgetFeatures, label);
+            }
             exitSelectionMode();
         } else {
-            // TODO checkme (2015-09-01, Fat-Zer)
-            exitSelectionMode();
             std::vector<std::string> mirrorPlanes;
             App::DocumentObject* selObj;
             PartDesign::Mirrored* pcMirrored = static_cast<PartDesign::Mirrored*>(getObject());
             getReferencedSelection(pcMirrored, msg, selObj, mirrorPlanes);
-            if(!selObj)
-                return;
-            // Note: ReferenceSelection has already checked the selection for validity
-            if ( selectionMode == reference || 
-				selObj->isDerivedFrom ( App::Plane::getClassTypeId () ) ||
-				selObj->isDerivedFrom(PartDesign::Plane::getClassTypeId())) {
+            if (!selObj)
+                    return;
+            
+            if ( selectionMode == reference || selObj->isDerivedFrom ( App::Plane::getClassTypeId () ) ) {
                 pcMirrored->MirrorPlane.setValue(selObj, mirrorPlanes);
-
                 recomputeFeature();
                 updateUI();
             }
+            exitSelectionMode();
         }
     }
 }
@@ -272,16 +287,16 @@ void TaskMirroredParameters::apply()
 TaskMirroredParameters::~TaskMirroredParameters()
 {
     //hide the parts coordinate system axis for selection
-    PartDesign::Body * body = PartDesign::Body::findBodyOf ( getObject() );
-    if ( body ) {
-        try {
+    try {
+        PartDesign::Body * body = PartDesign::Body::findBodyOf ( getObject() );
+        if ( body ) {
             App::Origin *origin = body->getOrigin();
             ViewProviderOrigin* vpOrigin;
             vpOrigin = static_cast<ViewProviderOrigin*>(Gui::Application::Instance->getViewProvider(origin));
             vpOrigin->resetTemporaryVisibility();
-        } catch (const Base::Exception &ex) {
-            Base::Console().Error ("%s\n", ex.what () );
         }
+    } catch (const Base::Exception &ex) {
+        Base::Console().Error ("%s\n", ex.what () );
     }
 
     delete ui;

@@ -27,16 +27,29 @@ if FreeCAD.GuiUp:
     import FreeCADGui
     from PySide import QtCore, QtGui
     from DraftTools import translate
+    from PySide.QtCore import QT_TRANSLATE_NOOP
 else:
+    # \cond
     def translate(ctxt,txt):
         return txt
+    def QT_TRANSLATE_NOOP(ctxt,txt):
+        return txt
+    # \endcond
+    
+## @package ArchFrame
+#  \ingroup ARCH
+#  \brief The Frame object and tools
+#
+#  This module provides tools to build Frame objects.
+#  Frames are objects made of a profile and an object with
+#  edges along which the profile gets extruded
 
 __title__="FreeCAD Arch Frame"
 __author__ = "Yorik van Havre"
 __url__ = "http://www.freecadweb.org"
 
 # Possible roles for frames
-Roles = ['Covering','Member','Railing','Shading Device','Tendon']
+Roles = ['Undefined','Covering','Member','Railing','Shading Device','Tendon']
 
 def makeFrame(baseobj,profile,name=translate("Arch","Frame")):
     """makeFrame(baseobj,profile,[name]): creates a frame object from a base sketch (or any other object
@@ -59,9 +72,9 @@ class _CommandFrame:
 
     def GetResources(self):
         return {'Pixmap'  : 'Arch_Frame',
-                'MenuText': QtCore.QT_TRANSLATE_NOOP("Arch_Frame","Frame"),
+                'MenuText': QT_TRANSLATE_NOOP("Arch_Frame","Frame"),
                 'Accel': "F, R",
-                'ToolTip': QtCore.QT_TRANSLATE_NOOP("Arch_Frame","Creates a frame object from a planar 2D object and a profile")}
+                'ToolTip': QT_TRANSLATE_NOOP("Arch_Frame","Creates a frame object from a planar 2D object (the extrusion path(s)) and a profile. Make sure objects are selected in that order.")}
 
     def IsActive(self):
         return not FreeCAD.ActiveDocument is None
@@ -71,7 +84,9 @@ class _CommandFrame:
         if len(s) == 2:
             FreeCAD.ActiveDocument.openTransaction(translate("Arch","Create Frame"))
             FreeCADGui.addModule("Arch")
-            FreeCADGui.doCommand("Arch.makeFrame(FreeCAD.ActiveDocument."+s[0].Name+",FreeCAD.ActiveDocument."+s[1].Name+")")
+            FreeCADGui.doCommand("obj = Arch.makeFrame(FreeCAD.ActiveDocument."+s[0].Name+",FreeCAD.ActiveDocument."+s[1].Name+")")
+            FreeCADGui.addModule("Draft")
+            FreeCADGui.doCommand("Draft.autogroup(obj)")
             FreeCAD.ActiveDocument.commitTransaction()
             FreeCAD.ActiveDocument.recompute()
 
@@ -81,13 +96,19 @@ class _Frame(ArchComponent.Component):
 
     def __init__(self,obj):
         ArchComponent.Component.__init__(self,obj)
-        obj.addProperty("App::PropertyLink","Profile","Arch","The profile used to build this frame")
-        obj.addProperty("App::PropertyBool","Align","Arch","Specifies if the profile must be aligned with the extrusion wires")
-        obj.addProperty("App::PropertyVectorDistance","Offset","Arch","An offset vector between the base sketch and the frame")
-        obj.addProperty("App::PropertyInteger","BasePoint","Arch","Crossing point of the path on the profile.")
-        obj.addProperty("App::PropertyAngle","Rotation","Arch","The rotation of the profile around its extrusion axis")
+        obj.addProperty("App::PropertyLink","Profile","Arch",QT_TRANSLATE_NOOP("App::Property","The profile used to build this frame"))
+        obj.addProperty("App::PropertyBool","Align","Arch",QT_TRANSLATE_NOOP("App::Property","Specifies if the profile must be aligned with the extrusion wires"))
+        obj.addProperty("App::PropertyVectorDistance","Offset","Arch",QT_TRANSLATE_NOOP("App::Property","An offset vector between the base sketch and the frame"))
+        obj.addProperty("App::PropertyInteger","BasePoint","Arch",QT_TRANSLATE_NOOP("App::Property","Crossing point of the path on the profile."))
+        obj.addProperty("App::PropertyPlacement","ProfilePlacement","Arch",QT_TRANSLATE_NOOP("App::Property","An optional additional placement to add to the profile before extruding it"))
+        obj.addProperty("App::PropertyAngle","Rotation","Arch",QT_TRANSLATE_NOOP("App::Property","The rotation of the profile around its extrusion axis"))
+        obj.addProperty("App::PropertyEnumeration","Edges","Arch",QT_TRANSLATE_NOOP("App::Property","The type of edges to consider"))
+        obj.addProperty("App::PropertyBool","Fuse","Arch",QT_TRANSLATE_NOOP("App::Property","If true, geometry is fused, otherwise a compound"))
         self.Type = "Frame"
+        obj.Align = True
         obj.Role = Roles
+        obj.Role = "Railing"
+        obj.Edges = ["All edges","Vertical edges","Horizontal edges","Bottom horizontal edges","Top horizontal edges"]
 
     def execute(self,obj):
         
@@ -121,6 +142,9 @@ class _Frame(ArchComponent.Component):
                         return
             import DraftGeomUtils, Part, math
             baseprofile = obj.Profile.Shape.copy()
+            if hasattr(obj,"ProfilePlacement"):
+                if not obj.ProfilePlacement.isNull():
+                    baseprofile.Placement = obj.ProfilePlacement.multiply(baseprofile.Placement)
             if not baseprofile.Faces:
                 f = []
                 for w in baseprofile.Wires:
@@ -132,7 +156,27 @@ class _Frame(ArchComponent.Component):
             shapes = []
             normal = DraftGeomUtils.getNormal(obj.Base.Shape)
             #for wire in obj.Base.Shape.Wires:
-            for e in obj.Base.Shape.Edges:
+            edges = obj.Base.Shape.Edges
+            if hasattr(obj,"Edges"):
+                if obj.Edges == "Vertical edges":
+                    rv = obj.Base.Placement.Rotation.multVec(FreeCAD.Vector(0,1,0))
+                    edges = [e for e in edges if round(rv.getAngle(e.tangentAt(e.FirstParameter)),4) in [0,3.1416]]
+                elif obj.Edges == "Horizontal edges":
+                    rv = obj.Base.Placement.Rotation.multVec(FreeCAD.Vector(1,0,0))
+                    edges = [e for e in edges if round(rv.getAngle(e.tangentAt(e.FirstParameter)),4) in [0,3.1416]]
+                elif obj.Edges == "Top Horizontal edges":
+                    rv = obj.Base.Placement.Rotation.multVec(FreeCAD.Vector(1,0,0))
+                    edges = [e for e in edges if round(rv.getAngle(e.tangentAt(e.FirstParameter)),4) in [0,3.1416]]
+                    edges = sorted(edges,key=lambda x: x.CenterOfMass.z,reverse=True)
+                    z = edges[0].CenterOfMass.z
+                    edges = [e for e in edges if abs(e.CenterOfMass.z-z) < 0.00001]
+                elif obj.Edges == "Bottom Horizontal edges":
+                    rv = obj.Base.Placement.Rotation.multVec(FreeCAD.Vector(1,0,0))
+                    edges = [e for e in edges if round(rv.getAngle(e.tangentAt(e.FirstParameter)),4) in [0,3.1416]]
+                    edges = sorted(edges,key=lambda x: x.CenterOfMass.z)
+                    z = edges[0].CenterOfMass.z
+                    edges = [e for e in edges if abs(e.CenterOfMass.z-z) < 0.00001]
+            for e in edges:
                 #e = wire.Edges[0]
                 bvec = DraftGeomUtils.vec(e)
                 bpoint = e.Vertexes[0].Point
@@ -168,6 +212,14 @@ class _Frame(ArchComponent.Component):
                         profile.translate(obj.Offset)
                 shapes.append(profile)
             if shapes:
+                if hasattr(obj,"Fuse"):
+                    if obj.Fuse:
+                        if len(shapes) > 1:
+                            s = shapes[0].multiFuse(shapes[1:])
+                            s = s.removeSplitter()
+                            obj.Shape = s
+                            obj.Placement = pl
+                            return
                 obj.Shape = Part.makeCompound(shapes)
                 obj.Placement = pl
 

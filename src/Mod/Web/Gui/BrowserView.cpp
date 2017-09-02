@@ -50,6 +50,7 @@
 # include <QDesktopServices>
 # include <QMenu>
 # include <QDesktopWidget>
+# include <QSignalMapper>
 #endif
 
 #include "BrowserView.h"
@@ -57,7 +58,6 @@
 #include <Gui/Application.h>
 #include <Gui/MainWindow.h>
 #include <Gui/ProgressBar.h>
-#include <Gui/DownloadDialog.h>
 #include <Gui/Command.h>
 #include <Gui/OnlineDocumentation.h>
 #include <Gui/DownloadManager.h>
@@ -238,7 +238,8 @@ void BrowserView::onLinkClicked (const QUrl & url)
             QString ext = fi.completeSuffix();
             if (ext == QString::fromLatin1("py")) {
                 try {
-                    Gui::Command::doCommand(Gui::Command::Gui,"execfile('%s')",(const char*) fi.absoluteFilePath().	toLocal8Bit());
+                    // Gui::Command::doCommand(Gui::Command::Gui,"execfile('%s')",(const char*) fi.absoluteFilePath().	toLocal8Bit());
+                    Gui::Command::doCommand(Gui::Command::Gui,"exec(open('%s').read())",(const char*) fi.absoluteFilePath(). toLocal8Bit());  
                 }
                 catch (const Base::Exception& e) {
                     QMessageBox::critical(this, tr("Error"), QString::fromUtf8(e.what()));

@@ -37,6 +37,8 @@ namespace Gui {
 
 class ViewProviderDocumentObject;
 class DocumentObjectItem;
+typedef std::set<DocumentObjectItem*> DocumentObjectItems;
+typedef std::shared_ptr<DocumentObjectItems> DocumentObjectItemsPtr;
 class DocumentItem;
 
 /// highlight modes for the tree items
@@ -101,6 +103,8 @@ protected Q_SLOTS:
     void onActivateDocument(QAction*);
     void onStartEditing();
     void onFinishEditing();
+    void onSkipRecompute(bool on);
+    void onMarkRecompute();
 
 private Q_SLOTS:
     void onItemSelectionChanged(void);
@@ -122,6 +126,8 @@ private:
     QAction* createGroupAction;
     QAction* relabelObjectAction;
     QAction* finishEditingAction;
+    QAction* skipRecomputeAction;
+    QAction* markRecomputeAction;
     QTreeWidgetItem* contextItem;
 
     QTreeWidgetItem* rootItem;
@@ -150,6 +156,7 @@ public:
     void selectItems(void);
     void testStatus(void);
     void setData(int column, int role, const QVariant & value);
+    void populateItem(DocumentObjectItem *item, bool refresh = false);
 
 protected:
     /** Adds a view provider to the document item.
@@ -167,11 +174,14 @@ protected:
     void slotResetEdit       (const Gui::ViewProviderDocumentObject&);
     void slotHighlightObject (const Gui::ViewProviderDocumentObject&,const Gui::HighlightMode&,bool);
     void slotExpandObject    (const Gui::ViewProviderDocumentObject&,const Gui::TreeItemMode&);
-    std::vector<DocumentObjectItem*> getAllParents(DocumentObjectItem*) const;
 
+    bool createNewItem(const Gui::ViewProviderDocumentObject&, 
+                    QTreeWidgetItem *parent=0, int index=-1, 
+                    DocumentObjectItemsPtr ptrs = DocumentObjectItemsPtr());
+        
 private:
     const Gui::Document* pDocument;
-    std::map<std::string,DocumentObjectItem*> ObjectMap;
+    std::map<std::string,DocumentObjectItemsPtr> ObjectMap;
 
     typedef boost::BOOST_SIGNALS_NAMESPACE::connection Connection;
     Connection connectNewObject;
@@ -193,7 +203,8 @@ private:
 class DocumentObjectItem : public QTreeWidgetItem
 {
 public:
-    DocumentObjectItem(Gui::ViewProviderDocumentObject* pcViewProvider, QTreeWidgetItem * parent);
+    DocumentObjectItem(Gui::ViewProviderDocumentObject* pcViewProvider, 
+                       DocumentObjectItemsPtr selves);
     ~DocumentObjectItem();
 
     Gui::ViewProviderDocumentObject* object() const;
@@ -202,9 +213,6 @@ public:
     void setExpandedStatus(bool);
     void setData(int column, int role, const QVariant & value);
     bool isChildOfItem(DocumentObjectItem*);
-
-    bool allowDrop(const std::vector<const App::DocumentObject*> &objList,Qt::KeyboardModifiers keys,Qt::MouseButtons mouseBts,const QPoint &pos);
-    void drop(const std::vector<const App::DocumentObject*> &objList,Qt::KeyboardModifiers keys,Qt::MouseButtons mouseBts,const QPoint &pos);
 
 protected:
     void slotChangeIcon();
@@ -219,7 +227,11 @@ private:
     Connection connectTool;
     Connection connectStat;
 
+    DocumentObjectItemsPtr myselves;
+    bool populated;
+
     friend class TreeWidget;
+    friend class DocumentItem;
 };
 
 /**

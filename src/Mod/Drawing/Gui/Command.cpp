@@ -160,12 +160,10 @@ Gui::Action * CmdDrawingNewPage::createAction(void)
             lastPaper = paper;
             lastId = id;
 
-            QFile file(QString::fromLatin1(":/icons/actions/drawing-landscape-A0.svg"));
+            QFile file(QString::fromLatin1(":/icons/actions/drawing-%1-%2%3.svg").arg(orientation.toLower()).arg(paper).arg(id));
             QAction* a = pcAction->addAction(QString());
             if (file.open(QFile::ReadOnly)) {
-                QString s = QString::fromLatin1("style=\"font-size:22px\">%1%2</tspan></text>").arg(paper).arg(id);
                 QByteArray data = file.readAll();
-                data.replace("style=\"font-size:22px\">A0</tspan></text>", s.toLatin1());
                 a->setIcon(Gui::BitmapFactory().pixmapFromSvg(data, QSize(64,64)));
             }
 
@@ -215,36 +213,32 @@ void CmdDrawingNewPage::languageChange()
         int id = (*it)->property("TemplateId").toInt();
         QString orientation = (*it)->property("TemplateOrientation").toString();
         if (orientation.compare(QLatin1String("landscape"), Qt::CaseInsensitive) == 0)
-            orientation = QCoreApplication::translate("Drawing_NewPage", "Landscape", 0, QCoreApplication::CodecForTr);
+            orientation = QCoreApplication::translate("Drawing_NewPage", "Landscape");
         else if (orientation.compare(QLatin1String("portrait"), Qt::CaseInsensitive) == 0)
-            orientation = QCoreApplication::translate("Drawing_NewPage", "Portrait", 0, QCoreApplication::CodecForTr);
+            orientation = QCoreApplication::translate("Drawing_NewPage", "Portrait");
         QString info = (*it)->property("TemplateInfo").toString();
 
         if (info.isEmpty()) {
             (*it)->setText(QCoreApplication::translate(
-                "Drawing_NewPage", "%1%2 %3", 0,
-                QCoreApplication::CodecForTr)
+                "Drawing_NewPage", "%1%2 %3")
                 .arg(paper)
                 .arg(id)
                 .arg(orientation));
             (*it)->setToolTip(QCoreApplication::translate(
-                "Drawing_NewPage", "Insert new %1%2 %3 drawing", 0,
-                QCoreApplication::CodecForTr)
+                "Drawing_NewPage", "Insert new %1%2 %3 drawing")
                 .arg(paper)
                 .arg(id)
                 .arg(orientation));
         }
         else {
             (*it)->setText(QCoreApplication::translate(
-                "Drawing_NewPage", "%1%2 %3 (%4)", 0,
-                QCoreApplication::CodecForTr)
+                "Drawing_NewPage", "%1%2 %3 (%4)")
                 .arg(paper)
                 .arg(id)
                 .arg(orientation)
                 .arg(info));
             (*it)->setToolTip(QCoreApplication::translate(
-                "Drawing_NewPage", "Insert new %1%2 %3 (%4) drawing", 0,
-                QCoreApplication::CodecForTr)
+                "Drawing_NewPage", "Insert new %1%2 %3 (%4) drawing")
                 .arg(paper)
                 .arg(id)
                 .arg(orientation)

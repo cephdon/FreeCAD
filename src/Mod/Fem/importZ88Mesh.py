@@ -19,22 +19,30 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************
+from __future__ import print_function
 
+__title__ = "FreeCAD Z88 Mesh reader and writer"
+__author__ = "Bernd Hahnebach"
+__url__ = "http://www.freecadweb.org"
+
+## @package importZ88Mesh
+#  \ingroup FEM
+#  \brief FreeCAD Z88 Mesh reader and writer for FEM workbench
 
 import FreeCAD
 import os
-import FemMeshTools
-
-
-__title__ = "FreeCAD Z88 Mesh reader and writer"
-__author__ = "Bernd Hahnebach "
-__url__ = "http://www.freecadweb.org"
 
 
 Debug = False
 
+
+########## generic FreeCAD import and export methods ##########
 if open.__module__ == '__builtin__':
-    pyopen = open  # because we'll redefine open below
+    # because we'll redefine open below (Python2)
+    pyopen = open
+elif open.__module__ == 'io':
+    # because we'll redefine open below (Python3)
+    pyopen = open
 
 
 def open(filename):
@@ -53,12 +61,32 @@ def insert(filename, docname):
     import_z88_mesh(filename)
 
 
+def export(objectslist, filename):
+    "called when freecad exports a file"
+    if len(objectslist) != 1:
+        FreeCAD.Console.PrintError("This exporter can only export one object.\n")
+        return
+    obj = objectslist[0]
+    if not obj.isDerivedFrom("Fem::FemMeshObject"):
+        FreeCAD.Console.PrintError("No FEM mesh object selected.\n")
+        return
+    femnodes_mesh = obj.FemMesh.Nodes
+    import FemMeshTools
+    femelement_table = FemMeshTools.get_femelement_table(obj.FemMesh)
+    z88_element_type = get_z88_element_type(obj.FemMesh, femelement_table)
+    f = pyopen(filename, "wb")
+    write_z88_mesh_to_file(femnodes_mesh, femelement_table, z88_element_type, f)
+    f.close()
+
+
+########## module specific methods ##########
 def import_z88_mesh(filename, analysis=None):
     '''insert a FreeCAD FEM Mesh object in the ActiveDocument
     '''
     mesh_data = read_z88_mesh(filename)
     mesh_name = os.path.basename(os.path.splitext(filename)[0])
-    femmesh = FemMeshTools.make_femmesh(mesh_data)
+    import importToolsFem
+    femmesh = importToolsFem.make_femmesh(mesh_data)
     if femmesh:
         mesh_object = FreeCAD.ActiveDocument.addObject('Fem::FemMeshObject', mesh_name)
         mesh_object.FemMesh = femmesh
@@ -80,6 +108,7 @@ def read_z88_mesh(z88_mesh_input):
     elements_quad4 = {}
     elements_quad8 = {}
     elements_seg2 = {}
+    elements_seg3 = {}
 
     input_continues = False
     # elem = -1
@@ -206,7 +235,7 @@ def read_z88_mesh(z88_mesh_input):
                     input_continues = False
                 elif z88_element_type == 16:
                     # volume16 Z88 --> tetra10 FreeCAD
-                    # N4, N2, N3, N1, N9, N6, N10, N5, N7, N8
+                    # N1, N2, N4, N3, N5, N8, N10, N7, N6, N9, , Z88 to FC is differend as FC to Z88
                     nd1 = int(linecolumns[0])
                     nd2 = int(linecolumns[1])
                     nd3 = int(linecolumns[2])
@@ -217,7 +246,7 @@ def read_z88_mesh(z88_mesh_input):
                     nd8 = int(linecolumns[7])
                     nd9 = int(linecolumns[8])
                     nd10 = int(linecolumns[9])
-                    elements_tetra10[elem_no] = (nd4, nd2, nd3, nd1, nd9, nd6, nd10, nd5, nd7, nd8)
+                    elements_tetra10[elem_no] = (nd1, nd2, nd4, nd3, nd5, nd8, nd10, nd7, nd6, nd9)
                     input_continues = False
                 elif z88_element_type == 1:
                     # volume1 Z88 --> hexa8 FreeCAD
@@ -273,31 +302,24 @@ def read_z88_mesh(z88_mesh_input):
             print(e, '  ', elements_tria6[e])
 
     z88_mesh_file.close()
-    return {'Nodes': nodes,
-            'Hexa8Elem': elements_hexa8, 'Penta6Elem': elements_penta6, 'Tetra4Elem': elements_tetra4, 'Tetra10Elem': elements_tetra10,
-            'Penta15Elem': elements_penta15, 'Hexa20Elem': elements_hexa20, 'Tria3Elem': elements_tria3, 'Tria6Elem': elements_tria6,
-            'Quad4Elem': elements_quad4, 'Quad8Elem': elements_quad8, 'Seg2Elem': elements_seg2,
-            }
+    return {
+        'Nodes': nodes,
+        'Seg2Elem': elements_seg2,
+        'Seg3Elem': elements_seg3,
+        'Tria3Elem': elements_tria3,
+        'Tria6Elem': elements_tria6,
+        'Quad4Elem': elements_quad4,
+        'Quad8Elem': elements_quad8,
+        'Tetra4Elem': elements_tetra4,
+        'Tetra10Elem': elements_tetra10,
+        'Hexa8Elem': elements_hexa8,
+        'Hexa20Elem': elements_hexa20,
+        'Penta6Elem': elements_penta6,
+        'Penta15Elem': elements_penta15
+    }
 
 
-# export z88 Mesh
-def export(objectslist, filename):
-    "called when freecad exports a file"
-    if len(objectslist) != 1:
-        FreeCAD.Console.PrintError("This exporter can only export one object.\n")
-        return
-    obj = objectslist[0]
-    if not obj.isDerivedFrom("Fem::FemMeshObject"):
-        FreeCAD.Console.PrintError("No FEM mesh object selected.\n")
-        return
-    femnodes_mesh = obj.FemMesh.Nodes
-    femelement_table = FemMeshTools.get_femelement_table(obj.FemMesh)
-    z88_element_type = get_z88_element_type(obj.FemMesh, femelement_table)
-    f = pyopen(filename, "wb")
-    write_z88_mesh_to_file(femnodes_mesh, femelement_table, z88_element_type, f)
-    f.close()
-
-
+# write z88 Mesh
 def write_z88_mesh_to_file(femnodes_mesh, femelement_table, z88_element_type, f):
     node_dimension = 3  # 2 for 2D not supported
     if (z88_element_type == 4 or
@@ -344,17 +366,17 @@ def write_z88_mesh_to_file(femnodes_mesh, femelement_table, z88_element_type, f)
             f.write("{0} {1} {2} {3} {4} {5} {6} {7}\n".format(
                     n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7]))
         elif z88_element_type == 17:
-            # tetra4 FreeCAD --> volume17 Z88#
+            # tetra4 FreeCAD --> volume17 Z88
             # N4, N2, N3, N1
             f.write("{0} {1}\n".format(element, z88_element_type, element))
             f.write("{0} {1} {2} {3}\n".format(
                     n[3], n[1], n[2], n[0]))
         elif z88_element_type == 16:
             # tetra10 FreeCAD --> volume16 Z88
-            # N4, N2, N3, N1, N9, N6, N10, N5, N7, N8
+            # N1, N2, N4, N3, N5, N9, N8, N6, N10, N7, FC to Z88 is differend as Z88 to FC
             f.write("{0} {1}\n".format(element, z88_element_type, element))
             f.write("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}\n".format(
-                    n[3], n[1], n[2], n[0], n[8], n[5], n[9], n[4], n[6], n[7]))
+                    n[0], n[1], n[3], n[2], n[4], n[8], n[7], n[5], n[9], n[6]))
         elif z88_element_type == 1:
             # hexa8 FreeCAD --> volume1 Z88
             # N1, N2, N3, N4, N5, N6, N7, N8
@@ -377,6 +399,7 @@ def write_z88_mesh_to_file(femnodes_mesh, femelement_table, z88_element_type, f)
 
 # Helper
 def get_z88_element_type(femmesh, femelement_table=None):
+    import FemMeshTools
     if not femmesh:
         print("Error: No femmesh!")
     if not femelement_table:
@@ -385,7 +408,7 @@ def get_z88_element_type(femmesh, femelement_table=None):
     # in some cases lowest key in femelement_table is not [1]
     for elem in sorted(femelement_table):
         elem_length = len(femelement_table[elem])
-        print elem_length
+        print(elem_length)
         break  # break after the first elem
     if FemMeshTools.is_solid_femmesh(femmesh):
         if femmesh.TetraCount == femmesh.VolumeCount:

@@ -83,10 +83,10 @@ int PlateSurfacePy::PyInit(PyObject* args, PyObject* kwds)
         return -1;
     }
 
-    Handle_Geom_Surface surf;
+    Handle(Geom_Surface) surf;
     if (surface) {
         GeometryPy* pcGeo = static_cast<GeometryPy*>(surface);
-        surf = Handle_Geom_Surface::DownCast
+        surf = Handle(Geom_Surface)::DownCast
             (pcGeo->getGeometryPtr()->handle());
         if (surf.IsNull()) {
             PyErr_SetString(PyExc_TypeError, "geometry is not a surface");
@@ -130,9 +130,9 @@ int PlateSurfacePy::PyInit(PyObject* args, PyObject* kwds)
         getGeomPlateSurfacePtr()->setHandle(buildPlate.Surface());
         return 0;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return -1;
     }
 }
@@ -172,9 +172,9 @@ PyObject* PlateSurfacePy::makeApprox(PyObject *args, PyObject* kwds)
         continuity = GeomAbs_C1;
 
     PY_TRY {
-        GeomPlate_MakeApprox approx(Handle_GeomPlate_Surface::DownCast(getGeomPlateSurfacePtr()->handle()),
+        GeomPlate_MakeApprox approx(Handle(GeomPlate_Surface)::DownCast(getGeomPlateSurfacePtr()->handle()),
             tol3d, maxSeg, maxDegree, dmax, critOrder, continuity, enlargeCoeff);
-        Handle_Geom_BSplineSurface hSurf = approx.Surface();
+        Handle(Geom_BSplineSurface) hSurf = approx.Surface();
 
         if (!hSurf.IsNull()) {
             return new Part::BSplineSurfacePy(new Part::GeomBSplineSurface(hSurf));
@@ -183,18 +183,6 @@ PyObject* PlateSurfacePy::makeApprox(PyObject *args, PyObject* kwds)
         PyErr_SetString(PyExc_RuntimeError, "Approximation of B-Spline surface failed");
         return 0;
     } PY_CATCH_OCC;
-}
-
-PyObject* PlateSurfacePy::uIso(PyObject * /*args*/)
-{
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
-}
-
-PyObject* PlateSurfacePy::vIso(PyObject * /*args*/)
-{
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
 }
 
 PyObject *PlateSurfacePy::getCustomAttributes(const char* /*attr*/) const

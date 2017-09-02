@@ -79,7 +79,7 @@ bool Quantity::operator ==(const Quantity& that) const
 bool Quantity::operator <(const Quantity& that) const
 {
     if (this->_Unit != that._Unit)
-        throw Base::Exception("Quantity::operator <(): quantities need to have same unit to compare");
+        throw Base::UnitsMismatchError("Quantity::operator <(): quantities need to have same unit to compare");
 
     return (this->_Value < that._Value) ;
 }
@@ -87,9 +87,25 @@ bool Quantity::operator <(const Quantity& that) const
 bool Quantity::operator >(const Quantity& that) const
 {
     if (this->_Unit != that._Unit)
-        throw Base::Exception("Quantity::operator >(): quantities need to have same unit to compare");
+        throw Base::UnitsMismatchError("Quantity::operator >(): quantities need to have same unit to compare");
 
     return (this->_Value > that._Value) ;
+}
+
+bool Quantity::operator <=(const Quantity& that) const
+{
+    if (this->_Unit != that._Unit)
+        throw Base::UnitsMismatchError("Quantity::operator <=(): quantities need to have same unit to compare");
+
+    return (this->_Value <= that._Value) ;
+}
+
+bool Quantity::operator >=(const Quantity& that) const
+{
+    if (this->_Unit != that._Unit)
+        throw Base::UnitsMismatchError("Quantity::operator >=(): quantities need to have same unit to compare");
+
+    return (this->_Value >= that._Value) ;
 }
 
 Quantity Quantity::operator *(const Quantity &p) const
@@ -97,32 +113,49 @@ Quantity Quantity::operator *(const Quantity &p) const
     return Quantity(this->_Value * p._Value,this->_Unit * p._Unit);
 }
 
+Quantity Quantity::operator *(double p) const
+{
+    return Quantity(this->_Value * p,this->_Unit);
+}
+
 Quantity Quantity::operator /(const Quantity &p) const
 {
     return Quantity(this->_Value / p._Value,this->_Unit / p._Unit);
 }
 
+Quantity Quantity::operator /(double p) const
+{
+    return Quantity(this->_Value / p,this->_Unit);
+}
+
 Quantity Quantity::pow(const Quantity &p) const
 {
     if (!p._Unit.isEmpty())
-        throw Base::Exception("Quantity::pow(): exponent must not have a unit");
+        throw Base::UnitsMismatchError("Quantity::pow(): exponent must not have a unit");
     return Quantity(
         std::pow(this->_Value, p._Value),
         this->_Unit.pow((short)p._Value)
         );
 }
 
+Quantity Quantity::pow(double p) const
+{
+    return Quantity(
+        std::pow(this->_Value, p), this->_Unit
+        );
+}
+
 Quantity Quantity::operator +(const Quantity &p) const
 {
     if (this->_Unit != p._Unit)
-        throw Base::Exception("Quantity::operator +(): Unit mismatch in plus operation");
+        throw Base::UnitsMismatchError("Quantity::operator +(): Unit mismatch in plus operation");
     return Quantity(this->_Value + p._Value,this->_Unit);
 }
 
 Quantity& Quantity::operator +=(const Quantity &p)
 {
     if (this->_Unit != p._Unit)
-        throw Base::Exception("Quantity::operator +=(): Unit mismatch in plus operation");
+        throw Base::UnitsMismatchError("Quantity::operator +=(): Unit mismatch in plus operation");
 
     _Value += p._Value;
 
@@ -132,14 +165,14 @@ Quantity& Quantity::operator +=(const Quantity &p)
 Quantity Quantity::operator -(const Quantity &p) const
 {
     if (this->_Unit != p._Unit)
-        throw Base::Exception("Quantity::operator +(): Unit mismatch in minus operation");
+        throw Base::UnitsMismatchError("Quantity::operator +(): Unit mismatch in minus operation");
     return Quantity(this->_Value - p._Value,this->_Unit);
 }
 
 Quantity& Quantity::operator -=(const Quantity &p)
 {
     if (this->_Unit != p._Unit)
-        throw Base::Exception("Quantity::operator -=(): Unit mismatch in minus operation");
+        throw Base::UnitsMismatchError("Quantity::operator -=(): Unit mismatch in minus operation");
 
     _Value -= p._Value;
 
@@ -300,8 +333,8 @@ double num_change(char* yytext,char dez_delim,char grp_delim)
 
 // error func
 void Quantity_yyerror(char *errorinfo)
-{  
-    throw Base::Exception(errorinfo);  
+{
+    throw Base::ParserError(errorinfo);
 }
 
 
@@ -323,13 +356,25 @@ int QuantityLexer(void);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 // Scanner, defined in QuantityParser.l
+#if defined(__clang__)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wsign-compare"
+# pragma clang diagnostic ignored "-Wunneeded-internal-declaration"
+#elif defined (__GNUC__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wsign-compare"
+#endif
 #include "QuantityLexer.c"
+#if defined(__clang__)
+# pragma clang diagnostic pop
+#elif defined (__GNUC__)
+# pragma GCC diagnostic pop
+#endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 }
 
 Quantity Quantity::parse(const QString &string)
 {
-    
     // parse from buffer
     QuantityParser::YY_BUFFER_STATE my_string_buffer = QuantityParser::yy_scan_string (string.toUtf8().data());
     // set the global return variables
@@ -340,6 +385,6 @@ Quantity Quantity::parse(const QString &string)
     QuantityParser::yy_delete_buffer (my_string_buffer);
 
     //if (QuantResult == Quantity(DOUBLE_MIN))
-    //    throw Base::Exception("Unknown error in Quantity expression");
+    //    throw Base::ParserError("Unknown error in Quantity expression");
     return QuantResult;
 }

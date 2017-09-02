@@ -25,7 +25,6 @@
 #define GUI_VIEWPROVIDERPYTHONFEATURE_H
 
 #include <Gui/ViewProviderGeometryObject.h>
-#include <Gui/ViewProviderPythonFeaturePy.h>
 #include <App/PropertyPythonObject.h>
 #include <App/DynamicProperty.h>
 
@@ -56,9 +55,9 @@ public:
     std::string getElement(const SoDetail *det) const;
     SoDetail* getDetail(const char*) const;
     std::vector<Base::Vector3d> getSelectionShape(const char* Element) const;
-    bool setEdit(int ModNum);
-    bool unsetEdit(int ModNum);
-    bool doubleClicked(void);
+    ValueT setEdit(int ModNum);
+    ValueT unsetEdit(int ModNum);
+    ValueT doubleClicked(void);
     void setupContextMenu(QMenu* menu);
 
     /** @name Update data methods*/
@@ -73,6 +72,8 @@ public:
 
     /** @name Display methods */
     //@{
+    /// Returns true if the icon must always appear enabled in the tree view
+    bool isShow() const;
     /// get the default display mode
     const char* getDefaultDisplayMode() const;
     /// returns a list of all possible modes
@@ -266,6 +267,12 @@ public:
 
     /** @name Display methods */
     //@{
+    /// Returns true if the icon must always appear enabled in the tree view
+    virtual bool isShow() const {
+        bool ok = imp->isShow();
+        if (ok) return ok;
+        return ViewProviderT::isShow();
+    }
     /// get the default display mode
     virtual const char* getDefaultDisplayMode() const {
         return imp->getDefaultDisplayMode();
@@ -294,6 +301,7 @@ public:
         return props->addDynamicProperty(type, name, group, doc, attr, ro, hidden);
     }
     virtual bool removeDynamicProperty(const char* name) {
+        ViewProviderT::onAboutToRemoveProperty(name);
         return props->removeDynamicProperty(name);
     }
     std::vector<std::string> getDynamicPropertyNames() const {
@@ -358,10 +366,7 @@ public:
     //@}
 
     PyObject* getPyObject() {
-        if (!ViewProviderT::pyViewObject)
-            ViewProviderT::pyViewObject = new ViewProviderPythonFeaturePy(this);
-        ViewProviderT::pyViewObject->IncRef();
-        return ViewProviderT::pyViewObject;
+        return ViewProviderT::getPyObject();
     }
 
 protected:
@@ -387,15 +392,25 @@ protected:
     /// is called by the document when the provider goes in edit mode
     virtual bool setEdit(int ModNum)
     {
-        bool ok = imp->setEdit(ModNum);
-        if (!ok) ok = ViewProviderT::setEdit(ModNum);
-        return ok;
+        switch (imp->setEdit(ModNum)) {
+        case ViewProviderPythonFeatureImp::Accepted:
+            return true;
+        case ViewProviderPythonFeatureImp::Rejected:
+            return false;
+        default:
+            return ViewProviderT::setEdit(ModNum);
+        }
     }
-    /// is called when you loose the edit mode
+    /// is called when you lose the edit mode
     virtual void unsetEdit(int ModNum)
     {
-        bool ok = imp->unsetEdit(ModNum);
-        if (!ok) ViewProviderT::unsetEdit(ModNum);
+        switch (imp->unsetEdit(ModNum)) {
+        case ViewProviderPythonFeatureImp::Accepted:
+            return;
+        case ViewProviderPythonFeatureImp::Rejected:
+        default:
+            return ViewProviderT::unsetEdit(ModNum);
+        }
     }
 
 public:
@@ -408,11 +423,14 @@ public:
 protected:
     virtual bool doubleClicked(void)
     {
-        bool ok = imp->doubleClicked();
-        if (!ok) 
-            return ViewProviderT::doubleClicked();
-        else 
+        switch (imp->doubleClicked()) {
+        case ViewProviderPythonFeatureImp::Accepted:
             return true;
+        case ViewProviderPythonFeatureImp::Rejected:
+            return false;
+        default:
+            return ViewProviderT::doubleClicked();
+        }
     }
     virtual void setOverrideMode(const std::string &mode)
     {

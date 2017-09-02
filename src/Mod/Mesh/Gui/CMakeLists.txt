@@ -4,7 +4,6 @@ include_directories(
     ${COIN3D_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
     ${ZLIB_INCLUDE_DIR}
-    ${QT_INCLUDE_DIR}
     ${XercesC_INCLUDE_DIRS}
 )
 
@@ -42,7 +41,7 @@ set(Dialogs_UIC_SRCS
     Segmentation.ui
     Selection.ui
 )
-qt4_wrap_ui(Dialogs_UIC_HDRS ${Dialogs_UIC_SRCS})
+
 SET(Dialogs_SRCS
     ${Dialogs_UIC_HDRS}
     DlgEvaluateMesh.ui
@@ -57,6 +56,7 @@ SET(Dialogs_SRCS
     DlgSettingsMeshView.ui
     DlgSettingsMeshView.cpp
     DlgSettingsMeshView.h
+    DlgSettingsImportExport.ui
     DlgSettingsImportExportImp.cpp
     DlgSettingsImportExportImp.h
     DlgSmoothing.ui
@@ -84,7 +84,14 @@ SET(Inventor_SRCS
 )
 SOURCE_GROUP("Inventor" FILES ${Inventor_SRCS})
 
-qt4_add_resources(resource_SRCS Resources/Mesh.qrc)
+if (BUILD_QT5)
+    qt5_wrap_ui(Dialogs_UIC_HDRS ${Dialogs_UIC_SRCS})
+    qt5_add_resources(resource_SRCS Resources/Mesh.qrc)
+else()
+    qt4_wrap_ui(Dialogs_UIC_HDRS ${Dialogs_UIC_SRCS})
+    qt4_add_resources(resource_SRCS Resources/Mesh.qrc)
+endif()
+
 SET(resource_SRCS
     ${resource_SRCS}
     Resources/Mesh.qrc

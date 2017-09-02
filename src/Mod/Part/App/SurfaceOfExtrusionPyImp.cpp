@@ -24,11 +24,18 @@
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <Geom_SurfaceOfLinearExtrusion.hxx>
+# include <Geom_Curve.hxx>
+# include <Geom_Line.hxx>
+# include <gp_Lin.hxx>
 #endif
 
 #include "Geometry.h"
 #include "SurfaceOfExtrusionPy.h"
 #include "SurfaceOfExtrusionPy.cpp"
+#include "GeometryCurvePy.h"
+#include "LinePy.h"
+#include "BezierCurvePy.h"
+#include "BSplineCurvePy.h"
 
 #include <Base/GeometryPyCXX.h>
 #include <Base/VectorPy.h>
@@ -59,7 +66,7 @@ int SurfaceOfExtrusionPy::PyInit(PyObject* args, PyObject* /*kwd*/)
         return -1;
 
     GeometryPy* pcGeo = static_cast<GeometryPy*>(pGeom);
-    Handle_Geom_Curve curve = Handle_Geom_Curve::DownCast
+    Handle(Geom_Curve) curve = Handle(Geom_Curve)::DownCast
         (pcGeo->getGeometryPtr()->handle());
     if (curve.IsNull()) {
         PyErr_SetString(PyExc_TypeError, "geometry is not a curve");
@@ -68,21 +75,21 @@ int SurfaceOfExtrusionPy::PyInit(PyObject* args, PyObject* /*kwd*/)
 
     try {
         Base::Vector3d dir = static_cast<Base::VectorPy*>(pDir)->value();
-        Handle_Geom_SurfaceOfLinearExtrusion curve2 = new Geom_SurfaceOfLinearExtrusion(curve,
+        Handle(Geom_SurfaceOfLinearExtrusion) curve2 = new Geom_SurfaceOfLinearExtrusion(curve,
             gp_Dir(dir.x,dir.y,dir.z));
         getGeomSurfaceOfExtrusionPtr()->setHandle(curve2);
         return 0;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return -1;
     }
 }
 
 Py::Object SurfaceOfExtrusionPy::getDirection(void) const
 {
-    Handle_Geom_SurfaceOfLinearExtrusion curve = Handle_Geom_SurfaceOfLinearExtrusion::DownCast
+    Handle(Geom_SurfaceOfLinearExtrusion) curve = Handle(Geom_SurfaceOfLinearExtrusion)::DownCast
         (getGeometryPtr()->handle());
     const gp_Dir& dir = curve->Direction();
     return Py::Vector(Base::Vector3d(dir.X(),dir.Y(),dir.Z()));
@@ -93,13 +100,13 @@ void  SurfaceOfExtrusionPy::setDirection(Py::Object arg)
     PyObject* p = arg.ptr();
     if (PyObject_TypeCheck(p, &(Base::VectorPy::Type))) {
         Base::Vector3d dir = static_cast<Base::VectorPy*>(p)->value();
-        Handle_Geom_SurfaceOfLinearExtrusion curve = Handle_Geom_SurfaceOfLinearExtrusion::DownCast
+        Handle(Geom_SurfaceOfLinearExtrusion) curve = Handle(Geom_SurfaceOfLinearExtrusion)::DownCast
             (getGeometryPtr()->handle());
         curve->SetDirection(gp_Dir(dir.x,dir.y,dir.z));
     }
     else if (PyObject_TypeCheck(p, &PyTuple_Type)) {
         Base::Vector3d dir = Base::getVectorFromTuple<double>(p);
-        Handle_Geom_SurfaceOfLinearExtrusion curve = Handle_Geom_SurfaceOfLinearExtrusion::DownCast
+        Handle(Geom_SurfaceOfLinearExtrusion) curve = Handle(Geom_SurfaceOfLinearExtrusion)::DownCast
             (getGeometryPtr()->handle());
         curve->SetDirection(gp_Dir(dir.x,dir.y,dir.z));
     }
@@ -120,21 +127,103 @@ void  SurfaceOfExtrusionPy::setBasisCurve(Py::Object arg)
     PyObject* p = arg.ptr();
     if (PyObject_TypeCheck(p, &(GeometryPy::Type))) {
         GeometryPy* pcGeo = static_cast<GeometryPy*>(p);
-        Handle_Geom_Curve curve = Handle_Geom_Curve::DownCast
+        Handle(Geom_Curve) curve = Handle(Geom_Curve)::DownCast
             (pcGeo->getGeometryPtr()->handle());
         if (curve.IsNull()) {
             throw Py::TypeError("geometry is not a curve");
         }
 
         try {
-            Handle_Geom_SurfaceOfLinearExtrusion curve2 = Handle_Geom_SurfaceOfLinearExtrusion::DownCast
+            Handle(Geom_SurfaceOfLinearExtrusion) curve2 = Handle(Geom_SurfaceOfLinearExtrusion)::DownCast
                 (getGeometryPtr()->handle());
             curve2->SetBasisCurve(curve);
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            throw Py::Exception(e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            throw Py::Exception(e.GetMessageString());
         }
+    }
+}
+
+PyObject* SurfaceOfExtrusionPy::uIso(PyObject * args)
+{
+    double v;
+    if (!PyArg_ParseTuple(args, "d", &v))
+        return 0;
+
+    try {
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
+            (getGeometryPtr()->handle());
+        Handle(Geom_Curve) c = surf->UIso(v);
+        if (c->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
+            Handle(Geom_TrimmedCurve) aCurve = Handle(Geom_TrimmedCurve)::DownCast(c);
+            return new GeometryCurvePy(new GeomTrimmedCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
+            Handle(Geom_BezierCurve) aCurve = Handle(Geom_BezierCurve)::DownCast(c);
+            return new BezierCurvePy(new GeomBezierCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_BSplineCurve))) {
+            Handle(Geom_BSplineCurve) aCurve = Handle(Geom_BSplineCurve)::DownCast(c);
+            return new BSplineCurvePy(new GeomBSplineCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+            Handle(Geom_Line) aLine = Handle(Geom_Line)::DownCast(c);
+            GeomLine* line = new GeomLine();
+            Handle(Geom_Line) this_line = Handle(Geom_Line)::DownCast
+                (line->handle());
+            this_line->SetLin(aLine->Lin());
+            return new LinePy(line);
+        }
+        PyErr_Format(PyExc_NotImplementedError, "Iso curve is of type '%s'",
+            c->DynamicType()->Name());
+        return 0;
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
+    }
+}
+
+PyObject* SurfaceOfExtrusionPy::vIso(PyObject * args)
+{
+    double v;
+    if (!PyArg_ParseTuple(args, "d", &v))
+        return 0;
+
+    try {
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
+            (getGeometryPtr()->handle());
+        Handle(Geom_Curve) c = surf->VIso(v);
+        if (c->IsKind(STANDARD_TYPE(Geom_TrimmedCurve))) {
+            Handle(Geom_TrimmedCurve) aCurve = Handle(Geom_TrimmedCurve)::DownCast(c);
+            return new GeometryCurvePy(new GeomTrimmedCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_BezierCurve))) {
+            Handle(Geom_BezierCurve) aCurve = Handle(Geom_BezierCurve)::DownCast(c);
+            return new BezierCurvePy(new GeomBezierCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_BSplineCurve))) {
+            Handle(Geom_BSplineCurve) aCurve = Handle(Geom_BSplineCurve)::DownCast(c);
+            return new BSplineCurvePy(new GeomBSplineCurve(aCurve));
+        }
+        if (c->IsKind(STANDARD_TYPE(Geom_Line))) {
+            Handle(Geom_Line) aLine = Handle(Geom_Line)::DownCast(c);
+            GeomLine* line = new GeomLine();
+            Handle(Geom_Line) this_curv = Handle(Geom_Line)::DownCast
+                (line->handle());
+            this_curv->SetLin(aLine->Lin());
+            return new LinePy(line);
+        }
+        PyErr_Format(PyExc_NotImplementedError, "Iso curve is of type '%s'",
+            c->DynamicType()->Name());
+        return 0;
+    }
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
+        return 0;
     }
 }
 

@@ -26,6 +26,14 @@ __title__="FreeCAD Draft Workbench - OCA importer/exporter"
 __author__ = "Yorik van Havre <yorik@uncreated.net>"
 __url__ = ["http://www.freecadweb.org"]
 
+## @package importOCA
+#  \ingroup DRAFT
+#  \brief OCA (Open CAD Format) file import & export
+#
+#  This module provides support for importing and exporting to the OCA format fron GCAD3D.
+#  Warning, this file format is today practically obsolete and this module is not
+#  maintained anymore.
+
 '''
 This script imports OCA/gcad files into FreeCAD.
 '''
@@ -37,7 +45,7 @@ try: import FreeCADGui
 except ValueError: gui = False
 else: gui = True
 
-if open.__module__ == '__builtin__':
+if open.__module__ in ['__builtin__','io']:
     pythonopen = open
     
 params = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Draft")
@@ -134,7 +142,7 @@ def getline(data):
             verts.append(getpoint(data[p:p+4]))
         elif (data[p][0] == "P"):
             verts.append(getpoint([data[p]]))
-    l = Part.Line(verts[0],verts[1])
+    l = Part.LineSegment(verts[0],verts[1])
     return l.toShape()
 
 def gettranslation(data):

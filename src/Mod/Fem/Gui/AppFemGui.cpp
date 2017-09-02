@@ -35,6 +35,7 @@
 #include "PropertyFemMeshItem.h"
 #include "DlgSettingsFemGeneralImp.h"
 #include "DlgSettingsFemCcxImp.h"
+#include "DlgSettingsFemGmshImp.h"
 #include "DlgSettingsFemZ88Imp.h"
 #include "ViewProviderFemMesh.h"
 #include "ViewProviderFemMeshShape.h"
@@ -91,14 +92,14 @@ extern PyObject* initModule();
 
 
 /* Python entry */
-PyMODINIT_FUNC initFemGui()
+PyMOD_INIT_FUNC(FemGui)
 {
     if (!Gui::Application::Instance) {
         PyErr_SetString(PyExc_ImportError, "Cannot load Gui module in console application.");
-        return;
+        PyMOD_Return(0);
     }
 
-    (void) FemGui::initModule();
+    PyObject* mod = FemGui::initModule();
     Base::Console().Log("Loading GUI of Fem module... done\n");
 
     // instantiating the commands
@@ -109,6 +110,7 @@ PyMODINIT_FUNC initFemGui()
     FemGui::ViewProviderFemAnalysis               ::init();
     FemGui::ViewProviderFemAnalysisPython         ::init();
     FemGui::ViewProviderFemMesh                   ::init();
+    FemGui::ViewProviderFemMeshPython                   ::init();
     FemGui::ViewProviderFemMeshShape              ::init();
     FemGui::ViewProviderFemMeshShapeNetgen        ::init();
     FemGui::ViewProviderSolver                    ::init();
@@ -118,6 +120,7 @@ PyMODINIT_FUNC initFemGui()
     FemGui::ViewProviderSetFaces                  ::init();
     FemGui::ViewProviderSetGeometry               ::init();
     FemGui::ViewProviderFemConstraint             ::init();
+    FemGui::ViewProviderFemConstraintPython       ::init();
     FemGui::ViewProviderFemConstraintBearing      ::init();
     FemGui::ViewProviderFemConstraintFixed        ::init();
     FemGui::ViewProviderFemConstraintForce        ::init();
@@ -144,6 +147,7 @@ PyMODINIT_FUNC initFemGui()
     FemGui::ViewProviderFemPostPlaneFunction   ::init();
     FemGui::ViewProviderFemPostSphereFunction  ::init();
     FemGui::ViewProviderFemPostClip            ::init();
+    FemGui::ViewProviderFemPostDataAlongLine            ::init();
     FemGui::ViewProviderFemPostScalarClip      ::init();
     FemGui::ViewProviderFemPostWarpVector      ::init();
     FemGui::ViewProviderFemPostCut             ::init();
@@ -153,8 +157,11 @@ PyMODINIT_FUNC initFemGui()
     // register preferences pages
     new Gui::PrefPageProducer<FemGui::DlgSettingsFemGeneralImp> (QT_TRANSLATE_NOOP("QObject","FEM"));
     new Gui::PrefPageProducer<FemGui::DlgSettingsFemCcxImp> (QT_TRANSLATE_NOOP("QObject","FEM"));
+    new Gui::PrefPageProducer<FemGui::DlgSettingsFemGmshImp> (QT_TRANSLATE_NOOP("QObject","FEM"));
     new Gui::PrefPageProducer<FemGui::DlgSettingsFemZ88Imp> (QT_TRANSLATE_NOOP("QObject","FEM"));
 
      // add resources and reloads the translators
     loadFemResource();
+    
+    PyMOD_Return(mod);
 }

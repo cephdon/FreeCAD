@@ -88,6 +88,26 @@ int VectorPy::PyInit(PyObject* args, PyObject* /*kwd*/)
     return -1;
 }
 
+PyObject*  VectorPy::__reduce__(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args, ""))
+        return 0;
+
+    Py::Tuple tuple(2);
+
+    union PyType_Object pyType = {&VectorPy::Type};
+    Py::Object type(pyType.o);
+    tuple.setItem(0, type);
+
+    Base::Vector3d v = this->value();
+    Py::Tuple xyz(3);
+    xyz.setItem(0, Py::Float(v.x));
+    xyz.setItem(1, Py::Float(v.y));
+    xyz.setItem(2, Py::Float(v.z));
+    tuple.setItem(1, xyz);
+    return Py::new_reference_to(tuple);
+}
+
 PyObject* VectorPy::number_add_handler(PyObject *self, PyObject *other)
 {
     if (!PyObject_TypeCheck(self, &(VectorPy::Type))) {
@@ -120,29 +140,54 @@ PyObject* VectorPy::number_subtract_handler(PyObject *self, PyObject *other)
 
 PyObject* VectorPy::number_multiply_handler(PyObject *self, PyObject *other)
 {
-    if (!PyObject_TypeCheck(self, &(VectorPy::Type))) {
-        PyErr_SetString(PyExc_TypeError, "First arg must be Vector");
-        return 0;
-    }
-
-    if (PyObject_TypeCheck(other, &(VectorPy::Type))) {
+    if (PyObject_TypeCheck(self, &(VectorPy::Type))) {
         Base::Vector3d a = static_cast<VectorPy*>(self) ->value();
-        Base::Vector3d b = static_cast<VectorPy*>(other)->value();
-        Py::Float mult(a * b);
-        return Py::new_reference_to(mult);
-    }
-    else if (PyFloat_Check(other)) {
-        Base::Vector3d a = static_cast<VectorPy*>(self) ->value();
-        double b = PyFloat_AsDouble(other);
-        return new VectorPy(a * b);
-    }
+        if (PyObject_TypeCheck(other, &(VectorPy::Type))) {
+            Base::Vector3d b = static_cast<VectorPy*>(other)->value();
+            Py::Float mult(a * b);
+            return Py::new_reference_to(mult);
+        }
+        else if (PyFloat_Check(other)) {
+            double b = PyFloat_AsDouble(other);
+            return new VectorPy(a * b);
+        }
+#if PY_MAJOR_VERSION < 3
     else if (PyInt_Check(other)) {
         Base::Vector3d a = static_cast<VectorPy*>(self) ->value();
         long b = PyInt_AsLong(other);
-        return new VectorPy(a * (double)b);
+#else
+    else if (PyLong_Check(other)) {
+        long b = PyLong_AsLong(other);
+#endif
+            return new VectorPy(a * (double)b);
+        }
+        else {
+            PyErr_SetString(PyExc_TypeError, "A Vector can only be multiplied by Vector or number");
+            return 0;
+        }
+    }
+    else if (PyObject_TypeCheck(other, &(VectorPy::Type))) {
+        Base::Vector3d a = static_cast<VectorPy*>(other) ->value();
+        if (PyFloat_Check(self)) {
+            double b = PyFloat_AsDouble(self);
+            return new VectorPy(a * b);
+        }
+#if PY_MAJOR_VERSION >= 3
+        else if (PyLong_Check(self)) {
+            long b = PyLong_AsLong(self);
+#else
+        else if (PyInt_Check(self)) {
+            long b = PyInt_AsLong(self);
+#endif
+            return new VectorPy(a * (double)b);
+        }
+        else {
+            PyErr_SetString(PyExc_TypeError, "A Vector can only be multiplied by Vector or number");
+            return 0;
+        }
     }
     else {
-        PyErr_SetString(PyExc_TypeError, "A Vector can only be multiplied by Vector or number");
+        PyErr_SetString(PyExc_TypeError, "First or second arg must be Vector");
         return 0;
     }
 }
@@ -188,6 +233,63 @@ int VectorPy::sequence_ass_item(PyObject *self, Py_ssize_t index, PyObject *valu
     }
 
     return 0;
+}
+
+// http://renesd.blogspot.de/2009/07/python3-c-api-simple-slicing-sqslice.html
+PyObject * VectorPy::mapping_subscript(PyObject *self, PyObject *item)
+{
+    if (PyIndex_Check(item)) {
+        Py_ssize_t i = PyNumber_AsSsize_t(item, PyExc_IndexError);
+        if (i == -1 && PyErr_Occurred())
+            return NULL;
+        if (i < 0)
+            i += sequence_length(self);
+        return sequence_item(self, i);
+    }
+    else if (PySlice_Check(item)) {
+        Py_ssize_t start, stop, step, slicelength, cur, i;
+#if PY_MAJOR_VERSION < 3
+        PySliceObject* slice = reinterpret_cast<PySliceObject*>(item);
+#else
+        PyObject* slice = item;
+#endif
+
+        if (PySlice_GetIndicesEx(slice,
+                         sequence_length(self),
+                         &start, &stop, &step, &slicelength) < 0) {
+            return NULL;
+        }
+
+        if (slicelength <= 0) {
+            return PyTuple_New(0);
+        }
+        else if (start == 0 && step == 1 &&
+                 slicelength == sequence_length(self) &&
+                 PyObject_TypeCheck(self, &(VectorPy::Type))) {
+            Base::Vector3d v = static_cast<VectorPy*>(self) ->value();
+            Py::Tuple xyz(3);
+            xyz.setItem(0, Py::Float(v.x));
+            xyz.setItem(1, Py::Float(v.y));
+            xyz.setItem(2, Py::Float(v.z));
+            return Py::new_reference_to(xyz);
+        }
+        else if (PyObject_TypeCheck(self, &(VectorPy::Type))) {
+            Base::Vector3d v = static_cast<VectorPy*>(self) ->value();
+            Py::Tuple xyz(slicelength);
+
+            for (cur = start, i = 0; i < slicelength;
+                 cur += step, i++) {
+                xyz.setItem(i, Py::Float(v[cur]));
+            }
+
+            return Py::new_reference_to(xyz);
+        }
+    }
+
+    PyErr_Format(PyExc_TypeError,
+                 "Vector indices must be integers or slices, not %.200s",
+                 Py_TYPE(item)->tp_name);
+    return NULL;
 }
 
 PyObject*  VectorPy::add(PyObject *args)
@@ -566,11 +668,13 @@ int VectorPy::setCustomAttributes(const char* /*attr*/, PyObject* /*obj*/)
     return 0; 
 }
 
+#if PY_MAJOR_VERSION < 3
 PyObject * VectorPy::number_divide_handler (PyObject* /*self*/, PyObject* /*other*/)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
     return 0;
 }
+#endif
 
 PyObject * VectorPy::number_remainder_handler (PyObject* /*self*/, PyObject* /*other*/)
 {
@@ -649,10 +753,12 @@ PyObject * VectorPy::number_or_handler (PyObject* /*self*/, PyObject* /*other*/)
     return 0;
 }
 
+#if PY_MAJOR_VERSION < 3
 int VectorPy::number_coerce_handler (PyObject ** /*self*/, PyObject ** /*other*/)
 {
     return 1;
 }
+#endif
 
 PyObject * VectorPy::number_int_handler (PyObject* /*self*/)
 {
@@ -660,11 +766,13 @@ PyObject * VectorPy::number_int_handler (PyObject* /*self*/)
     return 0;
 }
 
+#if PY_MAJOR_VERSION < 3
 PyObject * VectorPy::number_long_handler (PyObject* /*self*/)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
     return 0;
 }
+#endif
 
 PyObject * VectorPy::number_float_handler (PyObject* /*self*/)
 {
@@ -672,6 +780,7 @@ PyObject * VectorPy::number_float_handler (PyObject* /*self*/)
     return 0;
 }
 
+#if PY_MAJOR_VERSION < 3
 PyObject * VectorPy::number_oct_handler (PyObject* /*self*/)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
@@ -683,3 +792,4 @@ PyObject * VectorPy::number_hex_handler (PyObject* /*self*/)
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented");
     return 0;
 }
+#endif

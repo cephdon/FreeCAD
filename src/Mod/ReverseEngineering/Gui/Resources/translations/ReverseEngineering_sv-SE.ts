@@ -98,13 +98,13 @@
         <location line="+6"/>
         <location line="+67"/>
         <source>Degree</source>
-        <translation type="unfinished">Degree</translation>
+        <translation>Grad</translation>
     </message>
     <message>
         <location line="-38"/>
         <location line="+67"/>
         <source>Control points</source>
-        <translation type="unfinished">Control points</translation>
+        <translation>Kontrollpunkter</translation>
     </message>
     <message>
         <location line="-35"/>
@@ -134,7 +134,7 @@
     <message>
         <location line="+9"/>
         <source>Total Weight</source>
-        <translation type="unfinished">Total Weight</translation>
+        <translation>Total vikt</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -160,7 +160,7 @@
 <context>
     <name>ReenGui::FitBSplineSurfaceWidget</name>
     <message>
-        <location filename="../../FitBSplineSurface.cpp" line="+145"/>
+        <location filename="../../FitBSplineSurface.cpp" line="+146"/>
         <source>Wrong selection</source>
         <translation>Fel val</translation>
     </message>
@@ -203,7 +203,7 @@
         <translation type="unfinished">Samples per node</translation>
     </message>
     <message>
-        <location filename="../../Poisson.cpp" line="+108"/>
+        <location filename="../../Poisson.cpp" line="+109"/>
         <source>Input error</source>
         <translation>Inmatningsfel</translation>
     </message>

@@ -14,6 +14,9 @@ ENDIF(DOCDIR)
 
 add_definitions(-DBOOST_${Boost_VERSION})
 
+#if you want to use the old DAG structure uncomment this line
+add_definitions(-DUSE_OLD_DAG)
+
 #write relevant cmake variables to a file for later access with python. Exportet are all variables 
 #starting with BUILD. As the variable only exists if the user set it to ON a dict is useless, we 
 #use a python list for export. 
@@ -40,7 +43,6 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
     ${XercesC_INCLUDE_DIRS}
-    ${QT_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
 )
 
@@ -51,12 +53,33 @@ set(FreeCADApp_LIBS
     ${QT_QTXML_LIBRARY}
 )
 
+if (BUILD_QT5)
+    include_directories(
+        ${Qt5Xml_INCLUDE_DIRS}
+    )
+    list(APPEND FreeCADApp_LIBS
+         ${Qt5Core_LIBRARIES}
+         ${Qt5Xml_LIBRARIES}
+    )
+else()
+    include_directories(
+        ${QT_QTCORE_INCLUDE_DIR}
+    )
+    list(APPEND FreeCADApp_LIBS
+         ${QT_QTCORE_LIBRARY}
+    )
+endif()
+
 generate_from_xml(DocumentPy)
 generate_from_xml(DocumentObjectPy)
+generate_from_xml(ExtensionPy)
+generate_from_xml(ExtensionContainerPy)
+generate_from_xml(DocumentObjectExtensionPy)
+generate_from_xml(GroupExtensionPy)
 generate_from_xml(DocumentObjectGroupPy)
 generate_from_xml(GeoFeaturePy)
-generate_from_xml(GeoFeatureGroupPy)
-generate_from_xml(OriginGroupPy)
+generate_from_xml(GeoFeatureGroupExtensionPy)
+generate_from_xml(OriginGroupExtensionPy)
 generate_from_xml(PartPy)
 
 generate_from_xml(ComplexGeoDataPy)
@@ -67,11 +90,15 @@ generate_from_py(FreeCADInit InitScript.h)
 generate_from_py(FreeCADTest TestScript.h)
 
 SET(FreeCADApp_XML_SRCS
+    ExtensionPy.xml
+    ExtensionContainerPy.xml
+    DocumentObjectExtensionPy.xml
+    GroupExtensionPy.xml
     DocumentObjectGroupPy.xml
     DocumentObjectPy.xml
     GeoFeaturePy.xml
-    GeoFeatureGroupPy.xml
-    OriginGroupPy.xml
+    GeoFeatureGroupExtensionPy.xml
+    OriginGroupExtensionPy.xml
     PartPy.xml
     DocumentPy.xml
     PropertyContainerPy.xml
@@ -85,6 +112,14 @@ SET(Document_CPP_SRCS
     Annotation.cpp
     Document.cpp
     DocumentObject.cpp
+    Extension.cpp
+    ExtensionPyImp.cpp
+    DocumentObjectExtension.cpp
+    DocumentObjectExtensionPyImp.cpp
+    ExtensionContainer.cpp
+    ExtensionContainerPyImp.cpp
+    GroupExtension.cpp
+    GroupExtensionPyImp.cpp
     DocumentObjectFileIncluded.cpp
     DocumentObjectGroup.cpp
     DocumentObjectGroupPyImp.cpp
@@ -97,10 +132,10 @@ SET(Document_CPP_SRCS
     FeaturePython.cpp
     FeatureTest.cpp
     GeoFeature.cpp
-    GeoFeatureGroupPyImp.cpp
-    GeoFeatureGroup.cpp
-    OriginGroupPyImp.cpp
-    OriginGroup.cpp
+    GeoFeatureGroupExtensionPyImp.cpp
+    GeoFeatureGroupExtension.cpp
+    OriginGroupExtensionPyImp.cpp
+    OriginGroupExtension.cpp
     PartPyImp.cpp
     Part.cpp
     Origin.cpp
@@ -115,12 +150,17 @@ SET(Document_CPP_SRCS
     VRMLObject.cpp
     MaterialObject.cpp
     MergeDocuments.cpp
+    TextDocument.cpp
 )
 
 SET(Document_HPP_SRCS
     Annotation.h
     Document.h
     DocumentObject.h
+    Extension.h
+    ExtensionContainer.h
+    GroupExtension.h
+    DocumentObjectExtension.h
     DocumentObjectFileIncluded.h
     DocumentObjectGroup.h
     DocumentObserver.h
@@ -133,8 +173,8 @@ SET(Document_HPP_SRCS
     FeaturePythonPyImp.inl
     FeatureTest.h
     GeoFeature.h
-    GeoFeatureGroup.h
-    OriginGroup.h
+    GeoFeatureGroupExtension.h
+    OriginGroupExtension.h
     Part.h
     Origin.h
     Path.h
@@ -148,6 +188,7 @@ SET(Document_HPP_SRCS
     VRMLObject.h
     MaterialObject.h
     MergeDocuments.h
+    TextDocument.h
 )
 SET(Document_SRCS
     ${Document_CPP_SRCS}

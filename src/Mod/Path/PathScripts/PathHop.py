@@ -30,23 +30,14 @@ from PySide import QtCore, QtGui
 """Path Hop object and FreeCAD command"""
 
 # Qt tanslation handling
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig)
-
+def translate(context, text, disambig=None):
+    return QtCore.QCoreApplication.translate(context, text, disambig)
 
 class ObjectHop:
 
     def __init__(self, obj):
-        obj.addProperty("App::PropertyLink", "NextObject",
-                        "Path", "The object to be reached by this hop")
-        obj.addProperty("App::PropertyDistance", "HopHeight",
-                        "Path", "The Z height of the hop")
+        obj.addProperty("App::PropertyLink", "NextObject", "Path", QtCore.QT_TRANSLATE_NOOP("App::Property","The object to be reached by this hop"))
+        obj.addProperty("App::PropertyDistance", "HopHeight", "Path", QtCore.QT_TRANSLATE_NOOP("App::Property","The Z height of the hop"))
         obj.Proxy = self
 
     def __getstate__(self):
@@ -103,11 +94,14 @@ class CommandPathHop:
     def GetResources(self):
         return {'Pixmap': 'Path-Hop',
                 'MenuText': QtCore.QT_TRANSLATE_NOOP("Path_Hop", "Hop"),
-                'Accel': "P, H",
                 'ToolTip': QtCore.QT_TRANSLATE_NOOP("Path_Hop", "Creates a Path Hop object")}
 
     def IsActive(self):
-        return FreeCAD.ActiveDocument is not None
+        if FreeCAD.ActiveDocument is not None:
+            for o in FreeCAD.ActiveDocument.Objects:
+                if o.Name[:3] == "Job":
+                        return True
+        return False
 
     def Activated(self):
 
@@ -123,7 +117,7 @@ class CommandPathHop:
             return
 
         FreeCAD.ActiveDocument.openTransaction(
-            translate("Pat_hHop", "Create Hop"))
+            translate("Path_Hop", "Create Hop"))
         FreeCADGui.addModule("PathScripts.PathHop")
         FreeCADGui.addModule("PathScripts.PathUtils")
         FreeCADGui.doCommand(
@@ -133,7 +127,7 @@ class CommandPathHop:
             'PathScripts.PathHop.ViewProviderPathHop(obj.ViewObject)')
         FreeCADGui.doCommand(
             'obj.NextObject = FreeCAD.ActiveDocument.' + selection[0].Name)
-        FreeCADGui.doCommand('PathScripts.PathUtils.addToProject(obj)')
+        FreeCADGui.doCommand('PathScripts.PathUtils.addToJob(obj)')
         FreeCAD.ActiveDocument.commitTransaction()
         FreeCAD.ActiveDocument.recompute()
 

@@ -62,6 +62,14 @@ using namespace Gui;
 GUIApplication::GUIApplication(int & argc, char ** argv)
     : GUIApplicationNativeEventAware(argc, argv)
 {
+#if QT_VERSION > 0x050000
+    // In Qt 4.x 'commitData' is a virtual method
+    connect(this, SIGNAL(commitDataRequest(QSessionManager &)),
+            SLOT(commitData(QSessionManager &)), Qt::DirectConnection);
+#endif
+#if QT_VERSION >= 0x050600
+    setFallbackSessionManagementEnabled(false);
+#endif
 }
 
 GUIApplication::~GUIApplication()
@@ -73,6 +81,7 @@ bool GUIApplication::notify (QObject * receiver, QEvent * event)
     if (!receiver) {
         Base::Console().Log("GUIApplication::notify: Unexpected null receiver, event type: %d\n",
             (int)event->type());
+        return false;
     }
     try {
         if (event->type() == Spaceball::ButtonEvent::ButtonEventType || 

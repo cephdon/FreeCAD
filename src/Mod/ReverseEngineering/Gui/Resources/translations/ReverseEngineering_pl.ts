@@ -160,7 +160,7 @@
 <context>
     <name>ReenGui::FitBSplineSurfaceWidget</name>
     <message>
-        <location filename="../../FitBSplineSurface.cpp" line="+145"/>
+        <location filename="../../FitBSplineSurface.cpp" line="+146"/>
         <source>Wrong selection</source>
         <translation>Niewłaściwy wybór</translation>
     </message>
@@ -203,7 +203,7 @@
         <translation type="unfinished">Samples per node</translation>
     </message>
     <message>
-        <location filename="../../Poisson.cpp" line="+108"/>
+        <location filename="../../Poisson.cpp" line="+109"/>
         <source>Input error</source>
         <translation>Błąd danych wejściowych</translation>
     </message>
@@ -220,7 +220,7 @@
         <location line="-134"/>
         <location line="+135"/>
         <source>Please select a single point cloud.</source>
-        <translation type="unfinished">Please select a single point cloud.</translation>
+        <translation>Proszę wybrać pojedynczą chmurę punktów.</translation>
     </message>
 </context>
 <context>

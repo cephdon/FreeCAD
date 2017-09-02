@@ -21,6 +21,7 @@
 # *   USA                                                                   *
 # *                                                                         *
 # ***************************************************************************
+from __future__ import print_function
 import FreeCAD
 import FreeCADGui
 import Path
@@ -30,24 +31,15 @@ from PySide import QtCore, QtGui
 """Path Dressup object and FreeCAD command"""
 
 # Qt tanslation handling
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-
-except AttributeError:
-
-    def translate(context, text, disambig=None):
-        return QtGui.QApplication.translate(context, text, disambig)
-
+def translate(context, text, disambig=None):
+    return QtCore.QCoreApplication.translate(context, text, disambig)
 
 class ObjectDressup:
 
     def __init__(self, obj):
-        obj.addProperty("App::PropertyLink", "Base","Path", "The base path to modify")
-        obj.addProperty("App::PropertyInteger", "Position", "Path", "The position of this dressup in the base path")
-        obj.addProperty("Path::PropertyPath", "Modification", "Path", "The modification to be added")
+        obj.addProperty("App::PropertyLink", "Base","Path", QtCore.QT_TRANSLATE_NOOP("App::Property","The base path to modify"))
+        obj.addProperty("App::PropertyInteger", "Position", "Path", QtCore.QT_TRANSLATE_NOOP("App::Property","The position of this dressup in the base path"))
+        obj.addProperty("Path::PropertyPath", "Modification", "Path", QtCore.QT_TRANSLATE_NOOP("App::Property","The modification to be added"))
         obj.Proxy = self
 
     def __getstate__(self):
@@ -90,7 +82,7 @@ class ViewProviderDressup:
                     if g.Name == self.Object.Base.Name:
                         group.remove(g)
                 i.Group = group
-                print i.Group
+                print(i.Group)
         return [self.Object.Base]
 
     def __getstate__(self):
@@ -103,6 +95,7 @@ class ViewProviderDressup:
         '''this makes sure that the base operation is added back to the project and visible'''
         FreeCADGui.ActiveDocument.getObject(arg1.Object.Base.Name).Visibility = True
         P.addToProject(arg1.Object.Base)
+        arg1.Object.Base = None
         return True
 
 class CommandPathDressup:
@@ -110,11 +103,14 @@ class CommandPathDressup:
     def GetResources(self):
         return {'Pixmap': 'Path-Dressup',
                 'MenuText': QtCore.QT_TRANSLATE_NOOP("Path_Dressup", "Dress-up"),
-                'Accel': "P, S",
                 'ToolTip': QtCore.QT_TRANSLATE_NOOP("Path_Dressup", "Creates a Path Dress-up object from a selected path")}
 
     def IsActive(self):
-        return FreeCAD.ActiveDocument is not None
+        if FreeCAD.ActiveDocument is not None:
+            for o in FreeCAD.ActiveDocument.Objects:
+                if o.Name[:3] == "Job":
+                        return True
+        return False
 
     def Activated(self):
 

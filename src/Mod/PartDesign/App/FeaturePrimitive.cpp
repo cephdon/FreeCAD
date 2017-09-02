@@ -30,10 +30,13 @@
 #include "DatumPoint.h"
 #include "DatumCS.h"
 #include <Mod/Part/App/modelRefine.h>
+#include "FeaturePy.h"
 #include <Base/Exception.h>
 #include <Base/Tools.h>
 #include <App/Document.h>
 #include <App/Application.h>
+#include <App/FeaturePythonPyImp.h>
+
 #include <BRepPrimAPI_MakeBox.hxx>
 #include <BRepBuilderAPI_GTransform.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
@@ -59,12 +62,12 @@ const App::PropertyQuantityConstraint::Constraints angleRangeU = {0.0,360.0,1.0}
 const App::PropertyQuantityConstraint::Constraints angleRangeV = {-90.0,90.0,1.0};
 const App::PropertyQuantityConstraint::Constraints quantityRange  = {0.0,FLT_MAX,0.1};
 
-PROPERTY_SOURCE(PartDesign::FeaturePrimitive, PartDesign::FeatureAddSub)
+PROPERTY_SOURCE_WITH_EXTENSIONS(PartDesign::FeaturePrimitive, PartDesign::FeatureAddSub)
 
 FeaturePrimitive::FeaturePrimitive()
   :  primitiveType(Box)
 {
-    ADD_PROPERTY_TYPE(CoordinateSystem, (0), "Primitive", App::Prop_None, "References to build the location of the primitive");
+    Part::AttachExtension::initExtension(this);
 }
 
 TopoDS_Shape FeaturePrimitive::refineShapeIfActive(const TopoDS_Shape& oldShape) const
@@ -72,9 +75,14 @@ TopoDS_Shape FeaturePrimitive::refineShapeIfActive(const TopoDS_Shape& oldShape)
     Base::Reference<ParameterGrp> hGrp = App::GetApplication().GetUserParameter()
         .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/PartDesign");
     if (hGrp->GetBool("RefineModel", false)) {
-        Part::BRepBuilderAPI_RefineModel mkRefine(oldShape);
-        TopoDS_Shape resShape = mkRefine.Shape();
-        return resShape;
+        try {
+            Part::BRepBuilderAPI_RefineModel mkRefine(oldShape);
+            TopoDS_Shape resShape = mkRefine.Shape();
+            return resShape;
+        }
+        catch (Standard_Failure) {
+            return oldShape;
+        }
     }
 
     return oldShape;
@@ -84,13 +92,9 @@ App::DocumentObjectExecReturn* FeaturePrimitive::execute(const TopoDS_Shape& pri
 {
     try {
         //transform the primitive in the correct coordinance
-        App::DocumentObject* cs =  CoordinateSystem.getValue();
-        if(cs && cs->getTypeId() == PartDesign::CoordinateSystem::getClassTypeId())
-            Placement.setValue(static_cast<PartDesign::CoordinateSystem*>(cs)->Placement.getValue());
-        else 
-            Placement.setValue(Base::Placement());
+        FeatureAddSub::execute();
         
-        //if we have no base we just add the standart primitive shape
+        //if we have no base we just add the standard primitive shape
         TopoDS_Shape base;
         try{
              //if we have a base shape we need to make sure that it does not get our transformation to
@@ -143,9 +147,9 @@ App::DocumentObjectExecReturn* FeaturePrimitive::execute(const TopoDS_Shape& pri
         
         
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -154,6 +158,18 @@ App::DocumentObjectExecReturn* FeaturePrimitive::execute(const TopoDS_Shape& pri
 void FeaturePrimitive::onChanged(const App::Property* prop)
 {
     FeatureAddSub::onChanged(prop);
+}
+
+PYTHON_TYPE_DEF(PrimitivePy, PartDesign::FeaturePy)
+PYTHON_TYPE_IMP(PrimitivePy, PartDesign::FeaturePy)
+
+PyObject* FeaturePrimitive::getPyObject()
+{
+    if (PythonObject.is(Py::_None())){
+        // ref counter is set to 1
+        PythonObject = Py::Object(new PrimitivePy(this),true);
+    }
+    return Py::new_reference_to(PythonObject);
 }
 
 PROPERTY_SOURCE(PartDesign::Box, PartDesign::FeaturePrimitive)
@@ -190,9 +206,9 @@ App::DocumentObjectExecReturn* Box::execute(void)
         BRepPrimAPI_MakeBox mkBox(L, W, H);
         return FeaturePrimitive::execute(mkBox.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 }
 
@@ -238,9 +254,9 @@ App::DocumentObjectExecReturn* Cylinder::execute(void)
         
         return FeaturePrimitive::execute(mkCylr.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -288,9 +304,9 @@ App::DocumentObjectExecReturn* Sphere::execute(void)
                                         Angle3.getValue()/180.0f*M_PI);
         return FeaturePrimitive::execute(mkSphere.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -344,9 +360,9 @@ App::DocumentObjectExecReturn* Cone::execute(void)
         
         return FeaturePrimitive::execute(mkCone.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -426,9 +442,9 @@ App::DocumentObjectExecReturn* Ellipsoid::execute(void)
         BRepBuilderAPI_GTransform mkTrsf(mkSphere.Shape(), mat);
         return FeaturePrimitive::execute(mkTrsf.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -489,9 +505,9 @@ App::DocumentObjectExecReturn* Torus::execute(void)
                                       Angle3.getValue()/180.0f*M_PI);
         return FeaturePrimitive::execute(mkTorus.Solid());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -555,9 +571,9 @@ App::DocumentObjectExecReturn* Prism::execute(void)
         BRepPrimAPI_MakePrism mkPrism(mkFace.Face(), gp_Vec(0,0,Height.getValue()));
         return FeaturePrimitive::execute(mkPrism.Shape());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;
@@ -642,9 +658,9 @@ App::DocumentObjectExecReturn* Wedge::execute(void)
         mkSolid.Add(mkWedge.Shell());
         return FeaturePrimitive::execute(mkSolid.Solid());
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        return new App::DocumentObjectExecReturn(e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        return new App::DocumentObjectExecReturn(e.GetMessageString());
     }
 
     return App::DocumentObject::StdReturn;

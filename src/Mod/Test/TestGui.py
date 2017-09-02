@@ -52,6 +52,7 @@ class TestCmd:
         QtUnitGui.addTest("TestPartApp")
         QtUnitGui.addTest("TestPartDesignApp")
         QtUnitGui.addTest("TestPartDesignGui")
+        QtUnitGui.addTest("TestPathApp")
         QtUnitGui.addTest("TestSpreadsheet")
         QtUnitGui.addTest("TestDraft")
         QtUnitGui.addTest("TestArch")
@@ -143,7 +144,7 @@ class TestWorkbenchCmd:
             FreeCADGui.updateGui()
             FreeCADGui.activateWorkbench("PartWorkbench")
             FreeCADGui.updateGui()
-            print i
+            print(i)
             i=i+1
         FreeCADGui.activateWorkbench("TestWorkbench")
 

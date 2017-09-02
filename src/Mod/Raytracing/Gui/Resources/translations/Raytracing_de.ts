@@ -4,7 +4,7 @@
 <context>
     <name>CmdRaytracingExportProject</name>
     <message>
-        <location filename="../../Command.cpp" line="+503"/>
+        <location filename="../../Command.cpp" line="+496"/>
         <source>File</source>
         <translation>Datei</translation>
     </message>
@@ -26,7 +26,7 @@
 <context>
     <name>CmdRaytracingNewLuxProject</name>
     <message>
-        <location line="+206"/>
+        <location line="+207"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -54,7 +54,7 @@
 <context>
     <name>CmdRaytracingNewPartSegment</name>
     <message>
-        <location line="-340"/>
+        <location line="-341"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -66,7 +66,7 @@
     <message>
         <location line="+1"/>
         <source>Insert a new part object into a Raytracing project</source>
-        <translation>Einfügen eines neuen Part-Objektes in ein Raytracing-Projekt</translation>
+        <translation>Einfügen eines neuen Teil-Objektes in ein Raytracing-Projekt</translation>
     </message>
     <message>
         <source>Insert a new part object into a Povray project</source>
@@ -76,7 +76,7 @@
 <context>
     <name>CmdRaytracingNewPovrayProject</name>
     <message>
-        <location line="-107"/>
+        <location line="-100"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -112,7 +112,7 @@
 <context>
     <name>CmdRaytracingRender</name>
     <message>
-        <location line="+203"/>
+        <location line="+196"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -130,7 +130,7 @@
 <context>
     <name>CmdRaytracingResetCamera</name>
     <message>
-        <location line="+249"/>
+        <location line="+243"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -148,7 +148,7 @@
 <context>
     <name>CmdRaytracingWriteCamera</name>
     <message>
-        <location line="-736"/>
+        <location line="-723"/>
         <source>Raytracing</source>
         <translation>Raytracing</translation>
     </message>
@@ -159,8 +159,12 @@
     </message>
     <message>
         <location line="+1"/>
+        <source>Export the camera position of the active 3D view in POV-Ray format to a file</source>
+        <translation>Exportiere die Kameraposition der aktiven 3D-Ansicht im POV-Ray-Format in eine Datei</translation>
+    </message>
+    <message>
         <source>Export the camera positon of the active 3D view in POV-Ray format to a file</source>
-        <translation>Exportieren Sie die Kamera-Position der aktiven 3D Ansicht im POV-Ray-Format in eine Datei</translation>
+        <translation type="obsolete">Exportieren Sie die Kamera-Position der aktiven 3D Ansicht im POV-Ray-Format in eine Datei</translation>
     </message>
     <message>
         <source>Export camera to povray...</source>
@@ -186,7 +190,7 @@
     <message>
         <location line="+1"/>
         <source>Write the selected Part (object) as a POV-Ray file</source>
-        <translation>Speichern Sie das ausgewählte Teil (Objekt) als eine POV-Ray-Datei</translation>
+        <translation>Speichern des ausgewählten Teils (Objekt) als eine POV-Ray-Datei</translation>
     </message>
     <message>
         <source>Export part to povray...</source>
@@ -203,23 +207,23 @@
         <location line="-79"/>
         <location line="+139"/>
         <location line="+93"/>
-        <location line="+397"/>
+        <location line="+391"/>
         <source>No perspective camera</source>
         <translation>Keine perspektivische Kamera</translation>
     </message>
     <message>
-        <location line="-628"/>
+        <location line="-622"/>
         <location line="+139"/>
         <location line="+93"/>
         <source>The current view camera is not perspective and thus the result of the POV-Ray image later might look different to what you expect.
 Do you want to continue?</source>
-        <translation>Die aktuelle Kamera ist nicht perspektivisch und damit kann das Ergebnis anders aussehen als Sie es erwarten.
+        <translation>Die aktuelle Kamera ist nicht perspektivisch und damit kann das Ergebnis anders aussehen als erwartet.
 Möchten Sie fortfahren?</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>Export view to POV-Ray...</source>
-        <translation>Exportieren Sie die Ansicht in POV-Ray...</translation>
+        <translation>Exportieren der Ansicht in POV-Ray...</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -246,10 +250,10 @@ Möchten Sie fortfahren?</translation>
         <translation type="obsolete">Aktive 3D-Ansicht mit Kamera und ganzem Inhalt in eine Povray-Datei schreiben</translation>
     </message>
     <message>
-        <location line="+507"/>
+        <location line="+501"/>
         <source>The current view camera is not perspective and thus the result of the luxrender image later might look different to what you expect.
 Do you want to continue?</source>
-        <translation>Die aktuelle Kamera-Ansicht ist keine Perspektive und somit wird das Ergebnis des Luxrender-Bildes später möglicherweise anders aussehen, als Sie erwarten. Möchten Sie fortfahren?</translation>
+        <translation>Die aktuelle Kamera-Ansicht ist keine Perspektive und somit wird das Ergebnis des Luxrender-Bildes später möglicherweise anders aussehen, als erwartet. Möchten Sie fortfahren?</translation>
     </message>
 </context>
 <context>
@@ -267,10 +271,10 @@ Do you want to continue?</source>
         <translation type="obsolete">Alle Dateien (*.*)</translation>
     </message>
     <message>
-        <location line="-591"/>
+        <location line="-585"/>
         <location line="+51"/>
         <location line="+63"/>
-        <location line="+283"/>
+        <location line="+276"/>
         <source>Export page</source>
         <translation>Seite exportieren</translation>
     </message>
@@ -282,12 +286,12 @@ Do you want to continue?</source>
         <location line="-103"/>
         <location line="+87"/>
         <location line="+63"/>
-        <location line="+249"/>
+        <location line="+243"/>
         <source>Wrong selection</source>
         <translation>Falsche Auswahl</translation>
     </message>
     <message>
-        <location line="-398"/>
+        <location line="-392"/>
         <source>Select a Part object.</source>
         <translation>Formteil auswählen.</translation>
     </message>
@@ -300,22 +304,22 @@ Do you want to continue?</source>
     <message>
         <location line="-11"/>
         <source>Create a Raytracing project to insert a view.</source>
-        <translation>Erstellen Sie ein Raytracing-Projekt um eine Ansicht einzufügen.</translation>
+        <translation>Erstellen eines Raytracing-Projekts um eine Ansicht einzufügen.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Select a Raytracing project to insert the view.</source>
-        <translation>Wählen Sie ein Raytracing-Projekt um die Ansicht einzufügen.</translation>
+        <translation>Wählen eines Raytracing-Projekts um die Ansicht einzufügen.</translation>
     </message>
     <message>
         <location line="+64"/>
         <location line="+63"/>
-        <location line="+249"/>
+        <location line="+243"/>
         <source>Select one Raytracing project object.</source>
-        <translation>Wählen Sie ein Raytracing-Projekt-Objekt.</translation>
+        <translation>Wählen eines Raytracing-Projekt-Objekts.</translation>
     </message>
     <message>
-        <location line="-308"/>
+        <location line="-302"/>
         <source>Luxrender</source>
         <translation>LuxRender</translation>
     </message>
@@ -328,15 +332,15 @@ Do you want to continue?</source>
     <message>
         <location line="-5"/>
         <source>Please set the path to the POV-Ray executable in the preferences.</source>
-        <translation>Bitte setzen Sie den Pfad auf die Povray Programm-Datei in den &quot;Einstellungen&quot;.</translation>
+        <translation>Bitte setze den Pfad auf die Povray Programm-Datei in den &quot;Einstellungen&quot;.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Please correct the path to the POV-Ray executable in the preferences.</source>
-        <translation>Bitte korrigieren Sie den Pfad zu der POVRay Programm-Datei in den Voreinstellungen.</translation>
+        <translation>Bitte korrigiere den Pfad zu der POVRay Programm-Datei in den Voreinstellungen.</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+75"/>
         <source>Lux project file missing</source>
         <translation>Lux-Projekt-Datei fehlt</translation>
     </message>
@@ -346,24 +350,24 @@ Do you want to continue?</source>
         <translation>Die Lux-Projekt-Datei existiert nicht.</translation>
     </message>
     <message>
-        <location line="-68"/>
+        <location line="-69"/>
         <location line="+6"/>
         <source>Luxrender not found</source>
         <translation>Luxrender nicht gefunden</translation>
     </message>
     <message>
-        <location line="-482"/>
+        <location line="-475"/>
         <location line="+51"/>
         <location line="+62"/>
-        <location line="+279"/>
+        <location line="+272"/>
         <source>POV-Ray</source>
         <translation>POV-Ray</translation>
     </message>
     <message>
-        <location line="-391"/>
+        <location line="-384"/>
         <location line="+51"/>
         <location line="+62"/>
-        <location line="+283"/>
+        <location line="+276"/>
         <location line="+109"/>
         <source>All Files</source>
         <translation>Alle Dateien</translation>
@@ -371,7 +375,7 @@ Do you want to continue?</source>
     <message>
         <location line="-29"/>
         <source>Please set the path to the luxrender or luxconsole executable in the preferences.</source>
-        <translation>Bitte setzen Sie den Pfad zu der Luxrender- oder Luxconsole-Programm-Datei in den &quot;Einstellungen&quot;.</translation>
+        <translation>Bitte setze den Pfad zu der Luxrender- oder Luxconsole-Programm-Datei in den &quot;Einstellungen&quot;.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -430,7 +434,7 @@ Do you want to continue?</source>
     <message>
         <location line="+103"/>
         <source>The path to the POV-Ray executable, if you want to render from FreeCAD</source>
-        <translation>Der Pfad zur POVRay-Programm-Datei, wenn Sie von FreeCAD aus rendern möchten</translation>
+        <translation>Der Pfad zur POVRay-Programm-Datei, um aus FreeCAD zu rendern.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -440,12 +444,12 @@ Do you want to continue?</source>
     <message>
         <location line="+7"/>
         <source>POV-Ray output parameters:</source>
-        <translation>POV-Ray-Output-Parameter:</translation>
+        <translation>POV-Ray-Ausgabe-Einstellungen:</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>The POV-Ray parameters to be passed to the render.</source>
-        <translation>Die POV-Ray-Parameter die an das Rendering übergeben werden sollen.</translation>
+        <translation>POV-Ray-Einstellungen, die an das Rendering übergeben werden.</translation>
     </message>
     <message>
         <location line="+95"/>

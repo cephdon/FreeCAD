@@ -26,7 +26,7 @@
 
 
 
-#from __future__ import generators   # only needed for Python 2.2
+# from __future__ import generators   # only needed for Python 2.2
 
 import sys
 import os.path
@@ -212,7 +212,7 @@ class XschemaElement:
     def getRawType(self): return self.type
     def getType(self):
         returnType = self.type
-        if ElementDict.has_key(self.type):
+        if self.type in ElementDict:
             typeObj = ElementDict[self.type]
             typeObjType = typeObj.getRawType()
             if typeObjType in StringType or \
@@ -427,7 +427,7 @@ class XschemaElement:
     #   attributeGroup dictionary.
     def replace_attributeGroup_names(self):
         for groupName in self.attributeGroupNameList:
-            if AttributeGroups.has_key(groupName):
+            if groupName in AttributeGroups:
                 attrGroup = AttributeGroups[groupName]
                 for name in attrGroup.getKeys():
                     attr = attrGroup.get(name)
@@ -505,7 +505,7 @@ class XschemaAttributeGroup:
     def setGroup(self, group): self.group = group
     def getGroup(self): return self.group
     def get(self, name, default=None):
-        if self.group.has_key(name):
+        if name in self.group:
             return self.group[name]
         else:
             return default
@@ -514,7 +514,8 @@ class XschemaAttributeGroup:
     def add(self, name, attr):
         self.group[name] = attr
     def delete(self, name):
-        if has_key(self.group, name):
+        # if has_key(self.group, name):
+        if name in self.group:
             del self.group[name]
             return 1
         else:
@@ -2285,7 +2286,7 @@ class Sax%sHandler(handler.ContentHandler):
         self.locator = locator
     
     def showError(self, msg):
-        print '*** (showError):', msg
+        print('*** (showError):', msg)
         sys.exit(-1)
 
 """
@@ -2386,7 +2387,12 @@ TEMPLATE_HEADER = """\
 
 #
 # Generated %s by generateDS.py.
+# Update it with: python generateDS.py -o generateModel_Module.py generateMetaModel_Module.xsd
 #
+# WARNING! All changes made in this file will be lost!
+#
+
+from __future__ import print_function # this allows py2 to print(str1,str2) correctly
 
 import sys
 import getopt
@@ -2525,7 +2531,7 @@ Options:
 \"\"\"
 
 def usage():
-    print USAGE_TEXT
+    print(USAGE_TEXT)
     sys.exit(-1)
 
 
@@ -2554,10 +2560,10 @@ def parseSelect(inFileName):
         except StopIteration:
             topElementName = documentHandler.getTopElementName()
         if topElementName is None:
-            raise RuntimeError, 'no top level element'
+            raise RuntimeError('no top level element')
         topElementName = topElementName.replace('-', '_').replace(':', '_')
         if topElementName not in globals():
-            raise RuntimeError, 'no class for top element: %%s' %% topElementName
+            raise RuntimeError('no class for top element: %%s' %% topElementName)
         topElement = globals()[topElementName]
         infile.seek(0)
         doc = minidom.parse(infile)
@@ -3215,6 +3221,9 @@ Options:
     --root-element="XXX"     Assume XXX is root element of instance docs.
                              Default is first element defined in schema.
     --super="XXX"            Super module name in subclass module. Default="???"
+
+Example:
+python generateDS.py -o generateModel_Module.py generateMetaModel_Module.xsd
 """
 
 def usage():

@@ -143,7 +143,6 @@ protected:
 
     /// Check whether the line crosses the face (line and face must be on the same plane)
     static bool checkLineCrossesFace(const gp_Lin& line, const TopoDS_Face& face);
-    class Wire_Compare;
 
 
     /// Used to suggest a value for Reversed flag so that material is always removed (Groove) or added (Revolution) from the support
@@ -152,8 +151,8 @@ protected:
     void getAxis(const App::DocumentObject* pcReferenceAxis, const std::vector<std::string>& subReferenceAxis,
                  Base::Vector3d& base, Base::Vector3d& dir);
         
-private:
     void onChanged(const App::Property* prop);
+private:
     bool isParallelPlane(const TopoDS_Shape&, const TopoDS_Shape&) const;
     bool isEqualGeometry(const TopoDS_Shape&, const TopoDS_Shape&) const;
     bool isQuasiEqual(const TopoDS_Shape&, const TopoDS_Shape&) const;

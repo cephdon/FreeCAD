@@ -4,7 +4,7 @@
 <context>
     <name>CmdDrawingAnnotation</name>
     <message>
-        <location filename="../../Command.cpp" line="+476"/>
+        <location filename="../../Command.cpp" line="+474"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -42,7 +42,7 @@
 <context>
     <name>CmdDrawingDraftView</name>
     <message>
-        <location line="+183"/>
+        <location line="+185"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -61,7 +61,7 @@
 <context>
     <name>CmdDrawingExportPage</name>
     <message>
-        <location line="-90"/>
+        <location line="-92"/>
         <source>File</source>
         <translation>Plik</translation>
     </message>
@@ -80,7 +80,7 @@
 <context>
     <name>CmdDrawingNewA3Landscape</name>
     <message>
-        <location line="-355"/>
+        <location line="-359"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -94,7 +94,7 @@
 <context>
     <name>CmdDrawingNewPage</name>
     <message>
-        <location line="-185"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -108,7 +108,7 @@
 <context>
     <name>CmdDrawingNewView</name>
     <message>
-        <location line="+219"/>
+        <location line="+214"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -126,7 +126,7 @@
 <context>
     <name>CmdDrawingOpen</name>
     <message>
-        <location line="-255"/>
+        <location line="-250"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -144,7 +144,7 @@
 <context>
     <name>CmdDrawingOpenBrowserView</name>
     <message>
-        <location line="+378"/>
+        <location line="+375"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -163,7 +163,7 @@
 <context>
     <name>CmdDrawingOrthoViews</name>
     <message>
-        <location line="-53"/>
+        <location line="-54"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -181,7 +181,7 @@
 <context>
     <name>CmdDrawingProjectShape</name>
     <message>
-        <location line="+284"/>
+        <location line="+287"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -200,26 +200,26 @@
 <context>
     <name>CmdDrawingSpreadsheetView</name>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Spreadsheet View</source>
-        <translation type="unfinished">&amp;Spreadsheet View</translation>
+        <translation>&amp;Widok arkusza</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+2"/>
         <source>Inserts a view of a selected spreadsheet in the active drawing</source>
-        <translation type="unfinished">Inserts a view of a selected spreadsheet in the active drawing</translation>
+        <translation>Wstawia widok wybranego arkusza w aktywnym rysunku</translation>
     </message>
 </context>
 <context>
     <name>CmdDrawingSymbol</name>
     <message>
-        <location line="-176"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Rysunek</translation>
     </message>
@@ -238,7 +238,7 @@
 <context>
     <name>DrawingGui::DrawingView</name>
     <message>
-        <location filename="../../DrawingView.cpp" line="+212"/>
+        <location filename="../../DrawingView.cpp" line="+211"/>
         <source>&amp;Background</source>
         <translation>&amp;Tło</translation>
     </message>
@@ -673,7 +673,7 @@ Do you want to continue?</source>
     <message>
         <location line="+1"/>
         <source>There is currently no active document to complete the operation</source>
-        <translation type="unfinished">There is currently no active document to complete the operation</translation>
+        <translation>Aktualnie nie ma aktywnego dokumentu aby dokończyć operację</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -683,7 +683,7 @@ Do you want to continue?</source>
     <message>
         <location line="+1"/>
         <source>There is currently no active view to complete the operation</source>
-        <translation type="unfinished">There is currently no active view to complete the operation</translation>
+        <translation>Aktualnie nie ma aktywnego widoku aby dokończyć operację</translation>
     </message>
 </context>
 <context>
@@ -752,17 +752,17 @@ Do you want to continue?</source>
         <translation>%1 %2 %3</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Insert new %1%2 %3 drawing</source>
         <translation>Wstaw nowy rysunek %1 %2 %3</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>%1%2 %3 (%4)</source>
         <translation>%1%2 %3 (%4)</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>Insert new %1%2 %3 (%4) drawing</source>
         <translation>Wstaw nowy rysunek %1%2 %3 (%4)</translation>
     </message>
@@ -770,8 +770,8 @@ Do you want to continue?</source>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-174"/>
-        <location line="+519"/>
+        <location line="-169"/>
+        <location line="+517"/>
         <source>Choose an SVG file to open</source>
         <translation>Wybierz plik SVG do otwarcia</translation>
     </message>
@@ -784,16 +784,16 @@ Do you want to continue?</source>
         <translation type="obsolete">Skalowalna Grafika Wektorowa (*.svg *.svgz)</translation>
     </message>
     <message>
-        <location line="-266"/>
-        <location line="+78"/>
-        <location line="+49"/>
-        <location line="+186"/>
-        <location line="+116"/>
+        <location line="-268"/>
+        <location line="+79"/>
+        <location line="+50"/>
+        <location line="+187"/>
+        <location line="+119"/>
         <source>Wrong selection</source>
         <translation>Niewłaściwy wybór</translation>
     </message>
     <message>
-        <location line="-428"/>
+        <location line="-434"/>
         <source>Select a Part object.</source>
         <translation>Wybierz obiekt Części.</translation>
     </message>
@@ -810,40 +810,40 @@ Do you want to continue?</source>
         <translation type="obsolete">Utwórz stronę do wstawienia widoków.</translation>
     </message>
     <message>
-        <location line="-253"/>
-        <location line="+519"/>
-        <location line="+52"/>
+        <location line="-249"/>
+        <location line="+517"/>
+        <location line="+53"/>
         <source>Scalable Vector Graphic</source>
         <translation>Skalowalna grafika wektorowa</translation>
     </message>
     <message>
-        <location line="-310"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-313"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>No page found</source>
         <translation>Nie znaleziono strony</translation>
     </message>
     <message>
-        <location line="-425"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-431"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>Create a page first.</source>
         <translation>Najpierw stwórz stronę.</translation>
     </message>
     <message>
-        <location line="-357"/>
+        <location line="-362"/>
         <source>Select exactly one Part object.</source>
         <translation>Wybierz dokładnie jeden obiekt Części.</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+186"/>
+        <location line="+50"/>
+        <location line="+187"/>
         <source>Select one Page object.</source>
         <translation>Wybierz jeden obiekt Strony.</translation>
     </message>
@@ -853,7 +853,7 @@ Do you want to continue?</source>
         <translation>Wszystkie pliki</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+113"/>
         <source>Select exactly one Spreadsheet object.</source>
         <translation>Wybierz dokładnie jeden obiekt Arkusza.</translation>
     </message>
@@ -870,7 +870,7 @@ Do you want to continue?</source>
         <translation type="obsolete">Wszystkie pliki (*.*)</translation>
     </message>
     <message>
-        <location line="-108"/>
+        <location line="-111"/>
         <source>Export page</source>
         <translation>Eksportuj stronę</translation>
     </message>
@@ -905,21 +905,21 @@ Do you want to continue?</source>
     </message>
     <message>
         <location filename="../../TaskOrthoViews.cpp" line="+51"/>
-        <location line="+907"/>
+        <location line="+926"/>
         <source>Make axonometric...</source>
         <translation>Stwórz aksonometrię...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Edit axonometric settings...</source>
         <translation>Edytuj ustawienia aksonometrii...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Make orthographic</source>
-        <translation>Stwórz rzut (ortograficzny)</translation>
+        <translation>Rzutuj prostokątnie</translation>
     </message>
 </context>
 <context>

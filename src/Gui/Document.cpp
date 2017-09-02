@@ -62,6 +62,7 @@
 #include "View3DInventorViewer.h"
 #include "BitmapFactory.h"
 #include "ViewProviderDocumentObject.h"
+#include "ViewProviderDocumentObjectGroup.h"
 #include "Selection.h"
 #include "WaitCursor.h"
 #include "Thumbnail.h"
@@ -426,7 +427,7 @@ void Document::slotNewObject(const App::DocumentObject& Obj)
             d->_ViewProviderMap[&Obj] = pcProvider;
 
             try {
-                // if succesfully created set the right name and calculate the view
+                // if successfully created set the right name and calculate the view
                 //FIXME: Consider to change argument of attach() to const pointer
                 pcProvider->attach(const_cast<App::DocumentObject*>(&Obj));
                 pcProvider->updateView();
@@ -780,6 +781,7 @@ void Document::RestoreDocFile(Base::Reader &reader)
 
     xmlReader.readElement("Document");
     long scheme = xmlReader.getAttributeAsInteger("SchemaVersion");
+    xmlReader.DocumentSchema = scheme;
 
     // At this stage all the document objects and their associated view providers exist.
     // Now we must restore the properties of the view providers only.
@@ -897,8 +899,11 @@ void Document::SaveDocFile (Base::Writer &writer) const
         ViewProvider* obj = it->second;
         writer.Stream() << writer.ind() << "<ViewProvider name=\""
                         << doc->getNameInDocument() << "\" "
-                        << "expanded=\"" << (doc->testStatus(App::Expand) ? 1:0)
-                        << "\">" << std::endl;
+                        << "expanded=\"" << (doc->testStatus(App::Expand) ? 1:0) << "\"";
+        if(obj->hasExtensions())
+            writer.Stream() << " Extensions=\"True\"";
+        
+        writer.Stream() << ">" << std::endl;
         obj->Save(writer);
         writer.Stream() << writer.ind() << "</ViewProvider>" << std::endl;
     }
@@ -1050,15 +1055,9 @@ void Document::createView(const Base::Type& typeId)
 
     std::list<MDIView*> theViews = this->getMDIViewsOfType(typeId);
     if (typeId == View3DInventor::getClassTypeId()) {
-        View3DInventor* firstView = 0;
-        QGLWidget* shareWidget = 0;
+        View3DInventor* view3D = new View3DInventor(this, getMainWindow());
         if (!theViews.empty()) {
-            firstView = static_cast<View3DInventor*>(theViews.front());
-            shareWidget = qobject_cast<QGLWidget*>(firstView->getViewer()->getGLWidget());
-        }
-
-        View3DInventor* view3D = new View3DInventor(this, getMainWindow(), shareWidget);
-        if (firstView) {
+            View3DInventor* firstView = static_cast<View3DInventor*>(theViews.front());
             std::string overrideMode = firstView->getViewer()->getOverrideMode();
             view3D->getViewer()->setOverrideMode(overrideMode);
         }
@@ -1093,6 +1092,33 @@ void Document::createView(const Base::Type& typeId)
         view3D->resize(400, 300);
         getMainWindow()->addWindow(view3D);
     }
+}
+
+Gui::MDIView* Document::cloneView(Gui::MDIView* oldview)
+{
+    if (!oldview)
+        return 0;
+
+    if (oldview->getTypeId() == View3DInventor::getClassTypeId()) {
+        View3DInventor* view3D = new View3DInventor(this, getMainWindow());
+
+        // attach the viewprovider
+        std::map<const App::DocumentObject*,ViewProviderDocumentObject*>::const_iterator It1;
+        for (It1=d->_ViewProviderMap.begin();It1!=d->_ViewProviderMap.end();++It1)
+            view3D->getViewer()->addViewProvider(It1->second);
+        std::map<std::string,ViewProvider*>::const_iterator It2;
+        for (It2=d->_ViewProviderMapAnnotation.begin();It2!=d->_ViewProviderMapAnnotation.end();++It2)
+            view3D->getViewer()->addViewProvider(It2->second);
+
+        view3D->setWindowTitle(oldview->windowTitle());
+        view3D->setWindowModified(oldview->isWindowModified());
+        view3D->setWindowIcon(oldview->windowIcon());
+        view3D->resize(oldview->size());
+
+        return view3D;
+    }
+
+    return 0;
 }
 
 void Document::attachView(Gui::BaseView* pcView, bool bPassiv)
@@ -1178,6 +1204,8 @@ bool Document::isLastView(void)
  */
 bool Document::canClose ()
 {
+    if (d->_isClosing)
+        return true;
     if (!getDocument()->isClosable()) {
         QMessageBox::warning(getActiveView(),
             QObject::tr("Document not closable"),
@@ -1239,7 +1267,7 @@ bool Document::canClose ()
     }
 
     if (ok) {
-        // If a tsk dialog is open that doesn't allow other commands to modify
+        // If a task dialog is open that doesn't allow other commands to modify
         // the document it must be closed by resetting the edit mode of the
         // corresponding view provider.
         if (!Gui::Control().isAllowedAlterDocument()) {
@@ -1395,7 +1423,7 @@ void Document::openCommand(const char* sName)
 
 void Document::commitCommand(void)
 {
-    getDocument()->commitTransaction();	
+    getDocument()->commitTransaction();
 }
 
 void Document::abortCommand(void)
@@ -1464,13 +1492,30 @@ void Document::handleChildren3D(ViewProvider* viewProvider)
                     for (std::list<Gui::BaseView*>::iterator vIt = d->baseViews.begin();vIt != d->baseViews.end();++vIt) {
                         View3DInventor *activeView = dynamic_cast<View3DInventor *>(*vIt);
                         if (activeView && activeView->getViewer()->hasViewProvider(ChildViewProvider)) {
-                            // Note about hasViewProvider()
-                            //remove the viewprovider serves the purpose of detaching the inventor nodes from the
-                            //top level root in the viewer. However, if some of the children were grouped beneath the object
-                            //earlier they are not anymore part of the toplevel inventor node. we need to check for that.
+                            // @Note hasViewProvider()
+                            // remove the viewprovider serves the purpose of detaching the inventor nodes from the
+                            // top level root in the viewer. However, if some of the children were grouped beneath the object
+                            // earlier they are not anymore part of the toplevel inventor node. we need to check for that.
                             if (d->_editViewProvider == ChildViewProvider)
                                 resetEdit();
                             activeView->getViewer()->removeViewProvider(ChildViewProvider);
+                        }
+                    }
+                }
+            }
+        }
+    } else if (viewProvider && viewProvider->isDerivedFrom(ViewProviderDocumentObjectGroup::getClassTypeId())) {
+
+        if (viewProvider->hasExtension(ViewProviderDocumentObjectGroup::getExtensionClassTypeId())) {
+            std::vector<App::DocumentObject*> children = viewProvider->claimChildren();
+
+            for (auto& child : children) {
+                ViewProvider* ChildViewProvider = getViewProvider(child);
+                if (ChildViewProvider) {
+                    for (BaseView* view : d->baseViews) {
+                        View3DInventor *activeView = dynamic_cast<View3DInventor *>(view);
+                        if (activeView && !activeView->getViewer()->hasViewProvider(ChildViewProvider)) {
+                            activeView->getViewer()->addViewProvider(ChildViewProvider);
                         }
                     }
                 }

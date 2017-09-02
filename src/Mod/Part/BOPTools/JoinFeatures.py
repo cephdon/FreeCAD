@@ -33,26 +33,29 @@ import Part
 if FreeCAD.GuiUp:
     import FreeCADGui
     from PySide import QtCore, QtGui
-
-
-# -------------------------- common stuff --------------------------------------------------
-
-#-------------------------- translation-related code ----------------------------------------
-#Thanks, yorik! (see forum thread "A new Part tool is being born... JoinFeatures!"
-#http://forum.freecadweb.org/viewtopic.php?f=22&t=11112&start=30#p90239 )
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except Exception:
-    def _fromUtf8(s):
-        return s
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    # -------------------------- common stuff --------------------------------------------------
+    
+    #-------------------------- translation-related code ----------------------------------------
+    #Thanks, yorik! (see forum thread "A new Part tool is being born... JoinFeatures!"
+    #http://forum.freecadweb.org/viewtopic.php?f=22&t=11112&start=30#p90239 )
+    
+    try:
+        _fromUtf8 = QtCore.QString.fromUtf8
+    except Exception:
+        def _fromUtf8(s):
+            return s
+    try:
+        _encoding = QtGui.QApplication.UnicodeUTF8
+        def _translate(context, text, disambig):
+            return QtGui.QApplication.translate(context, text, disambig, _encoding)
+    except AttributeError:
+        def _translate(context, text, disambig):
+            return QtGui.QApplication.translate(context, text, disambig)
+else:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except NameError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
-#--------------------------/translation-related code ----------------------------------------
+        return text
+    #--------------------------/translation-related code ----------------------------------------
+
 
 def getParamRefine():
     return FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Part/Boolean").GetBool("RefineModel")
@@ -80,7 +83,7 @@ def cmdCreateJoinFeature(name, mode):
         mb = QtGui.QMessageBox()
         mb.setIcon(mb.Icon.Warning)
         mb.setText(_translate("Part_JoinFeatures","Computing the result failed with an error: \n\n{err}\n\n Click 'Continue' to create the feature anyway, or 'Abort' to cancel.", None)
-                   .format(err= err.message))
+                   .format(err= str(err)))
         mb.setWindowTitle(_translate("Part_JoinFeatures","Bad selection", None))
         btnAbort = mb.addButton(QtGui.QMessageBox.StandardButton.Abort)
         btnOK = mb.addButton(_translate("Part_JoinFeatures","Continue",None), QtGui.QMessageBox.ButtonRole.ActionRole)
@@ -121,6 +124,7 @@ class FeatureConnect:
         obj.addProperty("App::PropertyLength","Tolerance","Connect","Tolerance when intersecting (fuzzy value). In addition to tolerances of the shapes.")
 
         obj.Proxy = self
+        self.Type = "FeatureConnect"
 
     def execute(self,selfobj):
         rst = JoinAPI.connect([obj.Shape for obj in selfobj.Objects], selfobj.Tolerance)
@@ -142,13 +146,6 @@ class ViewProviderConnect:
         self.ViewObject = vobj
         self.Object = vobj.Object
 
-
-    def setEdit(self,vobj,mode):
-        return False
-
-    def unsetEdit(self,vobj,mode):
-        return
-
     def __getstate__(self):
         return None
 
@@ -163,8 +160,24 @@ class ViewProviderConnect:
             for obj in self.claimChildren():
                 obj.ViewObject.show()
         except Exception as err:
-            FreeCAD.Console.PrintError("Error in onDelete: " + err.message)
+            FreeCAD.Console.PrintError("Error in onDelete: " + str(err))
         return True
+
+    def canDragObjects(self):
+        return True
+    def canDropObjects(self):
+        return True
+    def canDragObject(self, dragged_object):
+        return True
+    def canDropObject(self, incoming_object):
+        return hasattr(incoming_object, 'Shape')
+    def dragObject(self, selfvp, dragged_object):
+        objs = self.Object.Objects
+        objs.remove(dragged_object)
+        self.Object.Objects = objs
+    def dropObject(self, selfvp, incoming_object):
+        self.Object.Objects = self.Object.Objects + [incoming_object]
+
 
 class CommandConnect:
     "Command to create Connect feature"
@@ -214,6 +227,7 @@ class FeatureEmbed:
         obj.addProperty("App::PropertyLength","Tolerance","Embed","Tolerance when intersecting (fuzzy value). In addition to tolerances of the shapes.")
 
         obj.Proxy = self
+        self.Type = "FeatureEmbed"
 
     def execute(self,selfobj):
         rst = JoinAPI.embed_legacy(selfobj.Base.Shape, selfobj.Tool.Shape, selfobj.Tolerance)
@@ -235,13 +249,6 @@ class ViewProviderEmbed:
         self.ViewObject = vobj
         self.Object = vobj.Object
 
-
-    def setEdit(self,vobj,mode):
-        return False
-
-    def unsetEdit(self,vobj,mode):
-        return
-
     def __getstate__(self):
         return None
 
@@ -256,7 +263,7 @@ class ViewProviderEmbed:
             self.Object.Base.ViewObject.show()
             self.Object.Tool.ViewObject.show()
         except Exception as err:
-            FreeCAD.Console.PrintError("Error in onDelete: " + err.message)
+            FreeCAD.Console.PrintError("Error in onDelete: " + str(err))
         return True
 
 class CommandEmbed:
@@ -308,6 +315,7 @@ class FeatureCutout:
         obj.addProperty("App::PropertyLength","Tolerance","Cutout","Tolerance when intersecting (fuzzy value). In addition to tolerances of the shapes.")
 
         obj.Proxy = self
+        self.Type = "FeatureCutout"
 
     def execute(self,selfobj):
         rst = JoinAPI.cutout_legacy(selfobj.Base.Shape, selfobj.Tool.Shape, selfobj.Tolerance)
@@ -329,13 +337,6 @@ class ViewProviderCutout:
         self.ViewObject = vobj
         self.Object = vobj.Object
 
-
-    def setEdit(self,vobj,mode):
-        return False
-
-    def unsetEdit(self,vobj,mode):
-        return
-
     def __getstate__(self):
         return None
 
@@ -350,7 +351,7 @@ class ViewProviderCutout:
             self.Object.Base.ViewObject.show()
             self.Object.Tool.ViewObject.show()
         except Exception as err:
-            FreeCAD.Console.PrintError("Error in onDelete: " + err.message)
+            FreeCAD.Console.PrintError("Error in onDelete: " + str(err))
         return True
 
 

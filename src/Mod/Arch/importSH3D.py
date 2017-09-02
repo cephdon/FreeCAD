@@ -20,15 +20,22 @@
 #*                                                                         *
 #***************************************************************************
 
+from __future__ import print_function
 __title__ =  "FreeCAD SweetHome3D importer"
 __author__ = "Yorik van Havre"
 __url__ =    "http://www.freecadweb.org"
 
 import os,zipfile,xml.sax,FreeCAD,Part,Draft,Arch,Mesh,tempfile,math,Sketcher
 
+## @package importSH3D
+#  \ingroup ARCH
+#  \brief SH3D (SweetHome3D) file format importer
+#
+#  This module provides tools to import SH3D files created from Sweet Home 3D.
+
 DEBUG = True
 
-if open.__module__ == '__builtin__':
+if open.__module__ in ['__builtin__','io']:
     pyopen = open # because we'll redefine open below
 
 
@@ -114,7 +121,7 @@ class SH3DHandler(xml.sax.ContentHandler):
             p2 = FreeCAD.Vector(float(attributes["xEnd"])*10,float(attributes["yEnd"])*10,0)
             height = float(attributes["height"])*10
             thickness = float(attributes["thickness"])*10
-            if DEBUG: print "Creating wall: ",name
+            if DEBUG: print("Creating wall: ",name)
             line = Draft.makeLine(p1,p2)
             if self.makeIndividualWalls:
                 wall = Arch.makeWall(baseobj=line,width=thickness,height=height,name=name)
@@ -138,7 +145,7 @@ class SH3DHandler(xml.sax.ContentHandler):
             mat.scale(1000*fx,1000*fy,1000*fz)
             mat.rotateX(math.pi/2)
             mat.rotateZ(math.pi)
-            if DEBUG: print "Creating furniture: ",name
+            if DEBUG: print("Creating furniture: ",name)
             if "angle" in attributes.keys():
                 mat.rotateZ(float(attributes["angle"]))
             m.transform(mat)
@@ -182,7 +189,7 @@ class SH3DHandler(xml.sax.ContentHandler):
                 shape.makeShapeFromMesh(m.Topology,0.100000)
                 shape = shape.removeSplitter()
             if shape:
-                if DEBUG: print "Creating window: ",name
+                if DEBUG: print("Creating window: ",name)
                 if "angle" in attributes.keys():
                     shape.rotate(shape.BoundBox.Center,FreeCAD.Vector(0,0,1),math.degrees(float(attributes["angle"])))
                     sub.rotate(shape.BoundBox.Center,FreeCAD.Vector(0,0,1),math.degrees(float(attributes["angle"])))

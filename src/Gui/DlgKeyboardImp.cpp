@@ -106,7 +106,11 @@ DlgCustomKeyboardImp::DlgCustomKeyboardImp( QWidget* parent  )
     commandTreeWidget->setHeaderLabels(labels);
     commandTreeWidget->header()->hide();
     commandTreeWidget->setIconSize(QSize(32, 32));
+#if QT_VERSION >= 0x050000
+    commandTreeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+#else
     commandTreeWidget->header()->setResizeMode(0, QHeaderView::ResizeToContents);
+#endif
 
     assignedTreeWidget->setHeaderLabels(labels);
     assignedTreeWidget->header()->hide();
@@ -226,7 +230,7 @@ void DlgCustomKeyboardImp::on_buttonAssign_clicked()
         // update the tool tip
         QString accel = shortcut.toString(QKeySequence::NativeText);
         QString toolTip = QCoreApplication::translate(cmd->className(),
-            cmd->getToolTipText(), 0, QCoreApplication::UnicodeUTF8);
+            cmd->getToolTipText());
         if (!accel.isEmpty()) {
             if (!toolTip.isEmpty()) {
                 QString tip = QString::fromLatin1("%1 (%2)")
@@ -240,7 +244,7 @@ void DlgCustomKeyboardImp::on_buttonAssign_clicked()
 
         // update the status tip
         QString statusTip = QCoreApplication::translate(cmd->className(),
-            cmd->getStatusTip(), 0, QCoreApplication::UnicodeUTF8);
+            cmd->getStatusTip());
         if (statusTip.isEmpty())
             statusTip = toolTip;
         if (!accel.isEmpty()) {
@@ -281,12 +285,12 @@ void DlgCustomKeyboardImp::on_buttonClear_clicked()
 
         // update the tool tip
         QString toolTip = QCoreApplication::translate(cmd->className(),
-            cmd->getToolTipText(), 0, QCoreApplication::UnicodeUTF8);
+            cmd->getToolTipText());
         action->setToolTip(toolTip);
 
         // update the status tip
         QString statusTip = QCoreApplication::translate(cmd->className(),
-            cmd->getStatusTip(), 0, QCoreApplication::UnicodeUTF8);
+            cmd->getStatusTip());
         if (statusTip.isEmpty())
             statusTip = toolTip;
         action->setStatusTip(statusTip);

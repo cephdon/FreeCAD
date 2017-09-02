@@ -4,27 +4,27 @@
 <context>
     <name>CmdPointsConvert</name>
     <message>
-        <location filename="../../Command.cpp" line="+184"/>
+        <location filename="../../Command.cpp" line="+191"/>
         <source>Points</source>
         <translation>Σημεία</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Convert to points...</source>
-        <translation type="unfinished">Convert to points...</translation>
+        <translation>Μετατροπή σε σημεία...</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Convert to points</source>
-        <translation type="unfinished">Convert to points</translation>
+        <translation>Μετατροπή σε σημεία</translation>
     </message>
 </context>
 <context>
     <name>CmdPointsExport</name>
     <message>
-        <location line="-78"/>
+        <location line="-82"/>
         <source>Points</source>
         <translation>Σημεία</translation>
     </message>
@@ -38,13 +38,13 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Exports a point cloud</source>
-        <translation type="unfinished">Exports a point cloud</translation>
+        <translation>Εξάγει ένα σύννεφο σημείο</translation>
     </message>
 </context>
 <context>
     <name>CmdPointsImport</name>
     <message>
-        <location line="-51"/>
+        <location line="-53"/>
         <source>Points</source>
         <translation>Σημεία</translation>
     </message>
@@ -58,20 +58,40 @@
         <location line="+1"/>
         <location line="+1"/>
         <source>Imports a point cloud</source>
-        <translation type="unfinished">Imports a point cloud</translation>
+        <translation>Εισάγει ένα σύννεφο σημείο</translation>
+    </message>
+</context>
+<context>
+    <name>CmdPointsMerge</name>
+    <message>
+        <location line="+256"/>
+        <source>Points</source>
+        <translation type="unfinished">Σημεία</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Merge point clouds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Merge several point clouds into one</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>CmdPointsPolyCut</name>
     <message>
-        <location line="+203"/>
+        <location line="-49"/>
         <source>Points</source>
         <translation>Σημεία</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Cut point cloud</source>
-        <translation type="unfinished">Cut point cloud</translation>
+        <translation>Κόψτε το νέφος σημείων</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -84,7 +104,7 @@
 <context>
     <name>CmdPointsTransform</name>
     <message>
-        <location line="-125"/>
+        <location line="-129"/>
         <source>Points</source>
         <translation>Σημεία</translation>
     </message>
@@ -131,7 +151,7 @@
     <message>
         <location line="-21"/>
         <source>Cluster by lines starting with:</source>
-        <translation type="unfinished">Cluster by lines starting with:</translation>
+        <translation>Σύμπλεγμα από τις γραμμές που αρχίζουν με:</translation>
     </message>
     <message>
         <location line="-7"/>
@@ -253,19 +273,19 @@
         <translation type="obsolete">Ascii Points (*.asc);;All Files (*.*)</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="-78"/>
-        <location line="+49"/>
+        <location filename="../../Command.cpp" line="-80"/>
+        <location line="+51"/>
         <source>Ascii Points</source>
         <translation type="unfinished">Ascii Points</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+49"/>
+        <location line="-51"/>
+        <location line="+51"/>
         <source>All Files</source>
         <translation type="unfinished">All Files</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+74"/>
         <source>Distance</source>
         <translation type="unfinished">Distance</translation>
     </message>

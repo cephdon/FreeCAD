@@ -138,9 +138,10 @@ StdCmdCloseActiveWindow::StdCmdCloseActiveWindow()
     sToolTipText  = QT_TR_NOOP("Close active window");
     sWhatsThis    = QT_TR_NOOP("Close active window");
     sStatusTip    = QT_TR_NOOP("Close active window");
-    // CTRL+F4 is already set by an QMdiSubWindow and thus we must use the
-    // alternative CTRL+W here to avoid an ambiguous shortcut overload
-	sAccel        = "Ctrl+W";
+    // In QMdiSubWindow the 'QKeySequence::Close' shortcut is set which will
+    // collide with this shortcut. Thus the shortcut of QMdiSubWindow will be
+    // reset in MainWindow::addWindow() (#0002631)
+    sAccel        = keySequenceToAccel(QKeySequence::Close);
     eType         = 0;
 }
 
@@ -439,14 +440,11 @@ Action * StdCmdWindowsMenu::createAction(void)
         QAction* window = pcAction->addAction(QObject::tr(sToolTipText));
         window->setCheckable(true);
         window->setToolTip(QCoreApplication::translate(
-            this->className(), sToolTipText, 0,
-            QCoreApplication::CodecForTr));
+            this->className(), sToolTipText));
         window->setStatusTip(QCoreApplication::translate(
-            this->className(), sStatusTip, 0,
-            QCoreApplication::CodecForTr));
+            this->className(), sStatusTip));
         window->setWhatsThis(QCoreApplication::translate(
-            this->className(), sWhatsThis, 0,
-            QCoreApplication::CodecForTr));
+            this->className(), sWhatsThis));
     }
 
     QAction* sep = pcAction->addAction(QLatin1String(""));
@@ -456,7 +454,7 @@ Action * StdCmdWindowsMenu::createAction(void)
 }
 
 //===========================================================================
-// Instanciation
+// Instantiation
 //===========================================================================
 
 

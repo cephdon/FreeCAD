@@ -26,6 +26,8 @@
 # include <sstream>
 #endif
 
+#include <App/Document.h>
+
 #include <Base/Console.h>
 #include <Base/Exception.h>
 
@@ -42,6 +44,7 @@ PROPERTY_SOURCE(TechDraw::DrawViewCollection, TechDraw::DrawView)
 
 DrawViewCollection::DrawViewCollection()
 {
+    nowDeleting = false;
     static const char *group = "Drawing view";
     ADD_PROPERTY_TYPE(Source    ,(0), group, App::Prop_None,"Shape to view");
     ADD_PROPERTY_TYPE(Views     ,(0), group, App::Prop_None,"Attached Views");
@@ -118,7 +121,6 @@ void DrawViewCollection::rebuildViewList()
 
 short DrawViewCollection::mustExecute() const
 {
-    // If Tolerance Property is touched
     if (Views.isTouched() ||
         Source.isTouched()) {
         return 1;
@@ -166,9 +168,29 @@ void DrawViewCollection::onChanged(const App::Property* prop)
     TechDraw::DrawView::onChanged(prop);
 }
 
+void DrawViewCollection::unsetupObject()
+{
+    nowDeleting = true;
+
+    // Remove the collection's views from document
+    App::Document* doc = getDocument();
+    std::string docName = doc->getName();
+
+    const std::vector<App::DocumentObject*> currViews = Views.getValues();
+    std::vector<App::DocumentObject*> emptyViews;
+    std::vector<App::DocumentObject*>::const_iterator it = currViews.begin();
+    for (; it != currViews.end(); it++) {
+        std::string viewName = (*it)->getNameInDocument();
+        Base::Interpreter().runStringArg("App.getDocument(\"%s\").removeObject(\"%s\")",
+                                          docName.c_str(), viewName.c_str());
+    }
+    Views.setValues(emptyViews);
+}
+
+
 App::DocumentObjectExecReturn *DrawViewCollection::execute(void)
 {
-    if (ScaleType.isValue("Document")) {
+    if (ScaleType.isValue("Page")) {
         const std::vector<App::DocumentObject *> &views = Views.getValues();
         for(std::vector<App::DocumentObject *>::const_iterator it = views.begin(); it != views.end(); ++it) {
             App::DocumentObject *docObj = *it;
@@ -176,7 +198,7 @@ App::DocumentObjectExecReturn *DrawViewCollection::execute(void)
                 TechDraw::DrawView *view = static_cast<TechDraw::DrawView *>(*it);
 
                 // Set scale factor of each view
-                view->ScaleType.setValue("Document");
+                view->ScaleType.setValue("Page");
                 view->touch();
             }
         }

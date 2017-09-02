@@ -58,7 +58,7 @@ Dependency of pcl components:
 common: none
 features: common, kdtree, octree, search, (range_image)
 filters: common, kdtree, octree, sample_consenus, search
-geomety: common
+geometry: common
 io: common, octree
 kdtree: common
 keypoints: common, features, filters, kdtree, octree, search, (range_image)
@@ -114,7 +114,22 @@ public:
             "filterVoxelGrid(dim)."
         );
         add_keyword_method("normalEstimation",&Module::normalEstimation,
-            "normalEstimation(Points)."
+            "normalEstimation(Points,[KSearch=0, SearchRadius=0]) -> Normals\n"
+            "KSearch is an int and used to search the k-nearest neighbours in\n"
+            "the k-d tree. Alternatively, SearchRadius (a float) can be used\n"
+            "as spatial distance to determine the neighbours of a point\n"
+            "Example:\n"
+            "\n"
+            "import ReverseEngineering as Reen\n"
+            "pts=App.ActiveDocument.ActiveObject.Points\n"
+            "nor=Reen.normalEstimation(pts,KSearch=5)\n"
+            "\n"
+            "f=App.ActiveDocument.addObject('Points::FeaturePython','Normals')\n"
+            "f.addProperty('Points::PropertyNormalList','Normal')\n"
+            "f.Points=pts\n"
+            "f.Normal=nor\n"
+            "f.ViewObject.Proxy=0\n"
+            "f.ViewObject.DisplayMode=1\n"
         );
 #endif
 #if defined(HAVE_PCL_SEGMENTATION)
@@ -221,7 +236,7 @@ private:
             }
 
             Reen::BSplineParameterCorrection pc(uOrder,vOrder,uPoles,vPoles);
-            Handle_Geom_BSplineSurface hSurf;
+            Handle(Geom_BSplineSurface) hSurf;
 
             if (uvdirs) {
                 Py::Tuple t(uvdirs);
@@ -735,11 +750,17 @@ Mesh.show(m)
     }
 #endif
 };
+
+PyObject* initModule()
+{
+    return (new Module)->module().ptr();
+}
+
 } // namespace Reen
 
 
 /* Python entry */
-PyMODINIT_FUNC initReverseEngineering()
+PyMOD_INIT_FUNC(ReverseEngineering)
 {
     // load dependent module
     try {
@@ -748,9 +769,10 @@ PyMODINIT_FUNC initReverseEngineering()
     }
     catch(const Base::Exception& e) {
         PyErr_SetString(PyExc_ImportError, e.what());
-        return;
+        PyMOD_Return(0);
     }
 
-    new Reen::Module();
+    PyObject* mod = Reen::initModule();
     Base::Console().Log("Loading ReverseEngineering module... done\n");
+    PyMOD_Return(mod);
 }

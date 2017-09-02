@@ -44,6 +44,7 @@
 #endif
 
 
+#include <Base/Console.h>
 #include <Base/Exception.h>
 #include <Base/Reader.h>
 #include <App/Property.h>
@@ -53,7 +54,7 @@
 #include "DatumFeature.h"
 
 #include <App/FeaturePythonPyImp.h>
-#include "Part2DObjectPy.h"
+#include <Mod/Part/App/Part2DObjectPy.h>
 
 using namespace Part;
 
@@ -61,18 +62,19 @@ const int Part2DObject::H_Axis = -1;
 const int Part2DObject::V_Axis = -2;
 const int Part2DObject::N_Axis = -3;
 
-PROPERTY_SOURCE(Part::Part2DObject, Part::AttachableObject)
+PROPERTY_SOURCE_WITH_EXTENSIONS(Part::Part2DObject, Part::Feature)
 
 
 Part2DObject::Part2DObject()
 {
+    AttachExtension::initExtension(this);
     this->setAttacher(new Attacher::AttachEnginePlane);
 }
 
 
 App::DocumentObjectExecReturn *Part2DObject::execute(void)
 {
-    return AttachableObject::execute();
+    return Feature::execute();
 }
 
 void Part2DObject::transformPlacement(const Base::Placement &transform)
@@ -116,9 +118,9 @@ bool Part2DObject::seekTrimPoints(const std::vector<Geometry *> &geomlist,
 
     Standard_Boolean periodic=Standard_False;
     double period = 0;
-    Handle_Geom2d_Curve primaryCurve;
-    Handle_Geom_Geometry geom = (geomlist[GeoId])->handle();
-    Handle_Geom_Curve curve3d = Handle_Geom_Curve::DownCast(geom);
+    Handle(Geom2d_Curve) primaryCurve;
+    Handle(Geom_Geometry) geom = (geomlist[GeoId])->handle();
+    Handle(Geom_Curve) curve3d = Handle(Geom_Curve)::DownCast(geom);
     if (curve3d.IsNull())
         return false;
     else {
@@ -141,12 +143,12 @@ bool Part2DObject::seekTrimPoints(const std::vector<Geometry *> &geomlist,
     GeoId2 = -1;
     double param1=-1e10,param2=1e10;
     gp_Pnt2d p1,p2;
-    Handle_Geom2d_Curve secondaryCurve;
+    Handle(Geom2d_Curve) secondaryCurve;
     for (int id=0; id < int(geomlist.size()); id++) {
         // #0000624: Trim tool doesn't work with construction lines
         if (id != GeoId/* && !geomlist[id]->Construction*/) {
             geom = (geomlist[id])->handle();
-            curve3d = Handle_Geom_Curve::DownCast(geom);
+            curve3d = Handle(Geom_Curve)::DownCast(geom);
             if (!curve3d.IsNull()) {
                 secondaryCurve = GeomAPI::To2d(curve3d, plane);
                 // perform the curves intersection

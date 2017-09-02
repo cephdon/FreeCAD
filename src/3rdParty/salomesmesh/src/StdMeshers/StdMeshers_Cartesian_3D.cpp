@@ -1650,7 +1650,7 @@ namespace
         case 3: // at a corner
         {
           _Node& node = _hexNodes[ subEntity - SMESH_Block::ID_FirstV ];
-          if ( node.Node() > 0 )
+          if ( node.Node() != 0 )
           {
             if ( node._intPoint )
               node._intPoint->Add( _eIntPoints[ iP ]->_faceIDs, _eIntPoints[ iP ]->_node );
@@ -2914,7 +2914,7 @@ namespace
       proj.Perform( testPnt );
       if ( proj.IsDone() && proj.NbPoints() > 0 )       
       {
-        Quantity_Parameter u,v;
+        Standard_Real u,v;
         proj.LowerDistanceParameters( u,v );
 
         if ( proj.LowerDistance() <= 0.1 * _grid->_tol )

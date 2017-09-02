@@ -55,48 +55,70 @@
 #include "PrimitiveFeature.h"
 #include "Part2DObject.h"
 #include "CustomFeature.h"
-#include "TopoShapePy.h"
-#include "TopoShapeVertexPy.h"
-#include "TopoShapeFacePy.h"
-#include "TopoShapeWirePy.h"
-#include "TopoShapeEdgePy.h"
-#include "TopoShapeSolidPy.h"
-#include "TopoShapeCompoundPy.h"
-#include "TopoShapeCompSolidPy.h"
-#include "TopoShapeShellPy.h"
-#include "LinePy.h"
-#include "PointPy.h"
-#include "CirclePy.h"
-#include "EllipsePy.h"
-#include "ArcPy.h"
-#include "ArcOfCirclePy.h"
-#include "ArcOfEllipsePy.h"
-#include "ArcOfParabolaPy.h"
-#include "ArcOfHyperbolaPy.h"
-#include "BezierCurvePy.h"
-#include "BSplineCurvePy.h"
-#include "HyperbolaPy.h"
-#include "OffsetCurvePy.h"
-#include "ParabolaPy.h"
-#include "BezierSurfacePy.h"
-#include "BSplineSurfacePy.h"
-#include "ConePy.h"
-#include "CylinderPy.h"
-#include "OffsetSurfacePy.h"
-#include "PlateSurfacePy.h"
-#include "PlanePy.h"
-#include "RectangularTrimmedSurfacePy.h"
-#include "SpherePy.h"
-#include "SurfaceOfExtrusionPy.h"
-#include "SurfaceOfRevolutionPy.h"
-#include "ToroidPy.h"
-#include "BRepOffsetAPI_MakePipeShellPy.h"
-#include "PartFeaturePy.h"
-#include "AttachEnginePy.h"
+#include "Geometry.h"
+#include "Geometry2d.h"
+#include "Mod/Part/App/TopoShapePy.h"
+#include "Mod/Part/App/TopoShapeVertexPy.h"
+#include "Mod/Part/App/TopoShapeFacePy.h"
+#include "Mod/Part/App/TopoShapeWirePy.h"
+#include "Mod/Part/App/TopoShapeEdgePy.h"
+#include "Mod/Part/App/TopoShapeSolidPy.h"
+#include "Mod/Part/App/TopoShapeCompoundPy.h"
+#include "Mod/Part/App/TopoShapeCompSolidPy.h"
+#include "Mod/Part/App/TopoShapeShellPy.h"
+#include "Mod/Part/App/LinePy.h"
+#include "Mod/Part/App/LineSegmentPy.h"
+#include "Mod/Part/App/PointPy.h"
+#include "Mod/Part/App/ConicPy.h"
+#include "Mod/Part/App/ArcOfConicPy.h"
+#include "Mod/Part/App/CirclePy.h"
+#include "Mod/Part/App/EllipsePy.h"
+#include "Mod/Part/App/ArcPy.h"
+#include "Mod/Part/App/ArcOfCirclePy.h"
+#include "Mod/Part/App/ArcOfEllipsePy.h"
+#include "Mod/Part/App/ArcOfParabolaPy.h"
+#include "Mod/Part/App/ArcOfHyperbolaPy.h"
+#include "Mod/Part/App/BezierCurvePy.h"
+#include "Mod/Part/App/BSplineCurvePy.h"
+#include "Mod/Part/App/HyperbolaPy.h"
+#include "Mod/Part/App/OffsetCurvePy.h"
+#include "Mod/Part/App/ParabolaPy.h"
+#include "Mod/Part/App/BezierSurfacePy.h"
+#include "Mod/Part/App/BSplineSurfacePy.h"
+#include "Mod/Part/App/ConePy.h"
+#include "Mod/Part/App/CylinderPy.h"
+#include "Mod/Part/App/OffsetSurfacePy.h"
+#include "Mod/Part/App/PlateSurfacePy.h"
+#include "Mod/Part/App/PlanePy.h"
+#include "Mod/Part/App/RectangularTrimmedSurfacePy.h"
+#include "Mod/Part/App/SpherePy.h"
+#include "Mod/Part/App/SurfaceOfExtrusionPy.h"
+#include "Mod/Part/App/SurfaceOfRevolutionPy.h"
+#include "Mod/Part/App/ToroidPy.h"
+#include "Mod/Part/App/BRepOffsetAPI_MakePipeShellPy.h"
+#include "Mod/Part/App/PartFeaturePy.h"
+#include "Mod/Part/App/AttachEnginePy.h"
+#include <Mod/Part/App/Geom2d/ArcOfCircle2dPy.h>
+#include <Mod/Part/App/Geom2d/ArcOfConic2dPy.h>
+#include <Mod/Part/App/Geom2d/ArcOfEllipse2dPy.h>
+#include <Mod/Part/App/Geom2d/ArcOfHyperbola2dPy.h>
+#include <Mod/Part/App/Geom2d/ArcOfParabola2dPy.h>
+#include <Mod/Part/App/Geom2d/BezierCurve2dPy.h>
+#include <Mod/Part/App/Geom2d/BSplineCurve2dPy.h>
+#include <Mod/Part/App/Geom2d/Circle2dPy.h>
+#include <Mod/Part/App/Geom2d/Conic2dPy.h>
+#include <Mod/Part/App/Geom2d/Ellipse2dPy.h>
+#include <Mod/Part/App/Geom2d/Geometry2dPy.h>
+#include <Mod/Part/App/Geom2d/Hyperbola2dPy.h>
+#include <Mod/Part/App/Geom2d/Curve2dPy.h>
+#include <Mod/Part/App/Geom2d/Line2dSegmentPy.h>
+#include <Mod/Part/App/Geom2d/Line2dPy.h>
+#include <Mod/Part/App/Geom2d/OffsetCurve2dPy.h>
+#include <Mod/Part/App/Geom2d/Parabola2dPy.h>
 #include "PropertyGeometryList.h"
 #include "DatumFeature.h"
 #include "Attacher.h"
-#include "AttachableObject.h"
+#include "AttachExtension.h"
 #include "FaceMaker.h"
 #include "FaceMakerCheese.h"
 #include "FaceMakerBullseye.h"
@@ -113,8 +135,99 @@ PyObject* Part::PartExceptionOCCRangeError;
 PyObject* Part::PartExceptionOCCConstructionError;
 PyObject* Part::PartExceptionOCCDimensionError;
 
+// <---
+namespace Part {
 
-PyMODINIT_FUNC initPart()
+// Compatibility class to keep old code working until removed
+class LinePyOld : public LineSegmentPy
+{
+public:
+    static PyTypeObject   Type;
+    virtual PyTypeObject *GetType(void) {return &Type;}
+
+public:
+    static PyObject *PyMake(struct _typeobject *, PyObject *, PyObject *)
+    {
+        PyErr_SetString(PyExc_DeprecationWarning, "For future usage 'Line' will be an infinite line, use 'LineSegment' instead");
+        PyErr_Print();
+        return new LinePyOld(new GeomLineSegment);
+    }
+    LinePyOld(GeomLineSegment *pcObject, PyTypeObject *T = &Type)
+      : LineSegmentPy(pcObject, T)
+    {
+    }
+    virtual ~LinePyOld()
+    {
+    }
+};
+
+/// Type structure of LinePyOld
+PyTypeObject LinePyOld::Type = {
+    // PyObject_HEAD_INIT(&PyType_Type)
+    // 0,                                                /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type,0)
+    "Part.Line",     /*tp_name*/
+    sizeof(LinePyOld),                       /*tp_basicsize*/
+    0,                                                /*tp_itemsize*/
+    /* methods */
+    PyDestructor,                                     /*tp_dealloc*/
+    0,                                                /*tp_print*/
+    0,                                        /*tp_getattr*/
+    0,                                        /*tp_setattr*/
+    0,                                                /*tp_compare*/
+    0,                                           /*tp_repr*/
+    0,                                                /*tp_as_number*/
+    0,                                                /*tp_as_sequence*/
+    0,                                                /*tp_as_mapping*/
+    0,                                                /*tp_hash*/
+    0,                                                /*tp_call */
+    0,                                                /*tp_str  */
+    0,                                                /*tp_getattro*/
+    0,                                                /*tp_setattro*/
+    /* --- Functions to access object as input/output buffer ---------*/
+    0,                                                /* tp_as_buffer */
+    /* --- Flags to define presence of optional/expanded features */
+#if PY_MAJOR_VERSION >= 3
+    Py_TPFLAGS_DEFAULT,                               /*tp_flags */
+#else
+    Py_TPFLAGS_HAVE_CLASS,                            /*tp_flags */
+#endif
+    "",
+    0,                                                /*tp_traverse */
+    0,                                                /*tp_clear */
+    0,                                                /*tp_richcompare */
+    0,                                                /*tp_weaklistoffset */
+    0,                                                /*tp_iter */
+    0,                                                /*tp_iternext */
+    0,                     /*tp_methods */
+    0,                                                /*tp_members */
+    0,                     /*tp_getset */
+    &LineSegmentPy::Type,                        /*tp_base */
+    0,                                                /*tp_dict */
+    0,                                                /*tp_descr_get */
+    0,                                                /*tp_descr_set */
+    0,                                                /*tp_dictoffset */
+    __PyInit,                                         /*tp_init */
+    0,                                                /*tp_alloc */
+    Part::LinePyOld::PyMake,/*tp_new */
+    0,                                                /*tp_free   Low-level free-memory routine */
+    0,                                                /*tp_is_gc  For PyObject_IS_GC */
+    0,                                                /*tp_bases */
+    0,                                                /*tp_mro    method resolution order */
+    0,                                                /*tp_cache */
+    0,                                                /*tp_subclasses */
+    0,                                                /*tp_weaklist */
+    0,                                                /*tp_del */
+    0                                                 /*tp_version_tag */
+#if PY_MAJOR_VERSION >=3
+    ,0                                                /*tp_finalize */
+#endif
+};
+
+}
+// --->
+
+PyMOD_INIT_FUNC(Part)
 {
     Base::Console().Log("Module: Part\n");
 
@@ -122,7 +235,8 @@ PyMODINIT_FUNC initPart()
     // if we have mysterious crashes
     // The argument must be 'Standard_False' to avoid FPE caused by
     // Python's cmath module.
-#if !defined(_DEBUG)
+    // For Linux use segmentation_fault_handler in Application.cpp
+#if !defined(_DEBUG) && !defined(FC_OS_LINUX)
     OSD::SetSignal(Standard_False);
 #endif
 
@@ -187,8 +301,22 @@ PyMODINIT_FUNC initPart()
     Base::Interpreter().addType(&Part::TopoShapeCompSolidPy ::Type,partModule,"CompSolid");
     Base::Interpreter().addType(&Part::TopoShapeShellPy     ::Type,partModule,"Shell");
 
-    Base::Interpreter().addType(&Part::LinePy               ::Type,partModule,"Line");
+    Base::Reference<ParameterGrp> hPartGrp = App::GetApplication().GetUserParameter()
+        .GetGroup("BaseApp")->GetGroup("Preferences")->GetGroup("Mod/Part");
+
+    // General
+    Base::Reference<ParameterGrp> hGenPGrp = hPartGrp->GetGroup("General");
+    if (hGenPGrp->GetBool("LineOld", false)) {
+        Base::Interpreter().addType(&Part::LinePy           ::Type,partModule,"_Line");
+        Base::Interpreter().addType(&Part::LinePyOld        ::Type,partModule,"Line");
+    }
+    else {
+        Base::Interpreter().addType(&Part::LinePy           ::Type,partModule,"Line");
+    }
+    Base::Interpreter().addType(&Part::LineSegmentPy        ::Type,partModule,"LineSegment");
     Base::Interpreter().addType(&Part::PointPy              ::Type,partModule,"Point");
+    Base::Interpreter().addType(&Part::ConicPy              ::Type,partModule,"Conic");
+    Base::Interpreter().addType(&Part::ArcOfConicPy         ::Type,partModule,"ArcOfConic");
     Base::Interpreter().addType(&Part::CirclePy             ::Type,partModule,"Circle");
     Base::Interpreter().addType(&Part::EllipsePy            ::Type,partModule,"Ellipse");
     Base::Interpreter().addType(&Part::HyperbolaPy          ::Type,partModule,"Hyperbola");
@@ -217,26 +345,52 @@ PyMODINIT_FUNC initPart()
                                                             ::Type,partModule,"RectangularTrimmedSurface");
 
     Base::Interpreter().addType(&Part::PartFeaturePy        ::Type,partModule,"Feature");
-
     Base::Interpreter().addType(&Attacher::AttachEnginePy   ::Type,partModule,"AttachEngine");
 
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef BRepOffsetAPIDef = {
+        PyModuleDef_HEAD_INIT,
+        "BRepOffsetAPI", "BRepOffsetAPI", -1, 0,
+        NULL, NULL, NULL, NULL
+    };
+    PyObject* brepModule = PyModule_Create(&BRepOffsetAPIDef);
+#else
     PyObject* brepModule = Py_InitModule3("BRepOffsetAPI", 0, "BrepOffsetAPI");
+#endif
     Py_INCREF(brepModule);
     PyModule_AddObject(partModule, "BRepOffsetAPI", brepModule);
     Base::Interpreter().addType(&Part::BRepOffsetAPI_MakePipeShellPy::Type,brepModule,"MakePipeShell");
 
-    try{
-        //import all submodules of BOPTools, to make them easy to browse in Py console.
-        //It's done in this weird manner instead of bt.caMemberFunction("importAll"),
-        //because the latter crashed when importAll failed with exception.
-        Base::Interpreter().runString("__import__('BOPTools').importAll()");
-
-        Py::Object bt = Base::Interpreter().runStringObject("__import__('BOPTools')");
-        module.setAttr(std::string("BOPTools"),bt);
-    } catch (Base::PyException &err){
-        Base::Console().Error("Failed to import BOPTools package:\n");
-        err.ReportException();
-    }
+    // Geom2d package
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef geom2dDef = {
+        PyModuleDef_HEAD_INIT,
+        "Geom2dD", "Geom2d", -1, 0,
+        NULL, NULL, NULL, NULL
+    };
+    PyObject* geom2dModule = PyModule_Create(&geom2dDef);
+#else
+     PyObject* geom2dModule = Py_InitModule3("Geom2d", 0, "Geom2d");
+#endif
+    Py_INCREF(geom2dModule);
+    PyModule_AddObject(partModule, "Geom2d", geom2dModule);
+    Base::Interpreter().addType(&Part::Geometry2dPy::Type,geom2dModule,"Geometry2d");
+    Base::Interpreter().addType(&Part::Curve2dPy::Type,geom2dModule,"Curve2d");
+    Base::Interpreter().addType(&Part::Conic2dPy::Type,geom2dModule,"Conic2d");
+    Base::Interpreter().addType(&Part::Circle2dPy::Type,geom2dModule,"Circle2d");
+    Base::Interpreter().addType(&Part::Ellipse2dPy::Type,geom2dModule,"Ellipse2d");
+    Base::Interpreter().addType(&Part::Hyperbola2dPy::Type,geom2dModule,"Hyperbola2d");
+    Base::Interpreter().addType(&Part::Parabola2dPy::Type,geom2dModule,"Parabola2d");
+    Base::Interpreter().addType(&Part::ArcOfConic2dPy::Type,geom2dModule,"ArcOfConic2d");
+    Base::Interpreter().addType(&Part::ArcOfCircle2dPy::Type,geom2dModule,"ArcOfCircle2d");
+    Base::Interpreter().addType(&Part::ArcOfEllipse2dPy::Type,geom2dModule,"ArcOfEllipse2d");
+    Base::Interpreter().addType(&Part::ArcOfHyperbola2dPy::Type,geom2dModule,"ArcOfHyperbola2d");
+    Base::Interpreter().addType(&Part::ArcOfParabola2dPy::Type,geom2dModule,"ArcOfParabola2d");
+    Base::Interpreter().addType(&Part::BezierCurve2dPy::Type,geom2dModule,"BezierCurve2d");
+    Base::Interpreter().addType(&Part::BSplineCurve2dPy::Type,geom2dModule,"BSplineCurve2d");
+    Base::Interpreter().addType(&Part::Line2dSegmentPy::Type,geom2dModule,"Line2dSegment");
+    Base::Interpreter().addType(&Part::Line2dPy::Type,geom2dModule,"Line2d");
+    Base::Interpreter().addType(&Part::OffsetCurve2dPy::Type,geom2dModule,"OffsetCurve2d");
 
     Part::TopoShape             ::init();
     Part::PropertyPartShape     ::init();
@@ -256,11 +410,12 @@ PyMODINIT_FUNC initPart()
     Attacher::AttachEnginePlane   ::init();
     Attacher::AttachEngineLine    ::init();
     Attacher::AttachEnginePoint   ::init();
+    
+    Part::AttachExtension       ::init();
+    Part::AttachExtensionPython ::init();
 
     Part::Feature               ::init();
     Part::FeatureExt            ::init();
-    Part::AttachableObject      ::init();
-    Part::AttachableObjectPython::init();
     Part::BodyBase              ::init();
     Part::FeaturePython         ::init();
     Part::FeatureGeometrySet    ::init();
@@ -318,8 +473,11 @@ PyMODINIT_FUNC initPart()
     Part::Geometry                ::init();
     Part::GeomPoint               ::init();
     Part::GeomCurve               ::init();
+    Part::GeomBoundedCurve        ::init();
     Part::GeomBezierCurve         ::init();
     Part::GeomBSplineCurve        ::init();
+    Part::GeomConic               ::init();
+    Part::GeomArcOfConic          ::init();
     Part::GeomCircle              ::init();
     Part::GeomArcOfCircle         ::init();
     Part::GeomArcOfEllipse        ::init();
@@ -346,6 +504,27 @@ PyMODINIT_FUNC initPart()
     Part::GeomSurfaceOfRevolution ::init();
     Part::GeomSurfaceOfExtrusion  ::init();
     Part::Datum                   ::init();
+
+    // Geometry2d types
+    Part::Geometry2d              ::init();
+    Part::Geom2dPoint             ::init();
+    Part::Geom2dCurve             ::init();
+    Part::Geom2dBezierCurve       ::init();
+    Part::Geom2dBSplineCurve      ::init();
+    Part::Geom2dConic             ::init();
+    Part::Geom2dArcOfConic        ::init();
+    Part::Geom2dCircle            ::init();
+    Part::Geom2dArcOfCircle       ::init();
+    Part::Geom2dEllipse           ::init();
+    Part::Geom2dArcOfEllipse      ::init();
+    Part::Geom2dHyperbola         ::init();
+    Part::Geom2dArcOfHyperbola    ::init();
+    Part::Geom2dParabola          ::init();
+    Part::Geom2dArcOfParabola     ::init();
+    Part::Geom2dLine              ::init();
+    Part::Geom2dLineSegment       ::init();
+    Part::Geom2dOffsetCurve       ::init();
+    Part::Geom2dTrimmedCurve      ::init();
 
     IGESControl_Controller::Init();
     STEPControl_Controller::Init();
@@ -421,4 +600,6 @@ PyMODINIT_FUNC initPart()
     Interface_Static::SetCVal("write.step.schema", ap.c_str());
     Interface_Static::SetCVal("write.step.product.name", hStepGrp->GetASCII("Product",
        Interface_Static::CVal("write.step.product.name")).c_str());
+
+    PyMOD_Return(partModule);
 }

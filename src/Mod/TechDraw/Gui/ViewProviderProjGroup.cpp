@@ -29,7 +29,6 @@
 # include <QMenu>
 #endif
 
-/// Here the FreeCAD includes sorted by Base,App,Gui......
 #include <Base/Console.h>
 #include <Base/Parameter.h>
 
@@ -46,6 +45,8 @@
 #include <Gui/Selection.h>
 #include <Gui/SoFCSelection.h>
 #include <Gui/ViewProviderDocumentObject.h>
+
+#include <Mod/TechDraw/App/DrawProjGroupItem.h>
 
 
 #include "TaskProjGroup.h"
@@ -106,14 +107,22 @@ void ViewProviderProjGroup::updateData(const App::Property* prop)
 
  }
 
+void ViewProviderProjGroup::onChanged(const App::Property *prop)
+{
+    if (prop == &(getViewObject()->Scale)) {
+            if (getViewObject()->ScaleType.isValue("Automatic")) {
+                    getMDIViewPage()->redraw1View(getViewObject());
+            }
+    } else if (prop == &(getViewObject()->ScaleType)) {
+        getMDIViewPage()->redraw1View(getViewObject());
+    }
+}
 
 void ViewProviderProjGroup::setupContextMenu(QMenu* menu, QObject* receiver, const char* member)
 {
     Q_UNUSED(menu);
     Q_UNUSED(receiver);
     Q_UNUSED(member);
-    //QAction* act;
-    //act = menu->addAction(QObject::tr("Show drawing"), receiver, member);
 }
 
 bool ViewProviderProjGroup::setEdit(int ModNum)
@@ -143,8 +152,13 @@ bool ViewProviderProjGroup::setEdit(int ModNum)
 
 void ViewProviderProjGroup::unsetEdit(int ModNum)
 {
-    Base::Console().Message("TRACE - VPPG::unSetEdit(%d) \n",ModNum);
-    Gui::Control().closeDialog();
+    Q_UNUSED(ModNum);
+    if (ModNum == ViewProvider::Default) {
+        Gui::Control().closeDialog();
+    }
+    else {
+        ViewProviderDrawingView::unsetEdit(ModNum);
+    }
 }
 
 bool ViewProviderProjGroup::doubleClicked(void)

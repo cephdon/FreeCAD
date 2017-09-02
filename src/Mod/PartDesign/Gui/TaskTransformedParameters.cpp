@@ -72,6 +72,12 @@ TaskTransformedParameters::TaskTransformedParameters(ViewProviderTransformed *Tr
       blockUpdate(false)
 {
     selectionMode = none;
+
+    if (TransformedView) {
+        Gui::Document* doc = TransformedView->getDocument();
+        this->attachDocument(doc);
+        this->enableNotifications(DocumentObserver::Delete);
+    }
 }
 
 TaskTransformedParameters::TaskTransformedParameters(TaskMultiTransformParameters *parentTask)
@@ -90,6 +96,12 @@ TaskTransformedParameters::~TaskTransformedParameters()
 {
     // make sure to remove selection gate in all cases
     Gui::Selection().rmvSelectionGate();
+}
+
+void TaskTransformedParameters::slotDeletedObject(const Gui::ViewProviderDocumentObject& Obj)
+{
+    if (TransformedView == &Obj)
+        TransformedView = nullptr;
 }
 
 bool TaskTransformedParameters::isViewUpdated() const
@@ -162,9 +174,9 @@ void TaskTransformedParameters::onButtonRemoveFeature(bool checked)
     }
 }
 
-void TaskTransformedParameters::removeItemFromListWidget(QListWidget* widget, const char* itemstr)
+void TaskTransformedParameters::removeItemFromListWidget(QListWidget* widget, const QString& itemstr)
 {
-    QList<QListWidgetItem*> items = widget->findItems(QString::fromLatin1(itemstr), Qt::MatchExactly);
+    QList<QListWidgetItem*> items = widget->findItems(itemstr, Qt::MatchExactly);
     if (!items.empty()) {
         for (QList<QListWidgetItem*>::const_iterator i = items.begin(); i != items.end(); i++) {
             QListWidgetItem* it = widget->takeItem(widget->row(*i));
@@ -264,17 +276,18 @@ PartDesignGui::ViewProviderTransformed *TaskTransformedParameters::getTopTransfo
 }
 
 PartDesign::Transformed *TaskTransformedParameters::getTopTransformedObject() const {
-	App::DocumentObject *transform = getTopTransformedView()->getObject();
-	assert (transform->isDerivedFrom(PartDesign::Transformed::getClassTypeId()));
-	return static_cast<PartDesign::Transformed*>(transform);
+    App::DocumentObject *transform = getTopTransformedView()->getObject();
+    assert (transform->isDerivedFrom(PartDesign::Transformed::getClassTypeId()));
+    return static_cast<PartDesign::Transformed*>(transform);
 }
-
 
 PartDesign::Transformed *TaskTransformedParameters::getObject() const {
     if (insideMultiTransform)
         return parentTask->getSubFeature();
-    else
+    else if (TransformedView)
         return static_cast<PartDesign::Transformed*>(TransformedView->getObject());
+    else
+        return nullptr;
 }
 
 Part::Feature *TaskTransformedParameters::getBaseObject() const {
@@ -338,7 +351,9 @@ void TaskTransformedParameters::exitSelectionMode()
 
 void TaskTransformedParameters::addReferenceSelectionGate(bool edge, bool face)
 {
-    Gui::Selection().addSelectionGate(new ReferenceSelection(getBaseObject(), edge, face, /*point =*/ true));
+    std::unique_ptr<Gui::SelectionFilterGate> gateRefPtr(new ReferenceSelection(getBaseObject(), edge, face, /*point =*/ true));
+    std::unique_ptr<Gui::SelectionFilterGate> gateDepPtr(new NoDependentsSelection(getTopTransformedObject()));
+    Gui::Selection().addSelectionGate(new CombineSelectionFilterGates(gateRefPtr, gateDepPtr));
 }
 
 //**************************************************************************

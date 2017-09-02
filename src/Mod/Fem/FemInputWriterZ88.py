@@ -20,11 +20,12 @@
 # *                                                                         *
 # ***************************************************************************
 
-
 __title__ = "FemInputWriterZ88"
 __author__ = "Bernd Hahnebach"
 __url__ = "http://www.freecadweb.org"
 
+## \addtogroup FEM
+#  @{
 
 import FreeCAD
 import FemMeshTools
@@ -40,7 +41,7 @@ class FemInputWriterZ88(FemInputWriter.FemInputWriter):
                  contact_obj, planerotation_obj, transform_obj,
                  selfweight_obj, force_obj, pressure_obj,
                  temperature_obj, heatflux_obj, initialtemperature_obj,
-                 beamsection_obj, shellthickness_obj,
+                 beamsection_obj, shellthickness_obj, fluidsection_obj,
                  analysis_type=None, dir_name=None
                  ):
 
@@ -52,9 +53,10 @@ class FemInputWriterZ88(FemInputWriter.FemInputWriter):
             contact_obj, planerotation_obj, transform_obj,
             selfweight_obj, force_obj, pressure_obj,
             temperature_obj, heatflux_obj, initialtemperature_obj,
-            beamsection_obj, shellthickness_obj,
+            beamsection_obj, shellthickness_obj, fluidsection_obj,
             analysis_type, dir_name)
-        self.file_name = self.dir_name + '/z88'
+        # self.dir_name does have a slash at the end
+        self.file_name = self.dir_name + 'z88'
         print('FemInputWriterZ88 --> self.dir_name  -->  ' + self.dir_name)
         print('FemInputWriterZ88 --> self.file_name  -->  ' + self.file_name)
 
@@ -172,8 +174,8 @@ class FemInputWriterZ88(FemInputWriter.FemInputWriter):
         if FemMeshTools.is_edge_femmesh(self.femmesh):
             if len(self.beamsection_objects) == 1:
                 beam_obj = self.beamsection_objects[0]['Object']
-                width = beam_obj.Width.getValueAs('mm')
-                height = beam_obj.Height.getValueAs('mm')
+                width = beam_obj.RectWidth.getValueAs('mm')
+                height = beam_obj.RectHeight.getValueAs('mm')
                 area = str(width * height)
                 elements_data.append('1 ' + str(self.element_count) + ' ' + area + ' 0 0 0 0 0 0 ')
                 print("Be aware, only trusses are supported for edge meshes!")
@@ -317,3 +319,5 @@ Entries for Cuthill-McKee Z88H         Daten fuer Cuthill- McKee Programm
 
 DYNAMIC END
 '''
+
+##  @}

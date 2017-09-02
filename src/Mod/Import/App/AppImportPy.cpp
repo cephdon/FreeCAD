@@ -29,6 +29,7 @@
 # include <Python.h>
 # include <climits>
 # include <Standard_Version.hxx>
+# include <NCollection_Vector.hxx>
 # include <TDocStd_Document.hxx>
 # include <XCAFApp_Application.hxx>
 # include <TDocStd_Document.hxx>
@@ -41,9 +42,11 @@
 # include <IGESControl_Controller.hxx>
 # include <IGESData_GlobalSection.hxx>
 # include <IGESData_IGESModel.hxx>
+# include <IGESToBRep_Actor.hxx>
 # include <Interface_Static.hxx>
 # include <Transfer_TransientProcess.hxx>
 # include <XSControl_WorkSession.hxx>
+# include <XSControl_TransferReader.hxx>
 # include <APIHeaderSection_MakeHeader.hxx>
 # include <OSD_Exception.hxx>
 #endif
@@ -125,16 +128,15 @@ private:
                         throw Py::Exception(PyExc_IOError, "cannot read STEP file");
                     }
 
-                    Handle_Message_ProgressIndicator pi = new Part::ProgressIndicator(100);
+                    Handle(Message_ProgressIndicator) pi = new Part::ProgressIndicator(100);
                     aReader.Reader().WS()->MapReader()->SetProgress(pi);
                     pi->NewScope(100, "Reading STEP file...");
                     pi->Show();
                     aReader.Transfer(hDoc);
                     pi->EndScope();
                 }
-                catch (OSD_Exception) {
-                    Handle_Standard_Failure e = Standard_Failure::Caught();
-                    Base::Console().Error("%s\n", e->GetMessageString());
+                catch (OSD_Exception& e) {
+                    Base::Console().Error("%s\n", e.GetMessageString());
                     Base::Console().Message("Try to load STEP file without colors...\n");
 
                     Part::ImportStepParts(pcDoc,Utf8Name.c_str());
@@ -158,16 +160,18 @@ private:
                         throw Py::Exception(PyExc_IOError, "cannot read IGES file");
                     }
 
-                    Handle_Message_ProgressIndicator pi = new Part::ProgressIndicator(100);
+                    Handle(Message_ProgressIndicator) pi = new Part::ProgressIndicator(100);
                     aReader.WS()->MapReader()->SetProgress(pi);
                     pi->NewScope(100, "Reading IGES file...");
                     pi->Show();
                     aReader.Transfer(hDoc);
                     pi->EndScope();
+                    // http://opencascade.blogspot.de/2009/03/unnoticeable-memory-leaks-part-2.html
+                    Handle(IGESToBRep_Actor)::DownCast(aReader.WS()->TransferReader()->Actor())
+                            ->SetModel(new IGESData_IGESModel);
                 }
-                catch (OSD_Exception) {
-                    Handle_Standard_Failure e = Standard_Failure::Caught();
-                    Base::Console().Error("%s\n", e->GetMessageString());
+                catch (OSD_Exception& e) {
+                    Base::Console().Error("%s\n", e.GetMessageString());
                     Base::Console().Message("Try to load IGES file without colors...\n");
 
                     Part::ImportIgesParts(pcDoc,Utf8Name.c_str());
@@ -186,10 +190,10 @@ private:
             xcaf.loadShapes();
 #endif
             pcDoc->recompute();
+            hApp->Close(hDoc);
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            throw Py::Exception(Base::BaseExceptionFreeCADError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+            throw Py::Exception(Base::BaseExceptionFreeCADError, e.GetMessageString());
         }
         catch (const Base::Exception& e) {
             throw Py::RuntimeError(e.what());
@@ -209,12 +213,15 @@ private:
         std::string name8bit = Part::encodeFilename(Utf8Name);
 
         try {
+            Py::Sequence list(object);
             Handle(XCAFApp_Application) hApp = XCAFApp_Application::GetApplication();
             Handle(TDocStd_Document) hDoc;
             hApp->NewDocument(TCollection_ExtendedString("MDTV-CAF"), hDoc);
-            Import::ExportOCAF ocaf(hDoc);
 
-            Py::Sequence list(object);
+            bool keepExplicitPlacement = list.size() > 1;
+            keepExplicitPlacement = Standard_True;
+            Import::ExportOCAF ocaf(hDoc, keepExplicitPlacement);
+
             for (Py::Sequence::iterator it = list.begin(); it != list.end(); ++it) {
                 PyObject* item = (*it).ptr();
                 if (PyObject_TypeCheck(item, &(App::DocumentObjectPy::Type))) {
@@ -222,7 +229,10 @@ private:
                     if (obj->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId())) {
                         Part::Feature* part = static_cast<Part::Feature*>(obj);
                         std::vector<App::Color> colors;
-                        ocaf.saveShape(part, colors);
+                        std::vector <TDF_Label> hierarchical_label;
+                        std::vector <TopLoc_Location> hierarchical_loc;
+                        std::vector <App::DocumentObject*> hierarchical_part;
+                        ocaf.saveShape(part, colors, hierarchical_label, hierarchical_loc, hierarchical_part);
                     }
                     else {
                         Base::Console().Message("'%s' is not a shape, export will be ignored.\n", obj->Label.getValue());
@@ -238,7 +248,10 @@ private:
                             Part::Feature* part = static_cast<Part::Feature*>(obj);
                             App::PropertyColorList colors;
                             colors.setPyObject(item1.ptr());
-                            ocaf.saveShape(part, colors.getValues());
+                            std::vector <TDF_Label> hierarchical_label;
+                            std::vector <TopLoc_Location> hierarchical_loc;
+                            std::vector <App::DocumentObject*> hierarchical_part;
+                            ocaf.saveShape(part, colors.getValues(), hierarchical_label, hierarchical_loc, hierarchical_part);
                         }
                         else {
                             Base::Console().Message("'%s' is not a shape, export will be ignored.\n", obj->Label.getValue());
@@ -288,10 +301,11 @@ private:
                     throw Py::Exception();
                 }
             }
+
+            hApp->Close(hDoc);
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            throw Py::Exception(Base::BaseExceptionFreeCADError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+            throw Py::Exception(Base::BaseExceptionFreeCADError, e.GetMessageString());
         }
         catch (const Base::Exception& e) {
             throw Py::RuntimeError(e.what());
@@ -340,20 +354,19 @@ static PyObject * importAssembly(PyObject *self, PyObject *args)
                 aReader.SetNameMode(true);
                 aReader.SetLayerMode(true);
                 if (aReader.ReadFile((Standard_CString)(name8bit.c_str())) != IFSelect_RetDone) {
-                    PyErr_SetString(PyExc_Exception, "cannot read STEP file");
+                    PyErr_SetString(PyExc_IOError, "cannot read STEP file");
                     return 0;
                 }
 
-                Handle_Message_ProgressIndicator pi = new Part::ProgressIndicator(100);
+                Handle(Message_ProgressIndicator) pi = new Part::ProgressIndicator(100);
                 aReader.Reader().WS()->MapReader()->SetProgress(pi);
                 pi->NewScope(100, "Reading STEP file...");
                 pi->Show();
                 aReader.Transfer(hDoc);
                 pi->EndScope();
             }
-            catch (OSD_Exception) {
-                Handle_Standard_Failure e = Standard_Failure::Caught();
-                Base::Console().Error("%s\n", e->GetMessageString());
+            catch (OSD_Exception& e) {
+                Base::Console().Error("%s\n", e.GetMessageString());
                 Base::Console().Message("Try to load STEP file without colors...\n");
 
                 Part::ImportStepParts(pcDoc,Name);
@@ -369,20 +382,19 @@ static PyObject * importAssembly(PyObject *self, PyObject *args)
                 aReader.SetNameMode(true);
                 aReader.SetLayerMode(true);
                 if (aReader.ReadFile((Standard_CString)(name8bit.c_str())) != IFSelect_RetDone) {
-                    PyErr_SetString(PyExc_Exception, "cannot read IGES file");
+                    PyErr_SetString(PyExc_IOError, "cannot read IGES file");
                     return 0;
                 }
 
-                Handle_Message_ProgressIndicator pi = new Part::ProgressIndicator(100);
+                Handle(Message_ProgressIndicator) pi = new Part::ProgressIndicator(100);
                 aReader.WS()->MapReader()->SetProgress(pi);
                 pi->NewScope(100, "Reading IGES file...");
                 pi->Show();
                 aReader.Transfer(hDoc);
                 pi->EndScope();
             }
-            catch (OSD_Exception) {
-                Handle_Standard_Failure e = Standard_Failure::Caught();
-                Base::Console().Error("%s\n", e->GetMessageString());
+            catch (OSD_Exception& e) {
+                Base::Console().Error("%s\n", e.GetMessageString());
                 Base::Console().Message("Try to load IGES file without colors...\n");
 
                 Part::ImportIgesParts(pcDoc,Name);
@@ -390,7 +402,7 @@ static PyObject * importAssembly(PyObject *self, PyObject *args)
             }
         }
         else {
-            PyErr_SetString(PyExc_Exception, "no supported file format");
+            PyErr_SetString(PyExc_RuntimeError, "no supported file format");
             return 0;
         }
 
@@ -399,9 +411,8 @@ static PyObject * importAssembly(PyObject *self, PyObject *args)
         pcDoc->recompute();
 
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PyExc_Exception, e->GetMessageString());
+    catch (Standard_Failure& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.GetMessageString());
         return 0;
     }
     PY_CATCH

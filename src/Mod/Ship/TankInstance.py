@@ -47,11 +47,10 @@ class Tank:
         ship -- Ship where the tank is allocated.
         """
         # Add an unique property to identify the Weight instances
-        tooltip = str(QtGui.QApplication.translate(
+        tooltip = unicode(QtGui.QApplication.translate(
             "ship_tank",
             "True if it is a valid tank instance, False otherwise",
-            None,
-            QtGui.QApplication.UnicodeUTF8))
+            None))
         obj.addProperty("App::PropertyBool",
                         "IsTank",
                         "Tank",
@@ -130,8 +129,7 @@ class Tank:
                 "ship_console",
                 "Tank volume operation failed. The tool is retrying that"
                 " slightly moving the free surface position",
-                None,
-                QtGui.QApplication.UnicodeUTF8)
+                None)
             App.Console.PrintWarning(msg + '\n')
             rand_bounds = 0.01 * dz
             i = 0
@@ -159,7 +157,7 @@ class Tank:
         """Return the fluid volume center of gravity, provided the volume of
         fluid inside the tank.
 
-        The returned center of gravity is refered to the untransformed ship.
+        The returned center of gravity is referred to the untransformed ship.
 
         Keyword arguments:
         fp -- Part::FeaturePython object affected.
@@ -271,7 +269,7 @@ class ViewProviderTank:
     def setDisplayMode(self, mode):
         """Map the display mode defined in attach with those defined in
         getDisplayModes. Since they have the same names nothing needs to be
-        done. This method is optinal.
+        done. This method is optional.
 
         Keyword arguments:
         mode -- Mode to be activated.

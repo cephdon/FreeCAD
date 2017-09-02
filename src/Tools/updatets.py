@@ -1,4 +1,4 @@
-#! python
+#! /usr/bin/python
 # -*- coding: utf-8 -*-
 # (c) 2010 Werner Mayer LGPL
 
@@ -30,7 +30,7 @@ Usage = """updatets - update all .ts files found in the source directories
 Usage:
    updatets 
    
-Autor:
+Author:
   (c) 2010 Werner Mayer
   Licence: GPL
 
@@ -77,6 +77,8 @@ PyCommands = [["src/Mod/Draft",
                'lconvert -i Gui/Resources/translations/Fempy.ts Gui/Resources/translations/Fem.ts -o Gui/Resources/translations/Fem.ts'],
               ["src/Mod/Fem",
                'rm Gui/Resources/translations/Fempy.ts'],
+              ["src/Mod/Tux",
+               'pylupdate `find ./ -name "*.py"` -ts Resources/translations/Tux.ts'],
                ]
 
 # add python folders to exclude list

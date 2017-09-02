@@ -48,10 +48,12 @@ public:
 
     App::PropertyFloat X;
     App::PropertyFloat Y;
-    App::PropertyFloat Scale;
+    App::PropertyFloatConstraint Scale;
 
     App::PropertyEnumeration ScaleType;
     App::PropertyFloat Rotation;
+    App::PropertyBool  KeepLabel;
+    App::PropertyString Caption;
 
     /** @name methods overide Feature */
     //@{
@@ -60,6 +62,7 @@ public:
     virtual void onDocumentRestored();
     virtual short mustExecute() const;
     //@}
+    void Restore(Base::XMLReader &reader);
 
     bool isInClip();
 
@@ -78,6 +81,7 @@ public:
     virtual QRectF getRect() const;                       //must be overridden by derived class
     virtual double autoScale(double w, double h) const;
     virtual bool checkFit(DrawPage*) const;
+    virtual void setPosition(double x, double y);
 
 protected:
     void onChanged(const App::Property* prop);
@@ -87,6 +91,7 @@ protected:
 
 private:
     static const char* ScaleTypeEnums[];
+    static App::PropertyFloatConstraint::Constraints scaleRange;
 };
 
 typedef App::FeaturePythonT<DrawView> DrawViewPython;

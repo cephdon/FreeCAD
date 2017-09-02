@@ -150,11 +150,18 @@ class DocumentBasicCases(unittest.TestCase):
     enumeration_choices = ["one", "two"]
     obj = self.Doc.addObject("App::FeaturePython","Label_2")
     obj.addProperty("App::PropertyEnumeration", "myEnumeration", "Enum", "mytest")
-    with self.assertRaises(FreeCAD.Base.FreeCADError):
+    with self.assertRaises(ValueError):
       obj.myEnumeration = enumeration_choices[0]
 
   def testMem(self):
     self.Doc.MemSize
+
+  def testDuplicateLinks(self):
+    obj = self.Doc.addObject("App::FeatureTest","obj")
+    grp = self.Doc.addObject("App::DocumentObjectGroup","group")
+    grp.Group = [obj,obj]
+    self.Doc.removeObject(obj.Name)
+    self.assertListEqual(grp.Group, [])
 
   def testAddRemove(self):
     L1 = self.Doc.addObject("App::FeatureTest","Label_1")
@@ -181,16 +188,249 @@ class DocumentBasicCases(unittest.TestCase):
     else:
       self.failUnless(False)
     del L2
+    
+  def testExtensions(self):
+    #we try to create a normal python object and add a extension to it 
+    obj = self.Doc.addObject("App::DocumentObject", "Extension_1")
+    grp = self.Doc.addObject("App::DocumentObject", "Extension_2")
+    #we should have all methods we need to handle extensions 
+    try:
+      self.failUnless(not grp.hasExtension("App::GroupExtensionPython"))
+      grp.addExtension("App::GroupExtensionPython", self)
+      self.failUnless(grp.hasExtension("App::GroupExtension"))
+      self.failUnless(grp.hasExtension("App::GroupExtensionPython"))
+      grp.addObject(obj)
+      self.failUnless(len(grp.Group) == 1)
+      self.failUnless(grp.Group[0] == obj)
+    except:
+      self.failUnless(False)
+      
+    #test if the method override works
+    class SpecialGroup():
+        def allowObject(self, obj):
+            return False;
+    
+    callback = SpecialGroup()
+    grp2 = self.Doc.addObject("App::DocumentObject", "Extension_3")  
+    grp2.addExtension("App::GroupExtensionPython", callback)
+    
+    try:
+      self.failUnless(grp2.hasExtension("App::GroupExtension"))
+      grp2.addObject(obj)
+      self.failUnless(len(grp2.Group) == 0)
+    except:
+      self.failUnless(True)
+    
+    self.Doc.removeObject(grp.Name)
+    self.Doc.removeObject(grp2.Name)
+    self.Doc.removeObject(obj.Name)
+    del obj
+    del grp
+    del grp2
+    
+  def testExtensionBug0002785(self):
+        
+        class MyExtension():
+            def __init__(self, obj):
+                obj.addExtension("App::GroupExtensionPython", self)
+             
+        obj = self.Doc.addObject("App::DocumentObject", "myObj")
+        MyExtension(obj)
+        self.failUnless(obj.hasExtension("App::GroupExtension"))
+        self.failUnless(obj.hasExtension("App::GroupExtensionPython"))
+        self.Doc.removeObject(obj.Name)
+        del obj
+
+  def testExtensionGroup(self):
+    obj = self.Doc.addObject("App::DocumentObject", "Obj")
+    grp = self.Doc.addObject("App::FeaturePython", "Extension_2")
+    grp.addExtension("App::GroupExtensionPython", None)
+    grp.Group = [obj]
+    self.assertTrue(obj in grp.Group)
+    
+  def testExtensionBugViewProvider(self):
+
+    class Layer():
+      def __init__(self, obj):
+        obj.addExtension("App::GroupExtensionPython", self)
+
+    class LayerViewProvider():
+      def __init__(self, obj):
+        obj.addExtension("Gui::ViewProviderGroupExtensionPython", self)
+        obj.Proxy = self
+    
+    obj = self.Doc.addObject("App::FeaturePython","Layer")
+    Layer(obj)
+    self.failUnless(obj.hasExtension("App::GroupExtension"))
+
+    if FreeCAD.GuiUp:
+        LayerViewProvider(obj.ViewObject)
+        self.failUnless(obj.ViewObject.hasExtension("Gui::ViewProviderGroupExtension"))
+        self.failUnless(obj.ViewObject.hasExtension("Gui::ViewProviderGroupExtensionPython"))
+    
+    self.Doc.removeObject(obj.Name)
+    del obj
+    
+  def testRecompute(self):
+      
+    # sequence to test recompute behaviour
+    #       L1---\    L7
+    #      /  \   \    |
+    #    L2   L3   \  L8
+    #   /  \ /  \  /
+    #  L4   L5   L6
+
+    L1 = self.Doc.addObject("App::FeatureTest","Label_1")
+    L2 = self.Doc.addObject("App::FeatureTest","Label_2")
+    L3 = self.Doc.addObject("App::FeatureTest","Label_3")
+    L4 = self.Doc.addObject("App::FeatureTest","Label_4")
+    L5 = self.Doc.addObject("App::FeatureTest","Label_5")
+    L6 = self.Doc.addObject("App::FeatureTest","Label_6")
+    L7 = self.Doc.addObject("App::FeatureTest","Label_7")
+    L8 = self.Doc.addObject("App::FeatureTest","Label_8")
+    L1.LinkList = [L2,L3,L6]
+    L2.Link = L4
+    L2.LinkList = [L5]
+    L3.LinkList = [L5,L6]
+    L7.Link = L8 #make second root
+
+    self.failUnless(L7 in self.Doc.RootObjects)
+    self.failUnless(L1 in self.Doc.RootObjects)
+
+    self.failUnless(len(self.Doc.Objects) == len(self.Doc.ToplogicalSortedObjects))
+
+    seqDic = {}
+    i = 0
+    for obj in self.Doc.ToplogicalSortedObjects:
+        seqDic[obj] = i
+        print(obj)
+        i += 1
+        
+    self.failUnless(seqDic[L2] > seqDic[L1])
+    self.failUnless(seqDic[L3] > seqDic[L1])
+    self.failUnless(seqDic[L5] > seqDic[L2])
+    self.failUnless(seqDic[L5] > seqDic[L3])
+    self.failUnless(seqDic[L5] > seqDic[L1])
+
+
+    self.failUnless((0, 0, 0, 0, 0, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    self.failUnless(self.Doc.recompute()==4)
+    self.failUnless((1, 1, 1, 0, 0, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L5.touch()
+    self.failUnless((1, 1, 1, 0, 0, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    self.failUnless(self.Doc.recompute()==4)
+    self.failUnless((2, 2, 2, 0, 1, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L4.touch()
+    self.failUnless(self.Doc.recompute()==3)
+    self.failUnless((3, 3, 2, 1, 1, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L5.touch()
+    self.failUnless(self.Doc.recompute()==4)
+    self.failUnless((4, 4, 3, 1, 2, 0)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L6.touch()
+    self.failUnless(self.Doc.recompute()==3)
+    self.failUnless((5, 4, 4, 1, 2, 1)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L2.touch()
+    self.failUnless(self.Doc.recompute()==2)
+    self.failUnless((6, 5, 4, 1, 2, 1)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+    L1.touch()
+    self.failUnless(self.Doc.recompute()==1)
+    self.failUnless((7, 5, 4, 1, 2, 1)==(L1.ExecCount,L2.ExecCount,L3.ExecCount,L4.ExecCount,L5.ExecCount,L6.ExecCount))
+     
+    self.Doc.removeObject(L1.Name)
+    self.Doc.removeObject(L2.Name)
+    self.Doc.removeObject(L3.Name)
+    self.Doc.removeObject(L4.Name)
+    self.Doc.removeObject(L5.Name)
+    self.Doc.removeObject(L6.Name)
+    self.Doc.removeObject(L7.Name)
+    self.Doc.removeObject(L8.Name)
+    
+  def testPropertyLink_Issue2902Part1(self):
+    o1 = self.Doc.addObject("App::FeatureTest","test1")
+    o2 = self.Doc.addObject("App::FeatureTest","test2")
+    o3 = self.Doc.addObject("App::FeatureTest","test3")
+
+    o1.Link=o2
+    self.assertEqual(o1.Link, o2)
+    o1.Link=o3
+    self.assertEqual(o1.Link, o3)
+    o2.Placement = FreeCAD.Placement()
+    self.assertEqual(o1.Link, o3)
+
+  def testNotification_Issue2902Part2(self):
+    o = self.Doc.addObject("App::FeatureTest","test")
+
+    plm = o.Placement
+    o.Placement = FreeCAD.Placement()
+    plm.Base.x = 5
+    self.assertEqual(o.Placement.Base.x, 0)
+    o.Placement.Base.x=5
+    self.assertEqual(o.Placement.Base.x, 5)
+
+  def testNotification_Issue2996(self):
+    if not FreeCAD.GuiUp:
+      return
+    # works only if Gui is shown
+    class ViewProvider:
+      def __init__(self, vobj):
+        vobj.Proxy=self
+
+      def attach(self, vobj):
+        self.ViewObject = vobj
+        self.Object = vobj.Object
+
+      def claimChildren(self):
+        children = [self.Object.Link]
+        return children
+
+    obj=self.Doc.addObject("App::FeaturePython", "Sketch")
+    obj.addProperty("App::PropertyLink","Link")
+    ViewProvider(obj.ViewObject)
+
+    ext=self.Doc.addObject("App::FeatureTest", "Extrude")
+    ext.Link=obj
+
+    sli=self.Doc.addObject("App::FeaturePython", "Slice")
+    sli.addProperty("App::PropertyLink","Link").Link=ext
+    ViewProvider(sli.ViewObject)
+
+    com=self.Doc.addObject("App::FeaturePython", "CompoundFilter")
+    com.addProperty("App::PropertyLink", "Link").Link=sli
+    ViewProvider(com.ViewObject)
+
+    ext.Label="test"
+
+    self.assertEqual(ext.Link, obj)
+    self.assertNotEqual(ext.Link, sli)
 
   def tearDown(self):
     #closing doc
     FreeCAD.closeDocument("CreateTest")
 
+# class must be defined in global scope to allow it to be reloaded on document open
+class SaveRestoreSpecialGroup():
+    def __init__(self, obj):
+        obj.addExtension("App::GroupExtensionPython", self)
+        obj.Proxy = self
+        
+    def allowObject(self, obj):
+        return False;
+
+# class must be defined in global scope to allow it to be reloaded on document open    
+class SaveRestoreSpecialGroupViewProvider():
+    def __init__(self, obj):
+        obj.addExtension("Gui::ViewProviderGroupExtensionPython", self)
+        obj.Proxy = self
+        
+    def testFunction(self):
+        pass
+        
 class DocumentSaveRestoreCases(unittest.TestCase):
   def setUp(self):
     self.Doc = FreeCAD.newDocument("SaveRestoreTests")
     L1 = self.Doc.addObject("App::FeatureTest","Label_1")
     L2 = self.Doc.addObject("App::FeatureTest","Label_2")
+    L3 = self.Doc.addObject("App::FeatureTest","Label_3")
     self.TempPath = tempfile.gettempdir()
     FreeCAD.Console.PrintLog( '  Using temp path: ' + self.TempPath + '\n')
 
@@ -201,9 +441,9 @@ class DocumentSaveRestoreCases(unittest.TestCase):
     self.Doc.Label_1.TypeTransient = 4712
     # setup Linking
     self.Doc.Label_1.Link = self.Doc.Label_2
-    self.Doc.Label_2.Link = self.Doc.Label_1
+    self.Doc.Label_2.Link = self.Doc.Label_3
     self.Doc.Label_1.LinkSub = (self.Doc.Label_2,["Sub1","Sub2"])
-    self.Doc.Label_2.LinkSub = (self.Doc.Label_1,["Sub3","Sub4"])
+    self.Doc.Label_2.LinkSub = (self.Doc.Label_3,["Sub3","Sub4"])
     # save the document
     self.Doc.saveAs(SaveName)
     FreeCAD.closeDocument("SaveRestoreTests")
@@ -212,9 +452,9 @@ class DocumentSaveRestoreCases(unittest.TestCase):
     self.failUnless(self.Doc.Label_2.Integer == 4711)
     # test Linkage
     self.failUnless(self.Doc.Label_1.Link == self.Doc.Label_2)
-    self.failUnless(self.Doc.Label_2.Link == self.Doc.Label_1)
+    self.failUnless(self.Doc.Label_2.Link == self.Doc.Label_3)
     self.failUnless(self.Doc.Label_1.LinkSub == (self.Doc.Label_2,["Sub1","Sub2"]))
-    self.failUnless(self.Doc.Label_2.LinkSub == (self.Doc.Label_1,["Sub3","Sub4"]))
+    self.failUnless(self.Doc.Label_2.LinkSub == (self.Doc.Label_3,["Sub3","Sub4"]))
     # do  NOT save transient properties
     self.failUnless(self.Doc.Label_1.TypeTransient == 4711)
     self.failUnless(self.Doc == FreeCAD.getDocument(self.Doc.Name))
@@ -243,6 +483,40 @@ class DocumentSaveRestoreCases(unittest.TestCase):
     except:
         # Okay, no document open
         self.failUnless(True)
+        
+  def testExtensionSaveRestore(self):
+    # saving and restoring
+    SaveName = self.TempPath + os.sep + "SaveRestoreExtensions.FCStd"
+    Doc = FreeCAD.newDocument("SaveRestoreExtensions")
+    #we try to create a normal python object and add a extension to it 
+    obj  = Doc.addObject("App::DocumentObject", "Obj") 
+    grp1 = Doc.addObject("App::DocumentObject", "Extension_1")
+    grp2 = Doc.addObject("App::FeaturePython", "Extension_2") 
+    
+    grp1.addExtension("App::GroupExtensionPython", None)
+    SaveRestoreSpecialGroup(grp2)
+    if FreeCAD.GuiUp:
+        SaveRestoreSpecialGroupViewProvider(grp2.ViewObject)
+    grp2.Group = [obj]
+    
+    Doc.saveAs(SaveName)
+    FreeCAD.closeDocument("SaveRestoreExtensions")
+    Doc = FreeCAD.open(SaveName)
+    
+    self.failUnless(Doc.Extension_1.hasExtension("App::GroupExtension"))
+    self.failUnless(Doc.Extension_2.hasExtension("App::GroupExtension"))
+    self.failUnless(Doc.Extension_1.ExtensionProxy is None)
+    self.failUnless(Doc.Extension_2.ExtensionProxy is not None)
+    self.failUnless(Doc.Extension_2.Group[0] is Doc.Obj)
+    self.failUnless(hasattr(Doc.Extension_2.Proxy, 'allowObject'))
+    self.failUnless(hasattr(Doc.Extension_2.ExtensionProxy, 'allowObject'))
+
+    if FreeCAD.GuiUp:
+      self.failUnless(Doc.Extension_2.ViewObject.hasExtension("Gui::ViewProviderGroupExtensionPython"))
+      self.failUnless(hasattr(Doc.Extension_2.ViewObject.Proxy, 'testFunction'))
+      self.failUnless(hasattr(Doc.Extension_2.ViewObject.ExtensionProxy, 'testFunction'))
+
+    FreeCAD.closeDocument("SaveRestoreExtensions")
 
   def tearDown(self):
     #closing doc
@@ -566,7 +840,63 @@ class UndoRedoCases(unittest.TestCase):
     self.Doc.removeObject("Group")
     self.Doc.removeObject("Label_2")
     self.Doc.removeObject("Label_3")
-
+    
+  def testGroupAndGeoFeatureGroup(self):
+    
+    # an object can only be in one group at once, that must be enforced
+    obj1 = self.Doc.addObject("App::FeatureTest","obj1")
+    grp1 = self.Doc.addObject("App::DocumentObjectGroup","Group1")
+    grp2 = self.Doc.addObject("App::DocumentObjectGroup","Group2")
+    grp1.addObject(obj1)
+    self.failUnless(obj1.getParentGroup()==grp1)
+    self.failUnless(obj1.getParentGeoFeatureGroup()==None)
+    self.failUnless(grp1.hasObject(obj1))
+    grp2.addObject(obj1)
+    self.failUnless(grp1.hasObject(obj1)==False)
+    self.failUnless(grp2.hasObject(obj1))
+    
+    # an object is allowed to be in a group and a geofeaturegroup
+    prt1 = self.Doc.addObject("App::Part","Part1")
+    prt2 = self.Doc.addObject("App::Part","Part2")
+    
+    prt1.addObject(grp2)
+    self.failUnless(grp2.getParentGeoFeatureGroup()==prt1)
+    self.failUnless(grp2.getParentGroup()==None)
+    self.failUnless(grp2.hasObject(obj1))
+    self.failUnless(prt1.hasObject(grp2))
+    self.failUnless(prt1.hasObject(obj1))
+    
+    #it is not allowed to be in 2 geofeaturegroups 
+    prt2.addObject(grp2)
+    self.failUnless(grp2.hasObject(obj1))
+    self.failUnless(prt1.hasObject(grp2)==False)
+    self.failUnless(prt1.hasObject(obj1)==False)
+    self.failUnless(prt2.hasObject(grp2))
+    self.failUnless(prt2.hasObject(obj1))
+       
+    #to test: try add obj to second group by .Group = []
+    grp = prt1.Group
+    grp.append(grp2)
+    
+    #to test: check if cross CS link works
+    #try:
+    #    prt1.Group=grp
+    #except:
+    #    pass
+    #else:
+    #    self.fail("No exception at cross geofeaturegroup links")
+    
+    prt2.addObject(grp1)
+    grp = grp1.Group
+    grp.append(obj1)
+    try:
+        grp1.Group = grp
+    except:
+        pass
+    else:
+        self.fail("No exception thrown when object is in multiple Groups")
+   
+        
 
   def tearDown(self):
     # closing doc

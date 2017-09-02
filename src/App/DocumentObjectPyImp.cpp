@@ -24,11 +24,13 @@
 
 #include "DocumentObject.h"
 #include "Document.h"
+#include "Expression.h"
+#include "GroupExtension.h"
+#include "GeoFeatureGroupExtension.h"
 
 // inclusion of the generated files (generated out of DocumentObjectPy.xml)
-#include "DocumentObjectPy.h"
-#include "DocumentObjectPy.cpp"
-#include "Expression.h"
+#include <App/DocumentObjectPy.h>
+#include <App/DocumentObjectPy.cpp>
 
 using namespace App;
 
@@ -58,6 +60,71 @@ Py::Object DocumentObjectPy::getDocument(void) const
     else {
         return Py::Object(doc->getPyObject(), true);
     }
+}
+
+PyObject*  DocumentObjectPy::addProperty(PyObject *args)
+{
+    char *sType,*sName=0,*sGroup=0,*sDoc=0;
+    short attr=0;
+    std::string sDocStr;
+    PyObject *ro = Py_False, *hd = Py_False;
+    if (!PyArg_ParseTuple(args, "s|ssethO!O!", &sType,&sName,&sGroup,"utf-8",&sDoc,&attr,
+        &PyBool_Type, &ro, &PyBool_Type, &hd))     // convert args: Python->C
+        return NULL;                             // NULL triggers exception
+
+    if (sDoc) {
+        sDocStr = sDoc;
+        PyMem_Free(sDoc);
+    }
+
+    App::Property* prop=0;
+    try {
+        prop = getDocumentObjectPtr()->addDynamicProperty(sType,sName,sGroup,sDocStr.c_str(),attr,
+            PyObject_IsTrue(ro) ? true : false, PyObject_IsTrue(hd) ? true : false);
+    }
+    catch (const Base::Exception& e) {
+        throw Py::RuntimeError(e.what());
+    }
+    if (!prop) {
+        std::stringstream str;
+        str << "No property found of type '" << sType << "'" << std::ends;
+        throw Py::Exception(Base::BaseExceptionFreeCADError,str.str());
+    }
+
+    return Py::new_reference_to(this);
+}
+
+PyObject*  DocumentObjectPy::removeProperty(PyObject *args)
+{
+    char *sName;
+    if (!PyArg_ParseTuple(args, "s", &sName))
+        return NULL;
+
+    try {
+        bool ok = getDocumentObjectPtr()->removeDynamicProperty(sName);
+        return Py_BuildValue("O", (ok ? Py_True : Py_False));
+    }
+    catch (const Base::Exception& e) {
+        throw Py::RuntimeError(e.what());
+    }
+}
+
+PyObject*  DocumentObjectPy::supportedProperties(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args, ""))     // convert args: Python->C
+        return NULL;                    // NULL triggers exception
+
+    std::vector<Base::Type> ary;
+    Base::Type::getAllDerivedFrom(App::Property::getClassTypeId(), ary);
+    Py::List res;
+    for (std::vector<Base::Type>::iterator it = ary.begin(); it != ary.end(); ++it) {
+        Base::BaseClass *data = static_cast<Base::BaseClass*>(it->createInstance());
+        if (data) {
+            delete data;
+            res.append(Py::String(it->getName()));
+        }
+    }
+    return Py::new_reference_to(res);
 }
 
 PyObject*  DocumentObjectPy::touch(PyObject * args)
@@ -96,6 +163,9 @@ Py::List DocumentObjectPy::getState(void) const
     if (object->isRestoring()) {
         uptodate = false;
         list.append(Py::String("Restore"));
+    }
+    if (object->testStatus(App::Expand)){
+        list.append(Py::String("Expanded"));
     }
     if (uptodate) {
         list.append(Py::String("Up-to-date"));
@@ -142,6 +212,22 @@ Py::List DocumentObjectPy::getInList(void) const
     return ret;
 }
 
+Py::List DocumentObjectPy::getInListRecursive(void) const
+{
+    Py::List ret;
+    try {
+        std::vector<DocumentObject*> list = getDocumentObjectPtr()->getInListRecursive();
+
+        for (std::vector<DocumentObject*>::iterator It = list.begin(); It != list.end(); ++It)
+            ret.append(Py::Object((*It)->getPyObject(), true));
+ 
+    }
+    catch (const Base::Exception& e) {
+        throw Py::IndexError(e.what());
+    }
+    return ret;    
+}
+
 Py::List DocumentObjectPy::getOutList(void) const
 {
     Py::List ret;
@@ -149,6 +235,23 @@ Py::List DocumentObjectPy::getOutList(void) const
 
     for (std::vector<DocumentObject*>::iterator It=list.begin();It!=list.end();++It)
         ret.append(Py::Object((*It)->getPyObject(), true));
+
+    return ret;
+}
+
+Py::List DocumentObjectPy::getOutListRecursive(void) const
+{
+    Py::List ret;
+    try {
+        std::vector<DocumentObject*> list = getDocumentObjectPtr()->getOutListRecursive();
+
+        // creat the python list for the output
+        for (std::vector<DocumentObject*>::iterator It = list.begin(); It != list.end(); ++It)
+            ret.append(Py::Object((*It)->getPyObject(), true));
+    }
+    catch (const Base::Exception& e) {
+        throw Py::IndexError(e.what());
+    }
 
     return ret;
 }
@@ -166,13 +269,21 @@ PyObject*  DocumentObjectPy::setExpression(PyObject * args)
 
     if (Py::Object(expr).isNone())
         getDocumentObjectPtr()->setExpression(p, boost::shared_ptr<Expression>());
+#if PY_MAJOR_VERSION >= 3
+    else if (PyUnicode_Check(expr)) {
+        const char * exprStr = PyUnicode_AsUTF8(expr);
+#else
     else if (PyString_Check(expr)) {
         const char * exprStr = PyString_AsString(expr);
+#endif
         boost::shared_ptr<Expression> shared_expr(ExpressionParser::parse(getDocumentObjectPtr(), exprStr));
 
         getDocumentObjectPtr()->setExpression(p, shared_expr, comment);
     }
     else if (PyUnicode_Check(expr)) {
+#if PY_MAJOR_VERSION >= 3
+        std::string exprStr = PyUnicode_AsUTF8(expr);
+#else
         PyObject* unicode = PyUnicode_AsEncodedString(expr, "utf-8", 0);
         if (unicode) {
             std::string exprStr = PyString_AsString(unicode);
@@ -185,20 +296,99 @@ PyObject*  DocumentObjectPy::setExpression(PyObject * args)
             // utf-8 encoding failed
             return 0;
         }
+#endif
     }
     else
         throw Py::TypeError("String or None expected.");
     Py_Return;
 }
 
-
-PyObject *DocumentObjectPy::getCustomAttributes(const char* /*attr*/) const
+PyObject*  DocumentObjectPy::recompute(PyObject *args)
 {
-    return 0;
+    if (!PyArg_ParseTuple(args, ""))
+        return NULL;
+
+    try {
+        bool ok = getDocumentObjectPtr()->recomputeFeature();
+        return Py_BuildValue("O", (ok ? Py_True : Py_False));
+    }
+    catch (const Base::Exception& e) {
+        throw Py::RuntimeError(e.what());
+    }
+}
+
+PyObject*  DocumentObjectPy::getParentGroup(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args, ""))
+        return NULL;
+
+    try {
+        auto grp = GroupExtension::getGroupOfObject(getDocumentObjectPtr());
+        if(!grp) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        return grp->getPyObject();
+    }
+    catch (const Base::Exception& e) {
+        throw Py::RuntimeError(e.what());
+    }
+}
+
+PyObject*  DocumentObjectPy::getParentGeoFeatureGroup(PyObject *args)
+{
+    if (!PyArg_ParseTuple(args, ""))
+        return NULL;
+
+    try {
+        auto grp = GeoFeatureGroupExtension::getGroupOfObject(getDocumentObjectPtr());
+        if(!grp) {
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        return grp->getPyObject();
+    }
+    catch (const Base::Exception& e) {
+        throw Py::RuntimeError(e.what());
+    }
+}
+
+PyObject *DocumentObjectPy::getCustomAttributes(const char* attr) const
+{
+    // search for dynamic property
+    Property* prop = getDocumentObjectPtr()->getDynamicPropertyByName(attr);
+    if (prop)
+        return prop->getPyObject();
+    else
+        return 0;
 }
 
 int DocumentObjectPy::setCustomAttributes(const char* attr, PyObject *obj)
 {
+    // explicitly search for dynamic property
+    try {
+        Property* prop = getDocumentObjectPtr()->getDynamicPropertyByName(attr);
+        if (prop) {
+            prop->setPyObject(obj);
+            return 1;
+        }
+    }
+    catch (Base::ValueError &exc) {
+        std::stringstream s;
+        s << "Property '" << attr << "': " << exc.what();
+        throw Py::ValueError(s.str());
+    }
+    catch (Base::Exception &exc) {
+        std::stringstream s;
+        s << "Attribute (Name: " << attr << ") error: '" << exc.what() << "' ";
+        throw Py::AttributeError(s.str());
+    }
+    catch (...) {
+        std::stringstream s;
+        s << "Unknown error in attribute " << attr;
+        throw Py::AttributeError(s.str());
+    }
+
     // search in PropertyList
     Property *prop = getDocumentObjectPtr()->getPropertyByName(attr);
     if (prop) {

@@ -34,20 +34,29 @@
 #include <Gui/Command.h>
 #include <Gui/Control.h>
 #include <Gui/Document.h>
+#include <Gui/View3DInventor.h>
+#include <Gui/View3DInventorViewer.h>
+
+#include <Inventor/SbVec3f.h>
 
 #include <Mod/Part/App/PartFeature.h>
 
 #include <Mod/TechDraw/App/DrawPage.h>
+#include <Mod/TechDraw/App/DrawUtil.h>
+#include <Mod/TechDraw/App/DrawView.h>
 #include <Mod/TechDraw/App/DrawViewPart.h>
 
 #include <Mod/TechDraw/App/DrawProjGroupItem.h>
 #include <Mod/TechDraw/App/DrawProjGroup.h>
 
 #include "ViewProviderProjGroup.h"
+#include "ViewProviderProjGroupItem.h"
+#include "ViewProviderPage.h"
 #include "TaskProjGroup.h"
 #include <Mod/TechDraw/Gui/ui_TaskProjGroup.h>
 
 using namespace Gui;
+using namespace TechDraw;
 using namespace TechDrawGui;
 
 //TODO: Look into this, seems we might be able to delete it now?  IR
@@ -86,6 +95,11 @@ TaskProjGroup::TaskProjGroup(TechDraw::DrawProjGroup* featView, bool mode) :
     connect(ui->butLeftRotate,  SIGNAL(clicked()), this, SLOT(rotateButtonClicked(void)));
     connect(ui->butCCWRotate,   SIGNAL(clicked()), this, SLOT(rotateButtonClicked(void)));
 
+    //3D button
+    connect(ui->but3D,   SIGNAL(clicked()), this, SLOT(on3DClicked(void)));
+    //Reset button
+    connect(ui->butReset,   SIGNAL(clicked()), this, SLOT(onResetClicked(void)));
+
     // Slot for Scale Type
     connect(ui->cmbScaleType, SIGNAL(currentIndexChanged(int)), this, SLOT(scaleTypeChanged(int)));
     connect(ui->sbScaleNum,   SIGNAL(valueChanged(int)), this, SLOT(scaleManuallyChanged(int)));
@@ -93,6 +107,14 @@ TaskProjGroup::TaskProjGroup(TechDraw::DrawProjGroup* featView, bool mode) :
 
     // Slot for Projection Type (layout)
     connect(ui->projection, SIGNAL(currentIndexChanged(int)), this, SLOT(projectionTypeChanged(int)));
+
+    m_page = multiView->findParentPage();
+    Gui::Document* activeGui = Gui::Application::Instance->getDocument(m_page->getDocument());
+    Gui::ViewProvider* vp = activeGui->getViewProvider(m_page);
+    ViewProviderPage* dvp = static_cast<ViewProviderPage*>(vp);
+    m_mdi = dvp->getMDIViewPage();
+
+    setUiPrimary();
 }
 
 TaskProjGroup::~TaskProjGroup()
@@ -102,15 +124,30 @@ TaskProjGroup::~TaskProjGroup()
 
 void TaskProjGroup::viewToggled(bool toggle)
 {
+    bool changed = false;
     // Obtain name of checkbox
     QString viewName = sender()->objectName();
     int index = viewName.mid(7).toInt();
     const char *viewNameCStr = viewChkIndexToCStr(index);
+    App::DocumentObject* newObj;
+    TechDraw::DrawView* newView;
     if ( toggle && !multiView->hasProjection( viewNameCStr ) ) {
-        multiView->addProjection( viewNameCStr );
+        newObj = multiView->addProjection( viewNameCStr );
+        newView = static_cast<TechDraw::DrawView*>(newObj);
+        m_mdi->redraw1View(newView);
+        changed = true;
     } else if ( !toggle && multiView->hasProjection( viewNameCStr ) ) {
         multiView->removeProjection( viewNameCStr );
+        changed = true;
     }
+    if (changed) {
+        multiView->recomputeFeature();
+        if (multiView->ScaleType.isValue("Automatic")) {
+            double scale = multiView->Scale.getValue();
+            setFractionalScale(scale);
+        }
+    }
+
 }
 
 void TaskProjGroup::rotateButtonClicked(void)
@@ -118,31 +155,53 @@ void TaskProjGroup::rotateButtonClicked(void)
     if ( multiView && ui ) {
         const QObject *clicked = sender();
 
-        // Any translation/scale/etc applied here will be ignored, as
-        // DrawProjGroup::setFrontViewOrientation() only
-        // uses it to set Direction and XAxisDirection.
-        Base::Matrix4D m = multiView->viewOrientationMatrix.getValue();
 
-        // TODO: Construct these directly
-        Base::Matrix4D t;
-
-        //TODO: Consider changing the vectors around depending on whether we're in First or Third angle mode - might be more intuitive? IR
-        if ( clicked == ui->butTopRotate ) {
-            t.rotX(M_PI / -2);
-        } else if ( clicked == ui->butCWRotate ) {
-            t.rotY(M_PI / -2);
-        } else if ( clicked == ui->butRightRotate) {
-            t.rotZ(M_PI / 2);
+        if ( clicked == ui->butTopRotate ) {          //change Front View Dir by 90
+            multiView->rotateUp();
         } else if ( clicked == ui->butDownRotate) {
-            t.rotX(M_PI / 2);
+            multiView->rotateDown();
+        } else if ( clicked == ui->butRightRotate) {
+            multiView->rotateRight();
         } else if ( clicked == ui->butLeftRotate) {
-            t.rotZ(M_PI / -2);
+            multiView->rotateLeft();
+        } else if ( clicked == ui->butCWRotate ) {              //doesn't change Anchor view dir. changes projType of secondaries, not dir
+            multiView->spinCW();
         } else if ( clicked == ui->butCCWRotate) {
-            t.rotY(M_PI / 2);
+            multiView->spinCCW();
         }
-        m *= t;
+        setUiPrimary();
+        Gui::Command::updateActive();
+    }
+}
 
-        multiView->setFrontViewOrientation(m);
+void TaskProjGroup::on3DClicked(void)
+{
+    Base::Console().Warning("TaskProjGroup - this function is temporarily unavailable\n");
+//TODO: how to set the DPG.Cube (or a brand new replacement Cube) to a specific orientation 
+//      {10x(viewDirection + RotationVector)}  given only the 
+//      viewDirection + upDirection(!= RotationVector) of the front view?
+//      need to find the sequence of rotations Left/Right, Up/Down, CW/CCW
+//      from current orientation to desired orientation. 
+    
+//    std::pair<Base::Vector3d,Base::Vector3d> dir3D = get3DViewDir();
+//    Base::Vector3d dir = dir3D.first;
+//    dir = DrawUtil::closestBasis(dir);
+//    Base::Vector3d up = dir3D.second;
+//    up = DrawUtil::closestBasis(up);
+//    TechDraw::DrawProjGroupItem* front = multiView->getProjItem("Front");
+//    if (front) {                              //why "if front"???
+//        multiView->setTable(dir,up);
+//        setUiPrimary();
+//        Gui::Command::updateActive();
+//    }
+}
+
+void TaskProjGroup::onResetClicked(void)
+{
+    TechDraw::DrawProjGroupItem* front = multiView->getProjItem("Front");
+    if (front) {
+        multiView->resetCube();
+        setUiPrimary();
         Gui::Command::updateActive();
     }
 }
@@ -152,12 +211,11 @@ void TaskProjGroup::projectionTypeChanged(int index)
     if(blockUpdate)
         return;
 
-    //Gui::Command::openCommand("Update projection type");
     if(index == 0) {
         //layout per Page (Document)
         Gui::Command::doCommand(Gui::Command::Doc,
                                 "App.activeDocument().%s.ProjectionType = '%s'",
-                                multiView->getNameInDocument(), "Document");
+                                multiView->getNameInDocument(), "Default");
     } else if(index == 1) {
         // First Angle layout
         Gui::Command::doCommand(Gui::Command::Doc,
@@ -169,7 +227,6 @@ void TaskProjGroup::projectionTypeChanged(int index)
                                 "App.activeDocument().%s.ProjectionType = '%s'",
                                 multiView->getNameInDocument(), "Third Angle");
     } else {
-        //Gui::Command::abortCommand();
         Base::Console().Log("Error - TaskProjGroup::projectionTypeChanged - unknown projection layout: %d\n",
                             index);
         return;
@@ -178,8 +235,6 @@ void TaskProjGroup::projectionTypeChanged(int index)
     // Update checkboxes so checked state matches the drawing
     setupViewCheckboxes();
 
-    //Gui::Command::commitCommand();
-    //Gui::Command::updateActive();
 }
 
 void TaskProjGroup::scaleTypeChanged(int index)
@@ -187,26 +242,30 @@ void TaskProjGroup::scaleTypeChanged(int index)
     if(blockUpdate)
         return;
 
-    //Gui::Command::openCommand("Update projection scale type");
     if(index == 0) {
-        //Automatic Scale Type
-        Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.ScaleType = '%s'", multiView->getNameInDocument()
-                                                                                             , "Document");
-    } else if(index == 1) {
         // Document Scale Type
+        Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.ScaleType = '%s'", multiView->getNameInDocument()
+                                                                                             , "Page");
+    } else if(index == 1) {
+        // Automatic Scale Type
         Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.ScaleType = '%s'", multiView->getNameInDocument()
                                                                                              , "Automatic");
     } else if(index == 2) {
         // Custom Scale Type
         Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.ScaleType = '%s'", multiView->getNameInDocument()
                                                                                              , "Custom");
+        int a = ui->sbScaleNum->value();
+        int b = ui->sbScaleDen->value();
+        double scale = (double) a / (double) b;
+        Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.Scale = %f", multiView->getNameInDocument()
+                                                                                     , scale);
     } else {
-        //Gui::Command::abortCommand();
         Base::Console().Log("Error - TaskProjGroup::scaleTypeChanged - unknown scale type: %d\n",index);
         return;
     }
-    //Gui::Command::commitCommand();
-    //Gui::Command::updateActive();
+
+    multiView->recomputeFeature();
+    Gui::Command::updateActive();
 }
 
 // ** David Eppstein / UC Irvine / 8 Aug 1993
@@ -220,7 +279,7 @@ void TaskProjGroup::nearestFraction(double val, int &n, int &d) const
 
     n = 1;  // numerator
     d = 1;  // denominator
-    double fraction = n / d;
+    double fraction = 1.0;                                                      //coverity 152005
     //double m = fabs(fraction - val);
 
     while (fabs(fraction - val) > 0.001) {
@@ -268,33 +327,20 @@ void TaskProjGroup::setFractionalScale(double newScale)
 void TaskProjGroup::scaleManuallyChanged(int i)
 {
     Q_UNUSED(i);
-    //TODO: See what this is about - shouldn't be simplifying the scale ratio while it's being edited... IR
     if(blockUpdate)
         return;
+    if (!multiView->ScaleType.isValue("Custom")) {                               //ignore if not custom!
+        return;
+    }
 
     int a = ui->sbScaleNum->value();
     int b = ui->sbScaleDen->value();
 
     double scale = (double) a / (double) b;
-    // If we were not in Custom, switch to Custom in two steps
-    bool switchToCustom = (strcmp(multiView->ScaleType.getValueAsString(), "Custom") != 0);
-    if(switchToCustom) {
-        // First, send out command to put us into custom scale
-        scaleTypeChanged(ui->cmbScaleType->findText(QString::fromLatin1("Custom")));
-        switchToCustom = true;
-    }
-
-    //Gui::Command::openCommand("Update custom scale");
     Gui::Command::doCommand(Gui::Command::Doc, "App.activeDocument().%s.Scale = %f", multiView->getNameInDocument()
                                                                                      , scale);
-    //Gui::Command::commitCommand();
-    //Gui::Command::updateActive();
-
-    if(switchToCustom) {
-        // Second, update the GUI
-        ui->cmbScaleType->setCurrentIndex(ui->cmbScaleType->findText(QString::fromLatin1("Custom")));
-    }
-
+    multiView->recomputeFeature();
+    Gui::Command::updateActive();
 }
 
 void TaskProjGroup::changeEvent(QEvent *e)
@@ -364,8 +410,61 @@ void TaskProjGroup::setupViewCheckboxes(bool addConnections)
     }
 }
 
+void TaskProjGroup::setUiPrimary()
+{
+    Base::Vector3d frontDir = multiView->getAnchorDirection();
+    ui->lePrimary->setText(formatVector(frontDir));
+}
+
+
+//should return a configuration?  frontdir,upDir mapped in DPG
+std::pair<Base::Vector3d,Base::Vector3d> TaskProjGroup::get3DViewDir()
+{
+    std::pair<Base::Vector3d,Base::Vector3d> result;
+    Base::Vector3d viewDir(0.0,-1.0,0.0);                                       //default to front
+    Base::Vector3d viewUp(0.0,0.0,1.0);                                         //default to top
+    std::list<MDIView*> mdis = Gui::Application::Instance->activeDocument()->getMDIViews();
+    Gui::View3DInventor *view;
+    Gui::View3DInventorViewer *viewer = nullptr;
+    for (auto& m: mdis) {                                                       //find the 3D viewer
+        view = dynamic_cast<Gui::View3DInventor*>(m);
+        if (view) {
+            viewer = view->getViewer();
+            break;
+        }
+    }
+    if (!viewer) {
+        Base::Console().Log("LOG - TaskProjGroup could not find a 3D viewer\n");
+        return std::make_pair( viewDir, viewUp);
+    }
+
+    SbVec3f dvec  = viewer->getViewDirection();
+    SbVec3f upvec = viewer->getUpDirection();
+
+    viewDir = Base::Vector3d(dvec[0], dvec[1], dvec[2]);
+    viewUp  = Base::Vector3d(upvec[0],upvec[1],upvec[2]);
+    viewDir *= -1.0;              //Inventor dir is opposite TD dir, Inventor up is same as TD up
+    viewDir = DrawUtil::closestBasis(viewDir);
+    viewUp  = DrawUtil::closestBasis(viewUp);
+    result = std::make_pair(viewDir,viewUp);
+    return result;
+}
+
+
+QString TaskProjGroup::formatVector(Base::Vector3d v)
+{
+    QString data = QString::fromLatin1("[%1 %2 %3]")
+        .arg(QLocale::system().toString(v.x, 'f', 2))
+        .arg(QLocale::system().toString(v.y, 'f', 2))
+        .arg(QLocale::system().toString(v.z, 'f', 2));
+    return data;
+}
+
 bool TaskProjGroup::accept()
 {
+    Gui::Document* doc = Gui::Application::Instance->getDocument(multiView->getDocument());
+    if (!doc) return false;
+
     Gui::Command::commitCommand();
     Gui::Command::updateActive();
     Gui::Command::doCommand(Gui::Command::Gui,"Gui.ActiveDocument.resetEdit()");
@@ -375,6 +474,9 @@ bool TaskProjGroup::accept()
 
 bool TaskProjGroup::reject()
 {
+    Gui::Document* doc = Gui::Application::Instance->getDocument(multiView->getDocument());
+    if (!doc) return false;
+
     if (getCreateMode()) {
         std::string multiViewName = multiView->getNameInDocument();
         std::string PageName = multiView->findParentPage()->getNameInDocument();
@@ -385,6 +487,8 @@ bool TaskProjGroup::reject()
                                 PageName.c_str(),multiViewName.c_str());
         Gui::Command::doCommand(Gui::Command::Gui,"App.activeDocument().removeObject('%s')",multiViewName.c_str());
         Gui::Command::doCommand(Gui::Command::Gui,"Gui.ActiveDocument.resetEdit()");
+        //make sure any dangling objects are cleaned up 
+        Gui::Command::doCommand(Gui::Command::Gui,"App.activeDocument().recompute()");
     } else {
         if (Gui::Command::hasPendingCommand()) {
             std::vector<std::string> undos = Gui::Application::Instance->activeDocument()->getUndoVector();
@@ -402,8 +506,10 @@ bool TaskProjGroup::reject()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //TODO: Do we really need to hang on to the TaskDlgProjGroup in this class? IR
-TaskDlgProjGroup::TaskDlgProjGroup(TechDraw::DrawProjGroup* featView, bool mode) : TaskDialog(),
-                                                                                                 multiView(featView)
+TaskDlgProjGroup::TaskDlgProjGroup(TechDraw::DrawProjGroup* featView, bool mode)
+    : TaskDialog()
+    , viewProvider(nullptr)
+    , multiView(featView)
 {
     //viewProvider = dynamic_cast<const ViewProviderProjGroup *>(featView);
     widget  = new TaskProjGroup(featView,mode);

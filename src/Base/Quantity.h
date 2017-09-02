@@ -63,6 +63,22 @@ struct QuantityFormat {
             return 'g';
         }
     }
+    static inline NumberFormat toFormat(char c, bool* ok = 0) {
+        if (ok)
+            *ok = true;
+        switch (c) {
+        case 'f':
+            return Fixed;
+        case 'e':
+            return Scientific;
+        case 'g':
+            return Default;
+        default:
+            if (ok)
+                *ok = false;
+            return Default;
+        }
+    }
 };
 
 /**
@@ -74,24 +90,29 @@ public:
     /// default constructor
     Quantity(void);
     Quantity(const Quantity&);
-    Quantity(double Value, const Unit& unit=Unit());
+    explicit Quantity(double Value, const Unit& unit=Unit());
     /// Destruction
     ~Quantity () {}
 
     /** Operators. */
     //@{
     Quantity operator *(const Quantity &p) const;
+    Quantity operator *(double p) const;
     Quantity operator +(const Quantity &p) const;
     Quantity& operator +=(const Quantity &p);
     Quantity operator -(const Quantity &p) const;
     Quantity& operator -=(const Quantity &p);
     Quantity operator -(void) const;
     Quantity operator /(const Quantity &p) const;
+    Quantity operator /(double p) const;
     bool operator ==(const Quantity&) const;
     bool operator < (const Quantity&) const;
     bool operator > (const Quantity&) const;
+    bool operator <= (const Quantity&) const;
+    bool operator >= (const Quantity&) const;
     Quantity& operator =(const Quantity&);
     Quantity pow(const Quantity&)const;
+    Quantity pow(double)const;
     //@}
 
     const QuantityFormat& getFormat() const {
@@ -100,7 +121,7 @@ public:
     void setFormat(const QuantityFormat& f) {
         _Format = f;
     }
-    /// transfer to user prefered unit/potence
+    /// transfer to user preferred unit/potence
     QString getUserString(double &factor, QString &unitString)const;
     QString getUserString(void) const { // to satisfy GCC
         double  dummy1;

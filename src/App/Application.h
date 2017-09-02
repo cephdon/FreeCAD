@@ -124,7 +124,7 @@ public:
 
 
     /** @name Signals of the document
-     * This signals are an agregation of all document. If you only 
+     * This signals are an aggregation of all document. If you only 
      * the signal of a special document connect to the document itself
      */
     //@{
@@ -230,7 +230,7 @@ public:
     static void destructObserver(void);
     static void processCmdLineFiles(void);
     static std::list<std::string> getCmdLineFiles();
-    static void processFiles(const std::list<std::string>&);
+    static std::list<std::string> processFiles(const std::list<std::string>&);
     static void runApplication(void);
     friend Application &GetApplication(void);
     static std::map<std::string,std::string> &Config(void){return mConfig;}
@@ -321,6 +321,9 @@ private:
     static PyObject* sRemoveDocObserver (PyObject *self,PyObject *args,PyObject *kwd);
     static PyObject* sTranslateUnit     (PyObject *self,PyObject *args,PyObject *kwd);
 
+    static PyObject *sSetLogLevel       (PyObject *self,PyObject *args,PyObject *kwd);
+    static PyObject *sGetLogLevel       (PyObject *self,PyObject *args,PyObject *kwd);
+
     static PyMethodDef    Methods[]; 
 
     friend class ApplicationObserver;
@@ -336,9 +339,12 @@ private:
     static void ParseOptions(int argc, char ** argv);
     /// checks if the environment is allreight
     //static void CheckEnv(void);
-    // search for the home path
+    /// Search for the FreeCAD home path based on argv[0]
+    /*!
+     * There are multiple implementations of this method per-OS
+     */
     static std::string FindHomePath(const char* sCall);
-    /// print the help massage
+    /// Print the help message
     static void PrintInitHelp(void);
     /// figure out some things
     static void ExtractUserPath();

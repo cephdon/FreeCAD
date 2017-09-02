@@ -135,10 +135,14 @@ void TaskPolarPatternParameters::setupUI()
     std::vector<App::DocumentObject*> originals = pcPolarPattern->Originals.getValues();
 
     // Fill data into dialog elements
-    for (std::vector<App::DocumentObject*>::const_iterator i = originals.begin(); i != originals.end(); ++i)
-    {
-        if ((*i) != NULL)
-            ui->listWidgetFeatures->addItem(QString::fromLatin1((*i)->getNameInDocument()));
+    for (std::vector<App::DocumentObject*>::const_iterator i = originals.begin(); i != originals.end(); ++i) {
+        const App::DocumentObject* obj = *i;
+        if (obj != NULL) {
+            QListWidgetItem* item = new QListWidgetItem();
+            item->setText(QString::fromUtf8(obj->Label.getValue()));
+            item->setData(Qt::UserRole, QString::fromLatin1(obj->getNameInDocument()));
+            ui->listWidgetFeatures->addItem(item);
+        }
     }
     // ---------------------
 
@@ -155,6 +159,9 @@ void TaskPolarPatternParameters::setupUI()
     App::DocumentObject* sketch = getSketchObject();
     if (sketch && sketch->isDerivedFrom(Part::Part2DObject::getClassTypeId())) {
         this->fillAxisCombo(axesLinks, static_cast<Part::Part2DObject*>(sketch));
+    }
+    else {
+        this->fillAxisCombo(axesLinks, NULL);
     }
 
     //show the parts coordinate system axis for selection
@@ -187,7 +194,7 @@ void TaskPolarPatternParameters::updateUI()
     unsigned occurrences = pcPolarPattern->Occurrences.getValue();
 
     if (axesLinks.setCurrentLink(pcPolarPattern->Axis) == -1){
-        //failed to set current, because the link isnt in the list yet
+        //failed to set current, because the link isn't in the list yet
         axesLinks.addLink(pcPolarPattern->Axis, getRefStr(pcPolarPattern->Axis.getValue(),pcPolarPattern->Axis.getSubValues()));
         axesLinks.setCurrentLink(pcPolarPattern->Axis);
     }
@@ -214,31 +221,40 @@ void TaskPolarPatternParameters::kickUpdateViewTimer() const
 void TaskPolarPatternParameters::onSelectionChanged(const Gui::SelectionChanges& msg)
 {
     if (msg.Type == Gui::SelectionChanges::AddSelection) {
-
+        
         if (originalSelected(msg)) {
-            if (selectionMode == addFeature)
-                ui->listWidgetFeatures->addItem(QString::fromLatin1(msg.pObjectName));
-            else
-                removeItemFromListWidget(ui->listWidgetFeatures, msg.pObjectName);
+            Gui::SelectionObject selObj(msg);
+            App::DocumentObject* obj = selObj.getObject();
+            Q_ASSERT(obj);
+
+            QString label = QString::fromUtf8(obj->Label.getValue());
+            QString objectName = QString::fromLatin1(msg.pObjectName);
+
+            if (selectionMode == addFeature) {
+                QListWidgetItem* item = new QListWidgetItem();
+                item->setText(label);
+                item->setData(Qt::UserRole, objectName);
+                ui->listWidgetFeatures->addItem(item);
+            }
+            else {
+                removeItemFromListWidget(ui->listWidgetFeatures, label);
+            }
             exitSelectionMode();
-        } else {
-            // TODO checkme (2015-09-01, Fat-Zer)
-            exitSelectionMode();
+        }
+        else {
             std::vector<std::string> axes;
             App::DocumentObject* selObj;
             PartDesign::PolarPattern* pcPolarPattern = static_cast<PartDesign::PolarPattern*>(getObject());
             getReferencedSelection(pcPolarPattern, msg, selObj, axes);
             if(!selObj)
-                return;
-            // Note: ReferenceSelection has already checked the selection for validity
-            if ( selectionMode == reference || 
-                selObj->isDerivedFrom ( App::Line::getClassTypeId () ) ||
-                selObj->isDerivedFrom(PartDesign::Line::getClassTypeId()) ) {
+                    return;
+            
+            if (selectionMode == reference || selObj->isDerivedFrom ( App::Line::getClassTypeId () ) ) {
                 pcPolarPattern->Axis.setValue(selObj, axes);
-
                 recomputeFeature();
                 updateUI();
             }
+            exitSelectionMode();
         }
     }
 }
@@ -359,16 +375,16 @@ unsigned TaskPolarPatternParameters::getOccurrences(void) const
 TaskPolarPatternParameters::~TaskPolarPatternParameters()
 {
     //hide the parts coordinate system axis for selection
-    PartDesign::Body * body = PartDesign::Body::findBodyOf ( getObject() );
-    if ( body ) {
-        try {
+    try {
+        PartDesign::Body * body = PartDesign::Body::findBodyOf ( getObject() );
+        if ( body ) {
             App::Origin *origin = body->getOrigin();
             ViewProviderOrigin* vpOrigin;
             vpOrigin = static_cast<ViewProviderOrigin*>(Gui::Application::Instance->getViewProvider(origin));
             vpOrigin->resetTemporaryVisibility ();
-        } catch (const Base::Exception &ex) {
-            Base::Console().Error ("%s\n", ex.what () );
         }
+    } catch (const Base::Exception &ex) {
+        Base::Console().Error ("%s\n", ex.what () );
     }
 
     delete ui;

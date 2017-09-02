@@ -29,6 +29,7 @@
 # include <BRepBuilderAPI_FindPlane.hxx>
 # include <BRepBuilderAPI_MakeWire.hxx>
 # include <BRepOffsetAPI_MakeOffset.hxx>
+# include <BRepTools_WireExplorer.hxx>
 # include <Precision.hxx>
 # include <ShapeFix_Wire.hxx>
 # include <TopoDS.hxx>
@@ -48,13 +49,14 @@
 #include <Base/VectorPy.h>
 #include <Base/GeometryPyCXX.h>
 
-#include "BSplineCurvePy.h"
 #include "TopoShape.h"
-#include "TopoShapeShellPy.h"
-#include "TopoShapeFacePy.h"
-#include "TopoShapeEdgePy.h"
-#include "TopoShapeWirePy.h"
-#include "TopoShapeWirePy.cpp"
+#include <Mod/Part/App/BSplineCurvePy.h>
+#include <Mod/Part/App/TopoShapeShellPy.h>
+#include <Mod/Part/App/TopoShapeFacePy.h>
+#include <Mod/Part/App/TopoShapeEdgePy.h>
+#include <Mod/Part/App/TopoShapeWirePy.h>
+#include <Mod/Part/App/TopoShapeWirePy.cpp>
+#include <Mod/Part/App/TopoShapeVertexPy.h>
 #include "OCCError.h"
 #include "Tools.h"
 
@@ -99,9 +101,9 @@ int TopoShapeWirePy::PyInit(PyObject* args, PyObject* /*kwd*/)
             getTopoShapePtr()->setShape(mkWire.Wire());
             return 0;
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
             return -1;
         }
     }
@@ -142,9 +144,9 @@ int TopoShapeWirePy::PyInit(PyObject* args, PyObject* /*kwd*/)
             getTopoShapePtr()->setShape(mkWire.Wire());
             return 0;
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
             return -1;
         }
     }
@@ -179,9 +181,9 @@ PyObject* TopoShapeWirePy::add(PyObject *args)
         getTopoShapePtr()->setShape(mkWire.Wire());
         Py_Return;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 }
@@ -213,9 +215,9 @@ PyObject* TopoShapeWirePy::fixWire(PyObject *args)
 
         Py_Return;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 }
@@ -247,9 +249,9 @@ PyObject* TopoShapeWirePy::makePipe(PyObject *args)
             TopoDS_Shape shape = this->getTopoShapePtr()->makePipe(profile);
             return new TopoShapePy(new TopoShape(shape));
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
             return 0;
         }
     }
@@ -283,9 +285,9 @@ PyObject* TopoShapeWirePy::makePipeShell(PyObject *args)
                 transition);
             return new TopoShapePy(new TopoShape(shape));
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
             return NULL;
         }
     }
@@ -312,9 +314,9 @@ PyObject* TopoShapeWirePy::makeHomogenousWires(PyObject *args)
             return wire;
         }
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return 0;
     }
 }
@@ -328,7 +330,7 @@ PyObject* TopoShapeWirePy::approximate(PyObject *args)
         return 0;
     try {
         BRepAdaptor_CompCurve adapt(TopoDS::Wire(getTopoShapePtr()->getShape()));
-        Handle_Adaptor3d_HCurve hcurve = adapt.Trim(adapt.FirstParameter(),
+        Handle(Adaptor3d_HCurve) hcurve = adapt.Trim(adapt.FirstParameter(),
                                                     adapt.LastParameter(),
                                                     tol2d);
         Approx_Curve3d approx(hcurve, tol3d, GeomAbs_C0, maxseg, maxdeg);
@@ -360,10 +362,17 @@ PyObject* TopoShapeWirePy::discretize(PyObject *args, PyObject *kwds)
         // use no kwds
         PyObject* dist_or_num;
         if (PyArg_ParseTuple(args, "O", &dist_or_num)) {
+#if PY_MAJOR_VERSION >= 3
+            if (PyLong_Check(dist_or_num)) {
+                numPoints = PyLong_AsLong(dist_or_num);
+                uniformAbscissaPoints = true;
+            }
+#else
             if (PyInt_Check(dist_or_num)) {
                 numPoints = PyInt_AsLong(dist_or_num);
                 uniformAbscissaPoints = true;
             }
+#endif
             else if (PyFloat_Check(dist_or_num)) {
                 distance = PyFloat_AsDouble(dist_or_num);
                 uniformAbscissaDistance = true;
@@ -586,6 +595,32 @@ Py::Dict TopoShapeWirePy::getPrincipalProperties(void) const
     rog.setItem(2, Py::Float(Rzz));
     dict.setItem("RadiusOfGyration",rog);
     return dict;
+}
+
+Py::List TopoShapeWirePy::getOrderedEdges(void) const
+{
+    Py::List ret;
+
+    BRepTools_WireExplorer xp(TopoDS::Wire(getTopoShapePtr()->getShape()));
+    while (xp.More()) {
+        ret.append(Py::asObject(new TopoShapeEdgePy(new TopoShape(xp.Current()))));
+        xp.Next();
+    }
+
+    return ret;
+}
+
+Py::List TopoShapeWirePy::getOrderedVertexes(void) const
+{
+    Py::List ret;
+
+    BRepTools_WireExplorer xp(TopoDS::Wire(getTopoShapePtr()->getShape()));
+    while (xp.More()) {
+        ret.append(Py::asObject(new TopoShapeVertexPy(new TopoShape(xp.CurrentVertex()))));
+        xp.Next();
+    }
+
+    return ret;
 }
 
 PyObject *TopoShapeWirePy::getCustomAttributes(const char* /*attr*/) const

@@ -36,6 +36,8 @@ namespace GCS
         double *y;
     };
 
+    typedef std::vector<Point> VEC_P;
+    
     ///Class DeriVector2 holds a vector value and its derivative on the
     ///parameter that the derivatives are being calculated for now. x,y is the
     ///actual vector (v). dx,dy is a derivative of the vector by a parameter
@@ -99,6 +101,15 @@ namespace GCS
         // fields of DeriVector2.
         virtual DeriVector2 CalculateNormal(Point &p, double* derivparam = 0) = 0;
 
+        /**
+         * @brief Value: returns point (vector) given the value of parameter
+         * @param u: value of parameter
+         * @param du: derivative of parameter by derivparam
+         * @param derivparam: pointer to sketch parameter to calculate the derivative for
+         * @return
+         */
+        virtual DeriVector2 Value(double u, double du, double* derivparam = 0);
+
         //adds curve's parameters to pvec (used by constraints)
         virtual int PushOwnParams(VEC_pD &pvec) = 0;
         //recunstruct curve's parameters reading them from pvec starting from index cnt.
@@ -115,6 +126,7 @@ namespace GCS
         Point p1;
         Point p2;
         DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        DeriVector2 Value(double u, double du, double* derivparam = 0);
         virtual int PushOwnParams(VEC_pD &pvec);
         virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
         virtual Line* Copy();
@@ -128,6 +140,7 @@ namespace GCS
         Point center;
         double *rad;
         DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        DeriVector2 Value(double u, double du, double* derivparam = 0);
         virtual int PushOwnParams(VEC_pD &pvec);
         virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
         virtual Circle* Copy();
@@ -149,7 +162,17 @@ namespace GCS
         virtual Arc* Copy();
     };
     
-    class Ellipse: public Curve
+    class MajorRadiusConic: public Curve
+    {
+    public:
+        virtual ~MajorRadiusConic(){}
+        virtual double getRadMaj(const DeriVector2 &center, const DeriVector2 &f1, double b, double db, double &ret_dRadMaj) = 0;
+        virtual double getRadMaj(double* derivparam, double &ret_dRadMaj) = 0;
+        virtual double getRadMaj() = 0;
+        DeriVector2 CalculateNormal(Point &p, double* derivparam = 0) = 0;
+    };
+    
+    class Ellipse: public MajorRadiusConic
     {
     public:
         Ellipse(){ radmin = 0;}
@@ -157,10 +180,11 @@ namespace GCS
         Point center; 
         Point focus1;
         double *radmin;
-        double getRadMaj(const DeriVector2 &center, const DeriVector2 &f1, double b, double db, double &ret_dRadMaj);
-        double getRadMaj(double* derivparam, double &ret_dRadMaj);
-        double getRadMaj();
+        virtual double getRadMaj(const DeriVector2 &center, const DeriVector2 &f1, double b, double db, double &ret_dRadMaj);
+        virtual double getRadMaj(double* derivparam, double &ret_dRadMaj);
+        virtual double getRadMaj();
         DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        DeriVector2 Value(double u, double du, double* derivparam = 0);
         virtual int PushOwnParams(VEC_pD &pvec);
         virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
         virtual Ellipse* Copy();
@@ -183,7 +207,98 @@ namespace GCS
         virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
         virtual ArcOfEllipse* Copy();
     };
+    
+    class Hyperbola: public MajorRadiusConic
+    {
+    public:
+        Hyperbola(){ radmin = 0;}
+        virtual ~Hyperbola(){}
+        Point center; 
+        Point focus1;
+        double *radmin;
+        virtual double getRadMaj(const DeriVector2 &center, const DeriVector2 &f1, double b, double db, double &ret_dRadMaj);
+        virtual double getRadMaj(double* derivparam, double &ret_dRadMaj);
+        virtual double getRadMaj();
+        DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        virtual DeriVector2 Value(double u, double du, double* derivparam = 0);
+        virtual int PushOwnParams(VEC_pD &pvec);
+        virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
+        virtual Hyperbola* Copy();
+    };    
 
+    class ArcOfHyperbola: public Hyperbola
+    {
+    public:
+        ArcOfHyperbola(){startAngle=0;endAngle=0;radmin = 0;}
+        virtual ~ArcOfHyperbola(){}
+        // parameters
+        double *startAngle;
+        double *endAngle;
+        Point start;
+        Point end;
+        // interface helpers
+        virtual int PushOwnParams(VEC_pD &pvec);
+        virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
+        virtual ArcOfHyperbola* Copy();
+    };
+    
+    class Parabola: public Curve
+    {
+    public:
+        Parabola(){ }
+        virtual ~Parabola(){}
+        Point vertex; 
+        Point focus1;
+        DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        virtual DeriVector2 Value(double u, double du, double* derivparam = 0);
+        virtual int PushOwnParams(VEC_pD &pvec);
+        virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
+        virtual Parabola* Copy();
+    };    
+
+    class ArcOfParabola: public Parabola
+    {
+    public:
+        ArcOfParabola(){startAngle=0;endAngle=0;}
+        virtual ~ArcOfParabola(){}
+        // parameters
+        double *startAngle;
+        double *endAngle;
+        Point start;
+        Point end;
+        // interface helpers
+        virtual int PushOwnParams(VEC_pD &pvec);
+        virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
+        virtual ArcOfParabola* Copy();
+    };
+
+    class BSpline: public Curve
+    {
+    public:
+        BSpline(){periodic=false;degree=2;}
+        virtual ~BSpline(){}
+        // parameters
+        VEC_P poles;
+        VEC_pD weights;
+        VEC_pD knots;
+        // dependent parameters (depends on previous parameters,
+        // but an "arcrules" constraint alike would be required to gain the commodity of simple coincident
+        // with endpoint constraints)
+        Point start;
+        Point end;
+        // not solver parameters
+        VEC_I mult;
+        int degree;
+        bool periodic;
+        VEC_I knotpointGeoids; // geoids of knotpoints as to index Geom array
+        // interface helpers
+        DeriVector2 CalculateNormal(Point &p, double* derivparam = 0);
+        virtual DeriVector2 Value(double u, double du, double* derivparam = 0);
+        virtual int PushOwnParams(VEC_pD &pvec);
+        virtual void ReconstructOnNewPvec (VEC_pD &pvec, int &cnt);
+        virtual BSpline* Copy();
+    };
+    
 } //namespace GCS
 
 #endif // PLANEGCS_GEO_H

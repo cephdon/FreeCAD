@@ -4,7 +4,7 @@
 <context>
     <name>CmdDrawingAnnotation</name>
     <message>
-        <location filename="../../Command.cpp" line="+476"/>
+        <location filename="../../Command.cpp" line="+474"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -42,7 +42,7 @@
 <context>
     <name>CmdDrawingDraftView</name>
     <message>
-        <location line="+183"/>
+        <location line="+185"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -55,13 +55,13 @@
         <location line="+1"/>
         <location line="+2"/>
         <source>Inserts a Draft view of the selected object(s) in the active drawing</source>
-        <translation type="unfinished">Inserts a Draft view of the selected object(s) in the active drawing</translation>
+        <translation>Lägger till en Draft-vy av det valda objektet(en) i den aktiva ritningen</translation>
     </message>
 </context>
 <context>
     <name>CmdDrawingExportPage</name>
     <message>
-        <location line="-90"/>
+        <location line="-92"/>
         <source>File</source>
         <translation>Fil</translation>
     </message>
@@ -80,7 +80,7 @@
 <context>
     <name>CmdDrawingNewA3Landscape</name>
     <message>
-        <location line="-355"/>
+        <location line="-359"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -94,7 +94,7 @@
 <context>
     <name>CmdDrawingNewPage</name>
     <message>
-        <location line="-185"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -108,7 +108,7 @@
 <context>
     <name>CmdDrawingNewView</name>
     <message>
-        <location line="+219"/>
+        <location line="+214"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -126,7 +126,7 @@
 <context>
     <name>CmdDrawingOpen</name>
     <message>
-        <location line="-255"/>
+        <location line="-250"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -144,7 +144,7 @@
 <context>
     <name>CmdDrawingOpenBrowserView</name>
     <message>
-        <location line="+378"/>
+        <location line="+375"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -163,7 +163,7 @@
 <context>
     <name>CmdDrawingOrthoViews</name>
     <message>
-        <location line="-53"/>
+        <location line="-54"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -181,7 +181,7 @@
 <context>
     <name>CmdDrawingProjectShape</name>
     <message>
-        <location line="+284"/>
+        <location line="+287"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -200,26 +200,26 @@
 <context>
     <name>CmdDrawingSpreadsheetView</name>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>&amp;Spreadsheet View</source>
-        <translation type="unfinished">&amp;Spreadsheet View</translation>
+        <translation>Kalkylblad&amp;svy</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+2"/>
         <source>Inserts a view of a selected spreadsheet in the active drawing</source>
-        <translation type="unfinished">Inserts a view of a selected spreadsheet in the active drawing</translation>
+        <translation>Lägger till en vy av valt Kalkylblad i den aktiva ritningen</translation>
     </message>
 </context>
 <context>
     <name>CmdDrawingSymbol</name>
     <message>
-        <location line="-176"/>
+        <location line="-179"/>
         <source>Drawing</source>
         <translation>Ritning</translation>
     </message>
@@ -238,7 +238,7 @@
 <context>
     <name>DrawingGui::DrawingView</name>
     <message>
-        <location filename="../../DrawingView.cpp" line="+212"/>
+        <location filename="../../DrawingView.cpp" line="+211"/>
         <source>&amp;Background</source>
         <translation>B&amp;akgrund</translation>
     </message>
@@ -358,12 +358,12 @@ Do you want to continue?</source>
     <message>
         <location line="+11"/>
         <source>Opening file failed</source>
-        <translation type="unfinished">Opening file failed</translation>
+        <translation>Fel vid filöppning</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Can&apos;t open file &apos;%1&apos; for writing.</source>
-        <translation type="unfinished">Can&apos;t open file &apos;%1&apos; for writing.</translation>
+        <translation>Kan inte öppna filen &apos;%1&apos; för skrivning.</translation>
     </message>
 </context>
 <context>
@@ -407,47 +407,47 @@ Do you want to continue?</source>
     <message>
         <location line="+7"/>
         <source> Vertical tilt</source>
-        <translation> Vertikal tilt</translation>
+        <translation> Vertikal lutning</translation>
     </message>
     <message>
         <location line="+11"/>
         <location line="+200"/>
         <source>X +ve</source>
-        <translation type="unfinished">X +ve</translation>
+        <translation>X +ve</translation>
     </message>
     <message>
         <location line="-195"/>
         <location line="+75"/>
         <location line="+125"/>
         <source>Y +ve</source>
-        <translation type="unfinished">Y +ve</translation>
+        <translation>Y +ve</translation>
     </message>
     <message>
         <location line="-195"/>
         <location line="+75"/>
         <location line="+125"/>
         <source>Z +ve</source>
-        <translation type="unfinished">Z +ve</translation>
+        <translation>Z +ve</translation>
     </message>
     <message>
         <location line="-195"/>
         <location line="+200"/>
         <source>X -ve</source>
-        <translation type="unfinished">X -ve</translation>
+        <translation>X -ve</translation>
     </message>
     <message>
         <location line="-195"/>
         <location line="+70"/>
         <location line="+130"/>
         <source>Y -ve</source>
-        <translation type="unfinished">Y -ve</translation>
+        <translation>Y -ve</translation>
     </message>
     <message>
         <location line="-195"/>
         <location line="+70"/>
         <location line="+130"/>
         <source>Z -ve</source>
-        <translation type="unfinished">Z -ve</translation>
+        <translation>Z -ve</translation>
     </message>
     <message>
         <location line="-188"/>
@@ -457,7 +457,7 @@ Do you want to continue?</source>
     <message>
         <location line="+5"/>
         <source>Dimetric</source>
-        <translation type="unfinished">Dimetric</translation>
+        <translation>Dimetrisk</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -477,7 +477,7 @@ Do you want to continue?</source>
     <message>
         <location line="+7"/>
         <source> Axis aligned up</source>
-        <translation type="unfinished"> Axis aligned up</translation>
+        <translation> Axel justerad uppåt</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -508,12 +508,12 @@ Do you want to continue?</source>
     <message>
         <location line="+19"/>
         <source>View from:</source>
-        <translation>Visa från:</translation>
+        <translation>Vy från:</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Axis aligned right:</source>
-        <translation type="unfinished">Axis aligned right:</translation>
+        <translation>Axel justerad åt höger:</translation>
     </message>
     <message>
         <source>Primary View</source>
@@ -673,17 +673,17 @@ Do you want to continue?</source>
     <message>
         <location line="+1"/>
         <source>There is currently no active document to complete the operation</source>
-        <translation type="unfinished">There is currently no active document to complete the operation</translation>
+        <translation>Det finns för närvarande inget aktivt dokument att slutföra åtgärden</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>No active view</source>
-        <translation type="unfinished">No active view</translation>
+        <translation>Ingen aktiv vy</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>There is currently no active view to complete the operation</source>
-        <translation type="unfinished">There is currently no active view to complete the operation</translation>
+        <translation>Det finns för närvarande ingen aktiv syn att slutföra åtgärden</translation>
     </message>
 </context>
 <context>
@@ -749,29 +749,29 @@ Do you want to continue?</source>
     <message>
         <location line="+4"/>
         <source>%1%2 %3</source>
-        <translation type="unfinished">%1%2 %3</translation>
+        <translation>%1%2 %3</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Insert new %1%2 %3 drawing</source>
         <translation>Infoga ny %1%2 %3 ritning</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+7"/>
         <source>%1%2 %3 (%4)</source>
-        <translation type="unfinished">%1%2 %3 (%4)</translation>
+        <translation>%1%2 %3 (%4)</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>Insert new %1%2 %3 (%4) drawing</source>
-        <translation type="unfinished">Insert new %1%2 %3 (%4) drawing</translation>
+        <translation>Infoga nya %1%2 %3 (%4) i ritning</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
-        <location line="-174"/>
-        <location line="+519"/>
+        <location line="-169"/>
+        <location line="+517"/>
         <source>Choose an SVG file to open</source>
         <translation>Välj en SVG fil att öppna</translation>
     </message>
@@ -784,16 +784,16 @@ Do you want to continue?</source>
         <translation type="obsolete">Skalbar vektorgrafik (*.svg *.svgz)</translation>
     </message>
     <message>
-        <location line="-266"/>
-        <location line="+78"/>
-        <location line="+49"/>
-        <location line="+186"/>
-        <location line="+116"/>
+        <location line="-268"/>
+        <location line="+79"/>
+        <location line="+50"/>
+        <location line="+187"/>
+        <location line="+119"/>
         <source>Wrong selection</source>
         <translation>Fel val</translation>
     </message>
     <message>
-        <location line="-428"/>
+        <location line="-434"/>
         <source>Select a Part object.</source>
         <translation>Välj ett Del objekt.</translation>
     </message>
@@ -810,40 +810,40 @@ Do you want to continue?</source>
         <translation type="obsolete">Skapa en sida att infoga vyer till.</translation>
     </message>
     <message>
-        <location line="-253"/>
-        <location line="+519"/>
-        <location line="+52"/>
+        <location line="-249"/>
+        <location line="+517"/>
+        <location line="+53"/>
         <source>Scalable Vector Graphic</source>
-        <translation type="unfinished">Scalable Vector Graphic</translation>
+        <translation>Skalbar vektorgrafik</translation>
     </message>
     <message>
-        <location line="-310"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-313"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>No page found</source>
         <translation>Ingen sida hittades</translation>
     </message>
     <message>
-        <location line="-425"/>
-        <location line="+78"/>
-        <location line="+80"/>
+        <location line="-431"/>
+        <location line="+79"/>
+        <location line="+81"/>
         <location line="+48"/>
         <location line="+45"/>
-        <location line="+175"/>
+        <location line="+179"/>
         <source>Create a page first.</source>
         <translation>Skapa en sida först.</translation>
     </message>
     <message>
-        <location line="-357"/>
+        <location line="-362"/>
         <source>Select exactly one Part object.</source>
         <translation>Markera exakt ett delobjekt.</translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+186"/>
+        <location line="+50"/>
+        <location line="+187"/>
         <source>Select one Page object.</source>
         <translation>Välj ett sidobjekt.</translation>
     </message>
@@ -853,9 +853,9 @@ Do you want to continue?</source>
         <translation>Alla Filer</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+113"/>
         <source>Select exactly one Spreadsheet object.</source>
-        <translation type="unfinished">Select exactly one Spreadsheet object.</translation>
+        <translation>Välj exakt ett sprängskissobjekt.</translation>
     </message>
     <message>
         <source>SVG (*.svg)</source>
@@ -870,7 +870,7 @@ Do you want to continue?</source>
         <translation type="obsolete">Alla filer (*.*)</translation>
     </message>
     <message>
-        <location line="-108"/>
+        <location line="-111"/>
         <source>Export page</source>
         <translation>Exportera sida</translation>
     </message>
@@ -905,21 +905,21 @@ Do you want to continue?</source>
     </message>
     <message>
         <location filename="../../TaskOrthoViews.cpp" line="+51"/>
-        <location line="+907"/>
+        <location line="+926"/>
         <source>Make axonometric...</source>
-        <translation type="unfinished">Make axonometric...</translation>
+        <translation>Gör axonometrisk...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Edit axonometric settings...</source>
-        <translation type="unfinished">Edit axonometric settings...</translation>
+        <translation>Redigera axonometriska inställningar...</translation>
     </message>
     <message>
-        <location line="-906"/>
-        <location line="+907"/>
+        <location line="-925"/>
+        <location line="+926"/>
         <source>Make orthographic</source>
-        <translation type="unfinished">Make orthographic</translation>
+        <translation>Gör ortografisk</translation>
     </message>
 </context>
 <context>

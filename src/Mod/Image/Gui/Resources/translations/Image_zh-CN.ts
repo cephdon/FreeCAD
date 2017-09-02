@@ -4,7 +4,7 @@
 <context>
     <name>CmdCreateImagePlane</name>
     <message>
-        <location filename="../../Command.cpp" line="+93"/>
+        <location filename="../../Command.cpp" line="+97"/>
         <source>Image</source>
         <translation>图像</translation>
     </message>
@@ -26,7 +26,7 @@
 <context>
     <name>CmdImageOpen</name>
     <message>
-        <location line="-44"/>
+        <location line="-46"/>
         <source>Image</source>
         <translation>图像</translation>
     </message>
@@ -44,12 +44,14 @@
 <context>
     <name>ImageGui::GLImageBox</name>
     <message>
-        <location filename="../../GLImageBox.cpp" line="+325"/>
+        <location filename="../../GLImageBox.cpp" line="+331"/>
+        <location filename="../../OpenGLImageBox.cpp" line="+385"/>
         <source>Undefined type of colour space for image viewing</source>
         <translation>图片视图的色彩模式未定义</translation>
     </message>
     <message>
         <location line="-1"/>
+        <location filename="../../OpenGLImageBox.cpp" line="-1"/>
         <source>Image pixel format</source>
         <translation>图像像素格式</translation>
     </message>
@@ -95,7 +97,7 @@
 <context>
     <name>ImageGui::ImageView</name>
     <message>
-        <location filename="../../ImageView.cpp" line="+77"/>
+        <location filename="../../ImageView.cpp" line="+107"/>
         <source>&amp;Fit image</source>
         <translation>适应图像尺寸(&amp;F)</translation>
     </message>
@@ -180,32 +182,40 @@
         <translation type="obsolete">图像(*.png *.xpm *.jpg *.bmp)</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="+18"/>
-        <location line="+41"/>
+        <location filename="../../Command.cpp" line="+20"/>
+        <location line="+43"/>
         <source>Choose an image file to open</source>
         <translation>选择一个图像文件打开</translation>
     </message>
     <message>
-        <location line="-48"/>
-        <location line="+41"/>
+        <location line="-50"/>
+        <location line="+43"/>
         <source>Images</source>
         <translation>图像</translation>
     </message>
     <message>
-        <location line="-36"/>
-        <location line="+41"/>
+        <location line="-38"/>
+        <location line="+43"/>
         <source>All files</source>
         <translation>所有文件</translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Error open image</source>
-        <translation>打开图像错误</translation>
+        <source>Error opening image</source>
+        <translation type="unfinished">Error opening image</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Could not load the chosen image</source>
+        <translation type="unfinished">Could not load the chosen image</translation>
+    </message>
+    <message>
+        <source>Error open image</source>
+        <translation type="obsolete">打开图像错误</translation>
+    </message>
+    <message>
         <source>Could not load the choosen image</source>
-        <translation>无法加载选择的图像</translation>
+        <translation type="obsolete">无法加载选择的图像</translation>
     </message>
 </context>
 <context>

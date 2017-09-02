@@ -114,7 +114,7 @@ TaskFemConstraintTransform::TaskFemConstraintTransform(ViewProviderFemConstraint
     ui->lw_Rect->clear();
 
     //Transformable surfaces
-    Gui::Command::doCommand(Gui::Command::Doc,TaskFemConstraintTransform::getDisplcementReferences((static_cast<Fem::Constraint*>(ConstraintView->getObject()))->getNameInDocument()).c_str());
+    Gui::Command::doCommand(Gui::Command::Doc,TaskFemConstraintTransform::getSurfaceReferences((static_cast<Fem::Constraint*>(ConstraintView->getObject()))->getNameInDocument()).c_str());
     std::vector<App::DocumentObject*> ObjDispl = pcConstraint->RefDispl.getValues();
     std::vector<App::DocumentObject*> nDispl = pcConstraint->NameDispl.getValues();
     std::vector<std::string> SubElemDispl = pcConstraint->RefDispl.getSubValues();
@@ -243,8 +243,8 @@ void TaskFemConstraintTransform::addToSelection()
         QMessageBox::warning(this, tr("Selection error"), tr("Only one face for rectangular transform constraint!"));
         Gui::Selection().clearSelection();
         return;
-    } 
-        
+    }
+
     if ((rows==0) && (selection.size()>=2)){
         QMessageBox::warning(this, tr("Selection error"), tr("Only one face for rectangular transform constraint!"));
         Gui::Selection().clearSelection();
@@ -254,7 +254,7 @@ void TaskFemConstraintTransform::addToSelection()
     Fem::ConstraintTransform* pcConstraint = static_cast<Fem::ConstraintTransform*>(ConstraintView->getObject());
     std::vector<App::DocumentObject*> Objects = pcConstraint->References.getValues();
     std::vector<std::string> SubElements = pcConstraint->References.getSubValues();
-    
+
     std::vector<App::DocumentObject*> ObjDispl = pcConstraint->RefDispl.getValues();
     std::vector<std::string> SubElemDispl = pcConstraint->RefDispl.getSubValues();
     for (std::vector<Gui::SelectionObject>::iterator it = selection.begin();  it != selection.end(); ++it){//for every selected object
@@ -300,7 +300,7 @@ void TaskFemConstraintTransform::addToSelection()
                     this, SLOT(setSelection(QListWidgetItem*)));
                 for (std::size_t i = 0; i < ObjDispl.size(); i++) {
                     if ((makeRefText(ObjDispl[i], SubElemDispl[i]))==(makeRefText(obj, subNames[subIt]))){
-                        Objects.push_back(obj);  
+                        Objects.push_back(obj);
                         SubElements.push_back(subNames[subIt]);
                         ui->lw_Rect->addItem(makeRefText(obj, subNames[subIt]));
                         connect(ui->lw_Rect, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
@@ -310,7 +310,7 @@ void TaskFemConstraintTransform::addToSelection()
                 if (Objects.size() == 0){
                     QMessageBox::warning(this, tr("Selection error"), tr("Only transformable faces can be selected! Apply displacement constraint to surface first then apply constraint to surface"));
                     Gui::Selection().clearSelection();
-                    return;    
+                    return;
                 }
             }
         }
@@ -436,7 +436,7 @@ void TaskFemConstraintTransform::onReferenceDeleted() {
     TaskFemConstraintTransform::removeFromSelection();
 }
 
-std::string TaskFemConstraintTransform::getDisplcementReferences(std::string showConstr="")
+std::string TaskFemConstraintTransform::getSurfaceReferences(std::string showConstr="")
 {
     return "for obj in FreeCAD.ActiveDocument.Objects:\n\
         if obj.isDerivedFrom(\"Fem::FemAnalysisPython\"):\n\
@@ -446,7 +446,7 @@ A = []\n\
 i = 0\n\
 ss = []\n\
 for member in members:\n\
-        if member.isDerivedFrom(\"Fem::ConstraintDisplacement\"):\n\
+        if (member.isDerivedFrom(\"Fem::ConstraintDisplacement\")) or (member.isDerivedFrom(\"Fem::ConstraintForce\")):\n\
                 m = member.References\n\
                 A.append(m)\n\
                 if i >0:\n\
@@ -480,7 +480,7 @@ std::string TaskFemConstraintTransform::get_transform_type(void) const {
     return transform;
 }
 
-void TaskFemConstraintTransform::changeEvent(QEvent *e){
+void TaskFemConstraintTransform::changeEvent(QEvent *){
 }
 
 //**************************************************************************
@@ -521,7 +521,7 @@ bool TaskDlgFemConstraintTransform::accept()
         Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Y_rot = %f",
             name.c_str(), parameters->get_Y_rot());
         Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.Z_rot = %f",
-            name.c_str(), parameters->get_Z_rot());     
+            name.c_str(), parameters->get_Z_rot());
         Gui::Command::doCommand(Gui::Command::Doc,"App.ActiveDocument.%s.TransformType = %s",
             name.c_str(), parameters->get_transform_type().c_str());
         std::string scale = parameters->getScale();  //OvG: determine modified scale

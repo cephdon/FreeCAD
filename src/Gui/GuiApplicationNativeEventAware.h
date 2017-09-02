@@ -26,13 +26,16 @@
 #define GUIAPPLICATIONNATIVEEVENTAWARE_H
 
 #include <QApplication>
+#if QT_VERSION >= 0x050000
+#include <QAbstractNativeEventFilter>
+#endif
 
 class QMainWindow;
 
 
 #ifdef _USE_3DCONNEXION_SDK
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include "3Dconnexion/MouseParameters.h"
 
 #include <vector>
@@ -41,9 +44,9 @@ class QMainWindow;
 //#define _WIN32_WINNT 0x0501  //target at least windows XP
 
 #include <Windows.h>
-#endif // Q_WS_WIN
+#endif // Q_OS_WIN
 
-#ifdef Q_WS_MACX
+#ifdef Q_OS_MACX
 #include <IOKit/IOKitLib.h>
 #include <ConnexionClientAPI.h>
 // Note that InstallConnexionHandlers will be replaced with
@@ -56,12 +59,31 @@ extern UInt16 RegisterConnexionClient(UInt32 signature, UInt8 *name, UInt16 mode
                                       UInt32 mask) __attribute__((weak_import));
 extern void UnregisterConnexionClient(UInt16 clientID) __attribute__((weak_import));
 extern void CleanupConnexionHandlers(void) __attribute__((weak_import));
-#endif // Q_WS_MACX
+#endif // Q_OS_MACX
 
 #endif // _USE_3DCONNEXION_SDK
 
 namespace Gui
 {
+#if QT_VERSION >= 0x050000
+    class RawInputEventFilter : public QAbstractNativeEventFilter
+    {
+    public:
+        typedef bool (*EventFilter)(void *message, long *result);
+        RawInputEventFilter(EventFilter) {
+        }
+        virtual ~RawInputEventFilter() {
+        }
+
+        virtual bool nativeEventFilter(const QByteArray & /*eventType*/, void *message, long *result) {
+            return eventFilter(message, result);
+        }
+
+    private:
+        EventFilter eventFilter;
+    };
+#endif
+
     class GUIApplicationNativeEventAware : public QApplication
     {
         Q_OBJECT
@@ -87,7 +109,7 @@ namespace Gui
 
 #ifdef _USE_3DCONNEXION_SDK
 // For Windows
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     public:
         static bool Is3dmouseAttached();
 
@@ -131,8 +153,8 @@ namespace Gui
         // use to calculate distance traveled since last event
         DWORD fLast3dmouseInputTime;
         static Gui::GUIApplicationNativeEventAware* gMouseInput;
-#endif // Q_WS_WIN
-#ifdef Q_WS_MACX
+#endif // Q_OS_WIN
+#ifdef Q_OS_MACX
     private:
         static UInt16 tdxClientID; /* ID assigned by the driver */
         static uint32_t lastButtons;
@@ -143,7 +165,7 @@ namespace Gui
         void Move3d();
         void Button3d(bool buttonDown, int buttonNumber);
 
-#endif// Q_WS_MACX
+#endif// Q_OS_MACX
 #endif // _USE_3DCONNEXION_SDK
     };
 }

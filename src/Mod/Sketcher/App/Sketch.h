@@ -128,6 +128,12 @@ public:
     int addEllipse(const Part::GeomEllipse &ellipse, bool fixed=false);
     /// add an arc of ellipse
     int addArcOfEllipse(const Part::GeomArcOfEllipse &ellipseSegment, bool fixed=false);
+    /// add an arc of hyperbola
+    int addArcOfHyperbola(const Part::GeomArcOfHyperbola &hyperbolaSegment, bool fixed=false);
+    /// add an arc of parabola
+    int addArcOfParabola(const Part::GeomArcOfParabola &parabolaSegment, bool fixed=false);
+    /// add a BSpline
+    int addBSpline(const Part::GeomBSplineCurve &spline, bool fixed=false);
     //@}
 
 
@@ -303,6 +309,13 @@ public:
     int addInternalAlignmentEllipseMinorDiameter(int geoId1, int geoId2);
     int addInternalAlignmentEllipseFocus1(int geoId1, int geoId2);
     int addInternalAlignmentEllipseFocus2(int geoId1, int geoId2);
+    /// add InternalAlignmentHyperbolaMajorRadius to a line and a hyperbola
+    int addInternalAlignmentHyperbolaMajorDiameter(int geoId1, int geoId2);
+    int addInternalAlignmentHyperbolaMinorDiameter(int geoId1, int geoId2);
+    int addInternalAlignmentHyperbolaFocus(int geoId1, int geoId2);
+    int addInternalAlignmentParabolaFocus(int geoId1, int geoId2);
+    int addInternalAlignmentBSplineControlPoint(int geoId1, int geoId2, int poleindex);
+    int addInternalAlignmentKnotPoint(int geoId1, int geoId2, int knotindex);
     //@}
 public:
     //This func is to be used during angle-via-point constraint creation. It calculates
@@ -317,7 +330,7 @@ public:
     //icstr should be the value returned by addXXXXConstraint
     //see more info in respective function in GCS.
     double calculateConstraintError(int icstr) { return GCSsys.calculateConstraintErrorByTag(icstr);}
-    
+
     /// Returns the size of the Geometry
     int getGeometrySize(void) const {return Geoms.size();}
 
@@ -328,7 +341,10 @@ public:
         Arc     = 3, // 3 Points(start,end,mid), (4)+5 Parameters((x1,y1,x2,y2),x,y,r,a1,a2)
         Circle  = 4, // 1 Point(mid), 3 Parameters(x,y,r)
         Ellipse = 5,  // 1 Point(mid), 5 Parameters(x,y,r1,r2,phi)  phi=angle xaxis of elipse with respect of sketch xaxis
-        ArcOfEllipse = 6
+        ArcOfEllipse = 6,
+        ArcOfHyperbola = 7,
+        ArcOfParabola = 8,
+        BSpline = 9
     };
 
     float SolveTime;
@@ -374,7 +390,10 @@ protected:
     std::vector<GCS::Arc>    Arcs;
     std::vector<GCS::Circle> Circles;
     std::vector<GCS::Ellipse> Ellipses;
-    std::vector<GCS::ArcOfEllipse>  ArcsOfEllipse;
+    std::vector<GCS::ArcOfEllipse> ArcsOfEllipse;
+    std::vector<GCS::ArcOfHyperbola> ArcsOfHyperbola;
+    std::vector<GCS::ArcOfParabola> ArcsOfParabola;
+    std::vector<GCS::BSpline> BSplines;
 
     bool isInitMove;
     bool isFine;

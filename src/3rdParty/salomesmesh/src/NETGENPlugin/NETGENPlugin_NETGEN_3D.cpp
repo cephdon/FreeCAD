@@ -75,7 +75,11 @@ namespace nglib {
 #include <nglib.h>
 }
 namespace netgen {
-#if NETGEN_VERSION > 4
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,2)
+  DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, shared_ptr<Mesh>&, MeshingParameters&);
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(6,0)
+  DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, shared_ptr<Mesh>&, MeshingParameters&, int, int);
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(5,0)
   DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, Mesh*&, MeshingParameters&, int, int);
 #else
   DLL_HEADER extern int OCCGenerateMesh (OCCGeometry&, Mesh*&, int, int, char*);
@@ -208,7 +212,11 @@ bool NETGENPlugin_NETGEN_3D::Compute(SMESH_Mesh&         aMesh,
   int Netgen_triangle[3];
 
   NETGENPlugin_NetgenLibWrapper ngLib;
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,0)
   Ng_Mesh * Netgen_mesh = ngLib._ngMesh;
+#else
+  Ng_Mesh * Netgen_mesh = ngLib._ngMesh.get();
+#endif
 
   // vector of nodes in which node index == netgen ID
   vector< const SMDS_MeshNode* > nodeVec;
@@ -340,77 +348,77 @@ bool NETGENPlugin_NETGEN_3D::Compute(SMESH_Mesh&         aMesh,
   return ( ngLib._isComputeOk = compute( aMesh, helper, nodeVec, Netgen_mesh));
 }
 
-namespace
-{
-  inline void limitVolumeSize( netgen::Mesh* ngMesh,
-                        double        maxh )
-  {
-    // get average h of faces
-    double faceh = 0;
-    int nbh = 0;
-    for (int i = 1; i <= ngMesh->GetNSE(); i++)
-    {
-      const netgen::Element2d& face = ngMesh->SurfaceElement(i);
-      for (int j=1; j <= face.GetNP(); ++j)
-      {
-        const netgen::PointIndex & i1 = face.PNumMod(j);
-        const netgen::PointIndex & i2 = face.PNumMod(j+1);
-        if ( i1 < i2 )
-        {
-          const netgen::Point3d & p1 = ngMesh->Point( i1 );
-          const netgen::Point3d & p2 = ngMesh->Point( i2 );
-          faceh += netgen::Dist2( p1, p2 );
-          nbh++;
-        }
-      }
-    }
-    faceh = Sqrt( faceh / nbh );
+//namespace
+//{
+//  inline void limitVolumeSize( netgen::Mesh* ngMesh,
+//                        double        maxh )
+//  {
+//    // get average h of faces
+//    double faceh = 0;
+//    int nbh = 0;
+//    for (int i = 1; i <= ngMesh->GetNSE(); i++)
+//    {
+//      const netgen::Element2d& face = ngMesh->SurfaceElement(i);
+//      for (int j=1; j <= face.GetNP(); ++j)
+//      {
+//        const netgen::PointIndex & i1 = face.PNumMod(j);
+//        const netgen::PointIndex & i2 = face.PNumMod(j+1);
+//        if ( i1 < i2 )
+//        {
+//          const netgen::Point3d & p1 = ngMesh->Point( i1 );
+//          const netgen::Point3d & p2 = ngMesh->Point( i2 );
+//          faceh += netgen::Dist2( p1, p2 );
+//          nbh++;
+//        }
+//      }
+//    }
+//    faceh = Sqrt( faceh / nbh );
 
-    double compareh;
-    if      ( faceh < 0.5 * maxh ) compareh = -1;
-    else if ( faceh > 1.5 * maxh ) compareh = 1;
-    else                           compareh = 0;
-    // cerr << "faceh " << faceh << endl;
-    // cerr << "init maxh " << maxh << endl;
-    // cerr << "compareh " << compareh << endl;
+//    double compareh;
+//    if      ( faceh < 0.5 * maxh ) compareh = -1;
+//    else if ( faceh > 1.5 * maxh ) compareh = 1;
+//    else                           compareh = 0;
+//    // cerr << "faceh " << faceh << endl;
+//    // cerr << "init maxh " << maxh << endl;
+//    // cerr << "compareh " << compareh << endl;
 
-    if ( compareh > 0 )
-      maxh *= 1.2;
-    else
-      maxh *= 0.8;
-    // cerr << "maxh " << maxh << endl;
+//    if ( compareh > 0 )
+//      maxh *= 1.2;
+//    else
+//      maxh *= 0.8;
+//    // cerr << "maxh " << maxh << endl;
 
-    // get bnd box
-    netgen::Point3d pmin, pmax;
-    ngMesh->GetBox( pmin, pmax, 0 );
-    const double dx = pmax.X() - pmin.X();
-    const double dy = pmax.Y() - pmin.Y();
-    const double dz = pmax.Z() - pmin.Z();
+//    // get bnd box
+//    netgen::Point3d pmin, pmax;
+//    ngMesh->GetBox( pmin, pmax, 0 );
+//    const double dx = pmax.X() - pmin.X();
+//    const double dy = pmax.Y() - pmin.Y();
+//    const double dz = pmax.Z() - pmin.Z();
 
-    if ( ! & ngMesh->LocalHFunction() )
-      ngMesh->SetLocalH( pmin, pmax, compareh <= 0 ? 0.1 : 0.5 );
+//    if ( ! & ngMesh->LocalHFunction() )
+//      ngMesh->SetLocalH( pmin, pmax, compareh <= 0 ? 0.1 : 0.5 );
 
-    // adjusted by SALOME_TESTS/Grids/smesh/bugs_08/I8
-    const int nbX = Max( 2, int( dx / maxh * 2 ));
-    const int nbY = Max( 2, int( dy / maxh * 2 ));
-    const int nbZ = Max( 2, int( dz / maxh * 2 ));
+//    // adjusted by SALOME_TESTS/Grids/smesh/bugs_08/I8
+//    const int nbX = Max( 2, int( dx / maxh * 2 ));
+//    const int nbY = Max( 2, int( dy / maxh * 2 ));
+//    const int nbZ = Max( 2, int( dz / maxh * 2 ));
 
-    netgen::Point3d p;
-    for ( int i = 0; i <= nbX; ++i )
-    {
-      p.X() = pmin.X() +  i * dx / nbX;
-      for ( int j = 0; j <= nbY; ++j )
-      {
-        p.Y() = pmin.Y() +  j * dy / nbY;
-        for ( int k = 0; k <= nbZ; ++k )
-        {
-          p.Z() = pmin.Z() +  k * dz / nbZ;
-          ngMesh->RestrictLocalH( p, maxh );
-        }
-      }
-    }
-  }
-}
+//    netgen::Point3d p;
+//    for ( int i = 0; i <= nbX; ++i )
+//    {
+//      p.X() = pmin.X() +  i * dx / nbX;
+//      for ( int j = 0; j <= nbY; ++j )
+//      {
+//        p.Y() = pmin.Y() +  j * dy / nbY;
+//        for ( int k = 0; k <= nbZ; ++k )
+//        {
+//          p.Z() = pmin.Z() +  k * dz / nbZ;
+//          ngMesh->RestrictLocalH( p, maxh );
+//        }
+//      }
+//    }
+//  }
+//}
 
 //================================================================================
 /*!
@@ -428,11 +436,17 @@ bool NETGENPlugin_NETGEN_3D::compute(SMESH_Mesh&                     aMesh,
   netgen::Mesh* ngMesh = (netgen::Mesh*)Netgen_mesh;
   int Netgen_NbOfNodes = Ng_GetNP(Netgen_mesh);
 
-#if NETGEN_VERSION < 5
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(5,0)
   char *optstr = 0;
 #endif
+
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,2)
   int startWith = netgen::MESHCONST_MESHVOLUME;
   int endWith   = netgen::MESHCONST_OPTVOLUME;
+#else
+  netgen::mparam.perfstepsstart = netgen::MESHCONST_MESHVOLUME;
+  netgen::mparam.perfstepsend = netgen::MESHCONST_OPTVOLUME;
+#endif
   int err = 1;
 
   NETGENPlugin_Mesher aMesher( &aMesh, helper.GetSubShape(), /*isVolume=*/true );
@@ -442,7 +456,11 @@ bool NETGENPlugin_NETGEN_3D::compute(SMESH_Mesh&                     aMesh,
   {
     aMesher.SetParameters( _hypParameters );
     if ( !_hypParameters->GetOptimize() )
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,2)
       endWith = netgen::MESHCONST_MESHVOLUME;
+#else
+      netgen::mparam.perfstepsend = netgen::MESHCONST_MESHVOLUME;
+#endif
   }
   else if ( _hypMaxElementVolume )
   {
@@ -469,8 +487,14 @@ bool NETGENPlugin_NETGEN_3D::compute(SMESH_Mesh&                     aMesh,
   try
   {
     OCC_CATCH_SIGNALS;
-
-#if NETGEN_VERSION > 4
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,0)
+    std::shared_ptr<netgen::Mesh> mesh_ptr(ngMesh,  [](netgen::Mesh*){});
+#if NETGEN_VERSION >= NETGEN_VERSION_STRING(6,2)
+    err = netgen::OCCGenerateMesh(occgeo, mesh_ptr, netgen::mparam);
+#else
+    err = netgen::OCCGenerateMesh(occgeo, mesh_ptr, netgen::mparam, startWith, endWith);
+#endif
+#elif NETGEN_VERSION >= NETGEN_VERSION_STRING(5,0)
     ngMesh->CalcLocalH(netgen::mparam.grading);
     err = netgen::OCCGenerateMesh(occgeo, ngMesh, netgen::mparam, startWith, endWith);
 #else
@@ -595,7 +619,11 @@ bool NETGENPlugin_NETGEN_3D::Compute(SMESH_Mesh&         aMesh,
   int Netgen_tetrahedron[4];
 
   NETGENPlugin_NetgenLibWrapper ngLib;
+#if NETGEN_VERSION < NETGEN_VERSION_STRING(6,0)
   Ng_Mesh * Netgen_mesh = ngLib._ngMesh;
+#else
+  Ng_Mesh * Netgen_mesh = ngLib._ngMesh.get();
+#endif
 
   SMESH_ProxyMesh::Ptr proxyMesh( new SMESH_ProxyMesh( aMesh ));
   if ( aMesh.NbQuadrangles() > 0 )

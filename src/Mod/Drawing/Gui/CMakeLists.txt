@@ -11,7 +11,6 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${COIN3D_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIRS}
-    ${QT_INCLUDE_DIR}
     ${OCC_INCLUDE_DIR}
     ${ZLIB_INCLUDE_DIR}
     ${XercesC_INCLUDE_DIRS}
@@ -36,13 +35,17 @@ set(DrawingGui_MOC_HDRS
 fc_wrap_cpp(DrawingGui_MOC_SRCS ${DrawingGui_MOC_HDRS})
 SOURCE_GROUP("Moc" FILES ${DrawingGui_MOC_SRCS})
 
-qt4_add_resources(DrawingGui_SRCS Resources/Drawing.qrc)
-
 set(DrawingGui_UIC_SRCS
     TaskOrthoViews.ui
 )
 
-qt4_wrap_ui(DrawingGui_UIC_HDRS ${DrawingGui_UIC_SRCS})
+if(BUILD_QT5)
+    qt5_add_resources(DrawingGui_SRCS Resources/Drawing.qrc)
+    qt5_wrap_ui(DrawingGui_UIC_HDRS ${DrawingGui_UIC_SRCS})
+else()
+    qt4_add_resources(DrawingGui_SRCS Resources/Drawing.qrc)
+    qt4_wrap_ui(DrawingGui_UIC_HDRS ${DrawingGui_UIC_SRCS})
+endif()
 
 SET(DrawingGui_SRCS
     ${DrawingGui_SRCS}

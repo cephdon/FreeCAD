@@ -29,16 +29,15 @@ if(BUILD_GUI)
         MainGui.cpp
     )
 
-    if(MSVC)
-        SET(FreeCAD_LIBS
-            FreeCADGui
+    SET(FreeCAD_LIBS
+        FreeCADGui
+    )
+
+    if (MSVC AND NOT BUILD_QT5)
+        list(APPEND FreeCAD_LIBS
             ${QT_QTMAIN_LIBRARY}
         )
-    else(MSVC)
-        SET(FreeCAD_LIBS
-            FreeCADGui
-        )
-    endif(MSVC)
+    endif()
 
     add_executable(FreeCADMain WIN32 ${FreeCAD_SRCS})
     target_link_libraries(FreeCADMain ${FreeCAD_LIBS})
@@ -50,11 +49,16 @@ if(BUILD_GUI)
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         )
-    else(WIN32)
+    elseif(APPLE)
+        INSTALL(TARGETS FreeCADMain
+	    RUNTIME DESTINATION MacOS
+            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        )
+    else()
         INSTALL(TARGETS FreeCADMain 
             RUNTIME DESTINATION bin
         )
-    endif(WIN32)
+    endif()
 endif(BUILD_GUI)
 ######################## FreeCADMainCmd ########################
 
@@ -63,10 +67,24 @@ SET(FreeCADMainCmd_SRCS
 )
 add_executable(FreeCADMainCmd ${FreeCADMainCmd_SRCS})
 
-target_link_libraries(FreeCADMainCmd 
+SET(FreeCADMainCmd_LIBS
     FreeCADApp
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTXML_LIBRARY}
+)
+
+if (BUILD_QT5)
+    list(APPEND FreeCADMainCmd_LIBS
+        ${Qt5Core_LIBRARIES}
+        ${Qt5Xml_LIBRARIES}
+    )
+else()
+    list(APPEND FreeCADMainCmd_LIBS
+        ${QT_QTCORE_LIBRARY}
+        ${QT_QTXML_LIBRARY}
+    )
+endif()
+
+target_link_libraries(FreeCADMainCmd 
+    ${FreeCADMainCmd_LIBS}
 )
 
 SET_BIN_DIR(FreeCADMainCmd FreeCADCmd)
@@ -76,11 +94,16 @@ if(WIN32)
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     )
-else(WIN32)
+elseif(APPLE)
+    INSTALL(TARGETS FreeCADMainCmd
+        RUNTIME DESTINATION MacOS
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+else()
     INSTALL(TARGETS FreeCADMainCmd 
         RUNTIME DESTINATION bin
     )
-endif(WIN32)
+endif()
 
 ######################## FreeCADMainPy ########################
 

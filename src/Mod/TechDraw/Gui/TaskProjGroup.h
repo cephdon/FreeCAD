@@ -24,9 +24,14 @@
 #ifndef GUI_TASKVIEW_TASKVIEWGROUP_H
 #define GUI_TASKVIEW_TASKVIEWGROUP_H
 
+#include <QString>
+
 #include <Base/BoundBox.h>
+#include <Base/Vector3D.h>
 #include <Gui/TaskView/TaskView.h>
 #include <Gui/TaskView/TaskDialog.h>
+
+#include "MDIViewPage.h"
 
 #include <Mod/TechDraw/Gui/ui_TaskProjGroup.h>
 
@@ -37,11 +42,13 @@
 class Ui_TaskProjGroup;
 
 namespace TechDraw {
-  class DrawProjGroup;
+class DrawProjGroup;
+class DrawPage;
 }
 
 namespace TechDrawGui
 {
+class MDIViewPage;
 class ViewProviderProjGroup;
 
 class TaskProjGroup : public QWidget
@@ -68,6 +75,9 @@ protected Q_SLOTS:
     /// Requests appropriate rotation of our DrawProjGroup
     void rotateButtonClicked(void);
 
+    void on3DClicked(void);
+    void onResetClicked(void);
+    
     void projectionTypeChanged(int index);
     void scaleTypeChanged(int index);
     void scaleManuallyChanged(int i);
@@ -81,6 +91,9 @@ protected:
      * between checkboxes and viewToggled()
      */
     void setupViewCheckboxes(bool addConnections = false);
+    std::pair<Base::Vector3d,Base::Vector3d> get3DViewDir(void);
+    void setUiPrimary(void);
+    QString formatVector(Base::Vector3d v);
 
 private:
     //class Private;
@@ -90,9 +103,12 @@ private:
     const char * viewChkIndexToCStr(int index);
 
 protected:
-  ViewProviderProjGroup *viewProvider;
+  //ViewProviderProjGroup *viewProvider;
   TechDraw::DrawProjGroup* multiView;
   bool m_createMode;
+  TechDraw::DrawPage* m_page;
+  MDIViewPage* m_mdi;
+
 };
 
 /// Simulation dialog for the TaskView

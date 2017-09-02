@@ -25,6 +25,14 @@ __title__="FreeCAD Draft Workbench - SVG importer/exporter"
 __author__ = "Yorik van Havre, Sebastian Hoogen"
 __url__ = ["http://www.freecadweb.org"]
 
+## @package importSVG
+#  \ingroup DRAFT
+#  \brief SVG file importer & exporter
+#
+#  This module provides support for importing and exporting SVG files. It
+#  enables importing/exporting objects directly to/from the 3D document, but
+#  doesn't handle the SVG output from the Drawng and TechDraw modules.
+
 '''
 This script imports SVG files in FreeCAD. Currently only reads the following entities:
 paths, lines, circular arcs ,rects, circles, ellipses, polygons, polylines.
@@ -47,7 +55,7 @@ else: gui = True
 try: draftui = FreeCADGui.draftToolBar
 except AttributeError: draftui = None
 
-if open.__module__ == '__builtin__':
+if open.__module__ in ['__builtin__','io']:
   pythonopen = open
 
 svgcolors = {
@@ -232,7 +240,7 @@ def getcolor(color):
 
 def transformCopyShape(shape,m):
     """apply transformation matrix m on given shape
-since OCCT 6.8.0 transformShape can be used to apply certian non-orthogonal
+since OCCT 6.8.0 transformShape can be used to apply certain non-orthogonal
 transformations on shapes. This way a conversion to BSplines in
 transformGeometry can be avoided."""
     if abs(m.A11**2+m.A12**2 -m.A21**2-m.A22**2) < 1e-8 and \
@@ -595,7 +603,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                 else:
                                                         currentvec = Vector(x,-y,0)
                                                 if not DraftVecUtils.equals(lastvec,currentvec):
-                                                        seg = Part.Line(lastvec,currentvec).toShape()
+                                                        seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                         FreeCAD.Console.PrintMessage("line %s %s\n" %(lastvec,currentvec))
                                                         lastvec = currentvec
                                                         path.append(seg)
@@ -606,7 +614,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                         currentvec = lastvec.add(Vector(x,0,0))
                                                 else:
                                                         currentvec = Vector(x,lastvec.y,0)
-                                                seg = Part.Line(lastvec,currentvec).toShape()
+                                                seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                 lastvec = currentvec
                                                 lastpole = None
                                                 path.append(seg)
@@ -616,7 +624,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                         currentvec = lastvec.add(Vector(0,-y,0))
                                                 else:
                                                         currentvec = Vector(lastvec.x,-y,0)
-                                                seg = Part.Line(lastvec,currentvec).toShape()
+                                                seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                 lastvec = currentvec
                                                 lastpole = None
                                                 path.append(seg)
@@ -684,7 +692,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                                 seg.reverse()
                                                                 #obj = self.doc.addObject("Part::Feature",'DEBUG %s'%pathname) #DEBUG
                                                                 #obj.Shape = seg #DEBUG
-                                                                #seg = Part.Line(lastvec,currentvec).toShape() #DEBUG
+                                                                #seg = Part.LineSegment(lastvec,currentvec).toShape() #DEBUG
                                                 lastvec = currentvec
                                                 lastpole = None
                                                 path.append(seg)
@@ -722,7 +730,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                         pole1.distanceToLine(lastvec,currentvec) < 10**(-1*(2+Draft.precision())) and \
                                                         pole2.distanceToLine(lastvec,currentvec) < 10**(-1*(2+Draft.precision())):
                                                                 #print "straight segment"
-                                                                seg = Part.Line(lastvec,currentvec).toShape()
+                                                                seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                         else:
                                                                 #print "cubic bezier segment"
                                                                 b = Part.BezierCurve()
@@ -759,7 +767,7 @@ class svgHandler(xml.sax.ContentHandler):
                                                         if True and \
                                                         pole.distanceToLine(lastvec,currentvec) < 20**(-1*(2+Draft.precision())):
                                                                 #print "straight segment"
-                                                                seg = Part.Line(lastvec,currentvec).toShape()
+                                                                seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                         else:
                                                                 #print "quadratic bezier segment"
                                                                 b = Part.BezierCurve()
@@ -772,7 +780,7 @@ class svgHandler(xml.sax.ContentHandler):
                                 elif (d == "Z") or (d == "z"):
                                         if not DraftVecUtils.equals(lastvec,firstvec):
                                             try:
-                                                seg = Part.Line(lastvec,firstvec).toShape()
+                                                seg = Part.LineSegment(lastvec,firstvec).toShape()
                                             except Part.OCCError:
                                                 pass
                                             else:
@@ -821,12 +829,11 @@ class svgHandler(xml.sax.ContentHandler):
                                 p2 = Vector(data['x']+data['width'],-data['y'],0)
                                 p3 = Vector(data['x']+data['width'],-data['y']-data['height'],0)
                                 p4 = Vector(data['x'],-data['y']-data['height'],0)
-                                edges.append(Part.Line(p1,p2).toShape())
-                                edges.append(Part.Line(p2,p3).toShape())
-                                edges.append(Part.Line(p3,p4).toShape())
-                                edges.append(Part.Line(p4,p1).toShape())
+                                edges.append(Part.LineSegment(p1,p2).toShape())
+                                edges.append(Part.LineSegment(p2,p3).toShape())
+                                edges.append(Part.LineSegment(p3,p4).toShape())
+                                edges.append(Part.LineSegment(p4,p1).toShape())
                         else: #rounded edges
-                                #ToTo: check for ry>rx !!!!
                                 rx = data.get('rx')
                                 ry = data.get('ry') or rx
                                 rx = rx or ry 
@@ -834,45 +841,36 @@ class svgHandler(xml.sax.ContentHandler):
                                         rx = data['width'] / 2.0
                                 if ry > 2 * data['height']:
                                        ry = data['height'] / 2.0
-                                if rx > ry:
-                                    mj = rx
-                                    mi = ry
-                                else:
-                                    mj = ry
-                                    mi = rx
+
                                 p1=Vector(data['x']+rx,-data['y']-data['height']+ry,0)
-                                e1=Part.Ellipse(p1,mj,mi)
                                 p2=Vector(data['x']+data['width']-rx,-data['y']-data['height']+ry,0)
-                                e2=Part.Ellipse(p2,mj,mi)
                                 p3=Vector(data['x']+data['width']-rx,-data['y']-ry,0)
-                                e3=Part.Ellipse(p3,mj,mi)
                                 p4=Vector(data['x']+rx,-data['y']-ry,0)
-                                e4=Part.Ellipse(p4,mj,mi)
-                                if rx > ry:
-                                        e1a=Part.Arc(e1,math.radians(180),math.radians(270))
-                                        e2a=Part.Arc(e2,math.radians(270),math.radians(360))
-                                        e3a=Part.Arc(e3,math.radians(0),math.radians(90))
-                                        e4a=Part.Arc(e4,math.radians(90),math.radians(180))
-                                        esh=[e1a.toShape(),e2a.toShape(),e3a.toShape(),e4a.toShape()]
+
+                                if rx >= ry:
+                                        e=Part.Ellipse(Vector(),rx,ry)
+                                        e1a=Part.Arc(e,math.radians(180),math.radians(270))
+                                        e2a=Part.Arc(e,math.radians(270),math.radians(360))
+                                        e3a=Part.Arc(e,math.radians(0),math.radians(90))
+                                        e4a=Part.Arc(e,math.radians(90),math.radians(180))
+                                        m=FreeCAD.Matrix()
                                 else:
-                                        e1a=Part.Arc(e1,math.radians(90),math.radians(180))
-                                        e2a=Part.Arc(e2,math.radians(180),math.radians(270))
-                                        e3a=Part.Arc(e3,math.radians(270),math.radians(360))
-                                        e4a=Part.Arc(e4,math.radians(0),math.radians(90))
-                                        rot90=FreeCAD.Matrix(0,-1,0,0,1,0)
-                                        esh=[]
-                                        for arc,point in ((e1a,p1),(e2a,p2),(e3a,p3),(e4a,p4)):
-                                                m1=FreeCAD.Matrix()
-                                                m1.move(point.multiply(1))
-                                                m1=m1.multiply(rot90)
-                                                m1.move(point.multiply(-1))
-                                                #m1.move(point)
-                                                arc.transform(m1)
-                                                esh.append(arc.toShape())
+                                        e=Part.Ellipse(Vector(),ry,rx)
+                                        e1a=Part.Arc(e,math.radians(90),math.radians(180))
+                                        e2a=Part.Arc(e,math.radians(180),math.radians(270))
+                                        e3a=Part.Arc(e,math.radians(270),math.radians(360))
+                                        e4a=Part.Arc(e,math.radians(0),math.radians(90))
+                                        m=FreeCAD.Matrix(0,-1,0,0,1,0) # rotate +90 degree
+                                esh=[]
+                                for arc,point in ((e1a,p1),(e2a,p2),(e3a,p3),(e4a,p4)):
+                                        m1=FreeCAD.Matrix(m)
+                                        m1.move(point)
+                                        arc.transform(m1)
+                                        esh.append(arc.toShape())
                                 for esh1,esh2 in zip(esh[-1:]+esh[:-1],esh):
                                         p1,p2 = esh1.Vertexes[-1].Point,esh2.Vertexes[0].Point
                                         if not DraftVecUtils.equals(p1,p2):
-                                            edges.append(Part.Line(esh1.Vertexes[-1].Point,esh2.Vertexes[0].Point).toShape()) #straight segments
+                                            edges.append(Part.LineSegment(esh1.Vertexes[-1].Point,esh2.Vertexes[0].Point).toShape()) #straight segments
                                         edges.append(esh2) # elliptical segments
                         sh = Part.Wire(edges)
                         if self.fill: sh = Part.Face(sh)
@@ -889,7 +887,7 @@ class svgHandler(xml.sax.ContentHandler):
                         if not pathname: pathname = 'Line'
                         p1 = Vector(data['x1'],-data['y1'],0)
                         p2 = Vector(data['x2'],-data['y2'],0)
-                        sh = Part.Line(p1,p2).toShape()
+                        sh = Part.LineSegment(p1,p2).toShape()
                         sh = self.applyTrans(sh)
                         obj = self.doc.addObject("Part::Feature",pathname)
                         obj.Shape = sh
@@ -914,7 +912,7 @@ class svgHandler(xml.sax.ContentHandler):
                                 for svgx,svgy in zip(points[2::2],points[3::2]):
                                         currentvec = Vector(svgx,-svgy,0)
                                         if not DraftVecUtils.equals(lastvec,currentvec):
-                                                seg = Part.Line(lastvec,currentvec).toShape()
+                                                seg = Part.LineSegment(lastvec,currentvec).toShape()
                                                 #print "polyline seg ",lastvec,currentvec
                                                 lastvec = currentvec
                                                 path.append(seg)
@@ -1152,7 +1150,7 @@ def decodeName(name):
         return decodedName
 
 def getContents(filename,tag,stringmode=False):
-        "gets the contents of all the occurences of the given tag in the given file"
+        "gets the contents of all the occurrences of the given tag in the given file"
         result = {}
         if stringmode:
                 contents = filename

@@ -4,7 +4,7 @@
 <context>
     <name>CmdCreateImagePlane</name>
     <message>
-        <location filename="../../Command.cpp" line="+93"/>
+        <location filename="../../Command.cpp" line="+97"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
@@ -26,7 +26,7 @@
 <context>
     <name>CmdImageOpen</name>
     <message>
-        <location line="-44"/>
+        <location line="-46"/>
         <source>Image</source>
         <translation>Bild</translation>
     </message>
@@ -44,12 +44,14 @@
 <context>
     <name>ImageGui::GLImageBox</name>
     <message>
-        <location filename="../../GLImageBox.cpp" line="+325"/>
+        <location filename="../../GLImageBox.cpp" line="+331"/>
+        <location filename="../../OpenGLImageBox.cpp" line="+385"/>
         <source>Undefined type of colour space for image viewing</source>
         <translation>Odefinierad färgrymd för bildvisning</translation>
     </message>
     <message>
         <location line="-1"/>
+        <location filename="../../OpenGLImageBox.cpp" line="-1"/>
         <source>Image pixel format</source>
         <translation>Bildens pixelformat</translation>
     </message>
@@ -95,7 +97,7 @@
 <context>
     <name>ImageGui::ImageView</name>
     <message>
-        <location filename="../../ImageView.cpp" line="+77"/>
+        <location filename="../../ImageView.cpp" line="+107"/>
         <source>&amp;Fit image</source>
         <translation>An&amp;passa bild</translation>
     </message>
@@ -180,32 +182,40 @@
         <translation type="obsolete">Bildformat (*.png *.xpm *.jpg *.bmp)</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="+18"/>
-        <location line="+41"/>
+        <location filename="../../Command.cpp" line="+20"/>
+        <location line="+43"/>
         <source>Choose an image file to open</source>
         <translation>Välj en bildfil att öppna</translation>
     </message>
     <message>
-        <location line="-48"/>
-        <location line="+41"/>
+        <location line="-50"/>
+        <location line="+43"/>
         <source>Images</source>
         <translation>Bilder</translation>
     </message>
     <message>
-        <location line="-36"/>
-        <location line="+41"/>
+        <location line="-38"/>
+        <location line="+43"/>
         <source>All files</source>
         <translation>Alla filer</translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Error open image</source>
-        <translation>Fel vid öppning av bilden</translation>
+        <source>Error opening image</source>
+        <translation type="unfinished">Error opening image</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Could not load the chosen image</source>
+        <translation type="unfinished">Could not load the chosen image</translation>
+    </message>
+    <message>
+        <source>Error open image</source>
+        <translation type="obsolete">Fel vid öppning av bilden</translation>
+    </message>
+    <message>
         <source>Could not load the choosen image</source>
-        <translation>Kunde inte ladda den valda bilden</translation>
+        <translation type="obsolete">Kunde inte ladda den valda bilden</translation>
     </message>
 </context>
 <context>

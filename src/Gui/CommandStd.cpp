@@ -196,14 +196,11 @@ Action * StdCmdAbout::createAction(void)
     QString exe = qApp->applicationName();
     pcAction = new Action(this,getMainWindow());
     pcAction->setText(QCoreApplication::translate(
-        this->className(), sMenuText, 0,
-        QCoreApplication::CodecForTr).arg(exe));
+        this->className(), sMenuText).arg(exe));
     pcAction->setToolTip(QCoreApplication::translate(
-        this->className(), sToolTipText, 0,
-        QCoreApplication::CodecForTr).arg(exe));
+        this->className(), sToolTipText).arg(exe));
     pcAction->setStatusTip(QCoreApplication::translate(
-        this->className(), sStatusTip, 0,
-        QCoreApplication::CodecForTr).arg(exe));
+        this->className(), sStatusTip).arg(exe));
     pcAction->setWhatsThis(QLatin1String(sWhatsThis));
     pcAction->setIcon(QApplication::windowIcon());
     pcAction->setShortcut(QString::fromLatin1(sAccel));
@@ -234,14 +231,11 @@ void StdCmdAbout::languageChange()
     if (_pcAction) {
         QString exe = qApp->applicationName();
         _pcAction->setText(QCoreApplication::translate(
-            this->className(), sMenuText, 0,
-            QCoreApplication::CodecForTr).arg(exe));
+            this->className(), sMenuText).arg(exe));
         _pcAction->setToolTip(QCoreApplication::translate(
-            this->className(), sToolTipText, 0,
-            QCoreApplication::CodecForTr).arg(exe));
+            this->className(), sToolTipText).arg(exe));
         _pcAction->setStatusTip(QCoreApplication::translate(
-            this->className(), sStatusTip, 0,
-            QCoreApplication::CodecForTr).arg(exe));
+            this->className(), sStatusTip).arg(exe));
         _pcAction->setWhatsThis(QLatin1String(sWhatsThis));
     }
 }
@@ -467,7 +461,7 @@ StdCmdOnlineHelpWebsite::StdCmdOnlineHelpWebsite()
 void StdCmdOnlineHelpWebsite::activated(int iMsg)
 {
     Q_UNUSED(iMsg); 
-    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/index.php?title=Online_Help_Toc").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/Online_Help_Toc").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("OnlineHelp", defaulturl.c_str());
     hURLGrp->SetASCII("OnlineHelp", url.c_str());
@@ -523,7 +517,7 @@ StdCmdFreeCADUserHub::StdCmdFreeCADUserHub()
 void StdCmdFreeCADUserHub::activated(int iMsg)
 {
     Q_UNUSED(iMsg); 
-    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/index.php?title=User_hub").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/User_hub").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("Documentation", defaulturl.c_str());
     hURLGrp->SetASCII("Documentation", url.c_str());
@@ -551,7 +545,7 @@ StdCmdFreeCADPowerUserHub::StdCmdFreeCADPowerUserHub()
 void StdCmdFreeCADPowerUserHub::activated(int iMsg)
 {
     Q_UNUSED(iMsg); 
-    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/index.php?title=Power_users_hub").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/Power_users_hub").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("PowerUsers", defaulturl.c_str());
     hURLGrp->SetASCII("PowerUsers", url.c_str());
@@ -607,7 +601,7 @@ StdCmdFreeCADFAQ::StdCmdFreeCADFAQ()
 void StdCmdFreeCADFAQ::activated(int iMsg)
 {
     Q_UNUSED(iMsg); 
-    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/index.php?title=FAQ").toStdString();
+    std::string defaulturl = QCoreApplication::translate(this->className(),"http://www.freecadweb.org/wiki/FAQ").toStdString();
     ParameterGrp::handle hURLGrp = App::GetApplication().GetParameterGroupByPath("User parameter:BaseApp/Preferences/Websites");
     std::string url = hURLGrp->GetASCII("FAQ", defaulturl.c_str());
     hURLGrp->SetASCII("FAQ", url.c_str());

@@ -45,10 +45,12 @@ public:
     PythonWrapper();
     bool loadCoreModule();
     bool loadGuiModule();
+    bool loadWidgetsModule();
 
     bool toCString(const Py::Object&, std::string&);
     QObject* toQObject(const Py::Object&);
     Py::Object fromQWidget(QWidget*, const char* className=0);
+    const char* getWrapperName(QObject*) const;
     /*!
       Create a Python wrapper for the icon. The icon must be created on the heap
       and the Python wrapper takes ownership of it.

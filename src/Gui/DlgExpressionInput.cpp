@@ -126,7 +126,7 @@ void DlgExpressionInput::textChanged(const QString &text)
             std::string error = path.getDocumentObject()->ExpressionEngine.validateExpression(path, expr);
 
             if (error.size() > 0)
-                throw Base::Exception(error.c_str());
+                throw Base::RuntimeError(error.c_str());
 
             std::unique_ptr<Expression> result(expr->eval());
 
@@ -139,7 +139,7 @@ void DlgExpressionInput::textChanged(const QString &text)
                 Base::Quantity value = n->getQuantity();
 
                 if (!value.getUnit().isEmpty() && value.getUnit() != impliedUnit)
-                    throw Base::Exception("Unit mismatch between result and required unit");
+                    throw Base::UnitsMismatchError("Unit mismatch between result and required unit");
 
                 value.setUnit(impliedUnit);
 
@@ -180,7 +180,7 @@ void DlgExpressionInput::setExpressionInputSize(int width, int height)
 
 void DlgExpressionInput::mouseReleaseEvent(QMouseEvent* ev)
 {
-#if 0//defined(Q_WS_WIN)
+#if 0//defined(Q_OS_WIN)
     if (QWidget::mouseGrabber() == this) {
         QList<QWidget*> childs = this->findChildren<QWidget*>();
         for (QList<QWidget*>::iterator it = childs.begin(); it != childs.end(); ++it) {
@@ -203,7 +203,7 @@ void DlgExpressionInput::mouseReleaseEvent(QMouseEvent* ev)
 
 void DlgExpressionInput::mousePressEvent(QMouseEvent* ev)
 {
-#if 0//defined(Q_WS_WIN)
+#if 0//defined(Q_OS_WIN)
     bool handled = false;
     if (QWidget::mouseGrabber() == this) {
         QList<QWidget*> childs = this->findChildren<QWidget*>();
@@ -241,7 +241,7 @@ void DlgExpressionInput::showEvent(QShowEvent* ev)
 {
     QDialog::showEvent(ev);
 
-#if 0//defined(Q_WS_WIN)
+#if 0//defined(Q_OS_WIN)
     // This way we can fetch click events outside modal dialogs
     QWidget* widget = QApplication::activeModalWidget();
     if (widget) {

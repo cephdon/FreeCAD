@@ -57,6 +57,37 @@
     </message>
 </context>
 <context>
+    <name>App::Property</name>
+    <message>
+        <source>The displayed size of the origin</source>
+        <translation type="unfinished">The displayed size of the origin</translation>
+    </message>
+    <message>
+        <source>Visual size of the feature</source>
+        <translation type="unfinished">Visual size of the feature</translation>
+    </message>
+    <message>
+        <source>&lt;empty&gt;</source>
+        <translation type="unfinished">&lt;empty&gt;</translation>
+    </message>
+    <message>
+        <source>Angle</source>
+        <translation>Úhel</translation>
+    </message>
+    <message>
+        <source>Axis</source>
+        <translation>Osa</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished">Position</translation>
+    </message>
+    <message>
+        <source>Base</source>
+        <translation>Základna</translation>
+    </message>
+</context>
+<context>
     <name>CmdTestConsoleOutput</name>
     <message>
         <source>Standard-Test</source>
@@ -149,33 +180,6 @@
     <message>
         <source>Ok</source>
         <translation>Budiž</translation>
-    </message>
-</context>
-<context>
-    <name>DlgUnitCalculator</name>
-    <message>
-        <source>Units calculator</source>
-        <translation>Převodník Jednotek</translation>
-    </message>
-    <message>
-        <source>as:</source>
-        <translation>jako:</translation>
-    </message>
-    <message>
-        <source>=&gt;</source>
-        <translation>=&gt;</translation>
-    </message>
-    <message>
-        <source>Help</source>
-        <translation>Nápověda</translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation>Kopírovat</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Zavřít</translation>
     </message>
 </context>
 <context>
@@ -325,6 +329,25 @@ while doing a left or right click and move the mouse up or down</source>
     </message>
 </context>
 <context>
+    <name>Gui::DAG::Model</name>
+    <message>
+        <source>Rename</source>
+        <translation>Přejmenovat</translation>
+    </message>
+    <message>
+        <source>Rename object</source>
+        <translation>Přejmenovat objekt</translation>
+    </message>
+    <message>
+        <source>Finish editing</source>
+        <translation>Dokončení úprav</translation>
+    </message>
+    <message>
+        <source>Finish editing object</source>
+        <translation>Dokončení úprav objektu</translation>
+    </message>
+</context>
+<context>
     <name>Gui::Dialog::AboutApplication</name>
     <message>
         <source>About</source>
@@ -351,10 +374,6 @@ while doing a left or right click and move the mouse up or down</source>
         <translation>Datum vydání</translation>
     </message>
     <message>
-        <source>License...</source>
-        <translation>Licence...</translation>
-    </message>
-    <message>
         <source>Copy to clipboard</source>
         <translation>Kopírovat do schránky</translation>
     </message>
@@ -365,6 +384,18 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source>Word size</source>
         <translation>Velikost slova</translation>
+    </message>
+    <message>
+        <source>Credits</source>
+        <translation>Zásluhy</translation>
+    </message>
+    <message>
+        <source>FreeCAD would be nowhere without their efforts:</source>
+        <translation>FreeCAD by zde nebyl bez jejich úsilí:</translation>
+    </message>
+    <message>
+        <source>License</source>
+        <translation>Licence</translation>
     </message>
 </context>
 <context>
@@ -530,6 +561,21 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source>%1 at %2</source>
         <translation>%1 z %2</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::Dialog::DlgCheckableMessageBox</name>
+    <message>
+        <source>Dialog</source>
+        <translation>Dialogové okno</translation>
+    </message>
+    <message>
+        <source>TextLabel</source>
+        <translation>Textový popisek</translation>
+    </message>
+    <message>
+        <source>CheckBox</source>
+        <translation>Zaškrtávací políčko</translation>
     </message>
 </context>
 <context>
@@ -732,6 +778,10 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source></source>
         <translation> </translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>Vyčistit</translation>
     </message>
 </context>
 <context>
@@ -1185,28 +1235,40 @@ Please define another shortcut.</source>
         <source>Style sheet:</source>
         <translation>Formát listu:</translation>
     </message>
+    <message>
+        <source>Python console</source>
+        <translation>Python konzole</translation>
+    </message>
+    <message>
+        <source>Enable word wrap</source>
+        <translation type="unfinished">Enable word wrap</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgGeneralImp</name>
     <message>
-        <source>Default (%1 x %1)</source>
-        <translation>Výchozí (%1 x %1)</translation>
-    </message>
-    <message>
-        <source>Small (%1 x %1)</source>
-        <translation>Malý (%1 x %1)</translation>
-    </message>
-    <message>
-        <source>Large (%1 x %1)</source>
-        <translation>Velký (%1 x %1)</translation>
-    </message>
-    <message>
-        <source>Extra large (%1 x %1)</source>
-        <translation>Extra velký (%1 x %1)</translation>
-    </message>
-    <message>
         <source>No style sheet</source>
         <translation>Bez stylů</translation>
+    </message>
+    <message>
+        <source>Small (%1px)</source>
+        <translation type="unfinished">Small (%1px)</translation>
+    </message>
+    <message>
+        <source>Medium (%1px)</source>
+        <translation type="unfinished">Medium (%1px)</translation>
+    </message>
+    <message>
+        <source>Large (%1px)</source>
+        <translation type="unfinished">Large (%1px)</translation>
+    </message>
+    <message>
+        <source>Extra large (%1px)</source>
+        <translation type="unfinished">Extra large (%1px)</translation>
+    </message>
+    <message>
+        <source>Custom (%1px)</source>
+        <translation type="unfinished">Custom (%1px)</translation>
     </message>
 </context>
 <context>
@@ -1668,6 +1730,18 @@ Specify another directory, please.</source>
         <source>Please select an object from the list</source>
         <translation>Prosím vyberte objekt ze seznamu</translation>
     </message>
+    <message>
+        <source>Search</source>
+        <translation>Hledat</translation>
+    </message>
+    <message>
+        <source>A search pattern to filter the results above</source>
+        <translation type="unfinished">A search pattern to filter the results above</translation>
+    </message>
+    <message>
+        <source>None (Remove link)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgReportView</name>
@@ -1867,11 +1941,15 @@ Specify another directory, please.</source>
     </message>
     <message>
         <source>Or&amp;thographic rendering</source>
-        <translation type="unfinished">Or&amp;thographic rendering</translation>
+        <translation>Or&amp;tografické renderování</translation>
     </message>
     <message>
         <source>Perspective renderin&amp;g</source>
-        <translation type="unfinished">Perspective renderin&amp;g</translation>
+        <translation>Perspektivní renderování &amp;g</translation>
+    </message>
+    <message>
+        <source>Use OpenGL Vertex Buffer Object (experimental)</source>
+        <translation type="unfinished">Use OpenGL Vertex Buffer Object (experimental)</translation>
     </message>
 </context>
 <context>
@@ -2138,6 +2216,10 @@ Specify another directory, please.</source>
         <source>Save AutoRecovery information every</source>
         <translation>Uložit informace Automatické obnovy každých</translation>
     </message>
+    <message>
+        <source>Add the program logo to the generated thumbnail</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsEditorImp</name>
@@ -2392,6 +2474,14 @@ Specify another directory, please.</source>
         <source>Insert comment</source>
         <translation>Vložit komentář</translation>
     </message>
+    <message>
+        <source>Transparent</source>
+        <translation>Průhledný</translation>
+    </message>
+    <message>
+        <source>Add watermark</source>
+        <translation>Přidání vodoznaku</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsMacro</name>
@@ -2486,6 +2576,18 @@ Specify another directory, please.</source>
         <source>Imperial decimal (in/lb)</source>
         <translation>Imperiální desetinné (in/lb)</translation>
     </message>
+    <message utf8="true">
+        <source>Building Euro (cm/m²/m³)</source>
+        <translation type="unfinished">Building Euro (cm/m²/m³)</translation>
+    </message>
+    <message>
+        <source>Building US (ft-in/sqft/cuft)</source>
+        <translation type="unfinished">Building US (ft-in/sqft/cuft)</translation>
+    </message>
+    <message>
+        <source>Metric small parts &amp; CNC(mm, mm/min)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsViewColor</name>
@@ -2521,57 +2623,55 @@ Specify another directory, please.</source>
         <source>Simple color</source>
         <translation>Jednoduchá barva</translation>
     </message>
+    <message>
+        <source>Pick radius (px):</source>
+        <translation>Vyberte poloměr (px):</translation>
+    </message>
+    <message>
+        <source>Sets the area of confusion for picking elements in 3D view. Larger value make it easier to pick stuff, but will make some small features impossible to select.</source>
+        <translation type="unfinished">Sets the area of confusion for picking elements in 3D view. Larger value make it easier to pick stuff, but will make some small features impossible to select.</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgTipOfTheDay</name>
-    <message>
-        <source>Tip of the day</source>
-        <translation>Tip dne</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;&lt;font face=&quot;Times New Roman&quot;&gt;&lt;font size=&quot;+3&quot;&gt;Did you know...&lt;/font&gt;&lt;/font&gt;&lt;/b&gt;</source>
-        <translation>&lt;font size=&quot;+3&quot;&gt;&lt;font face=&quot;Times New Roman&quot;&gt;&lt;b&gt;Víte, že ...&lt;/b&gt;&lt;/font&gt;&lt;/font&gt;</translation>
-    </message>
-    <message>
-        <source>&amp;Show tips at start up</source>
-        <translation>Zobrazit tipy při startu</translation>
-    </message>
-    <message>
-        <source>Alt+S</source>
-        <translation>ALT + S</translation>
-    </message>
-    <message>
-        <source>&amp;Next Tip</source>
-        <translation>Další tip</translation>
-    </message>
-    <message>
-        <source>Alt+N</source>
-        <translation>Alt+N</translation>
-    </message>
-    <message>
-        <source>&amp;Close</source>
-        <translation>&amp;Zavřít</translation>
-    </message>
-    <message>
-        <source>Alt+C</source>
-        <translation>Alt+C</translation>
-    </message>
     <message>
         <source></source>
         <translation> </translation>
     </message>
 </context>
 <context>
-    <name>Gui::Dialog::DlgTipOfTheDayImp</name>
+    <name>Gui::Dialog::DlgUnitCalculator</name>
     <message>
-        <source>Download failed: %1
-</source>
-        <translation>Stažení neúspěšné: %1
-</translation>
+        <source>Units calculator</source>
+        <translation>Převodník Jednotek</translation>
     </message>
     <message>
-        <source>If you want to learn more about FreeCAD you must go to %1 or press the Help item in the Help menu.</source>
-        <translation>Pokud se chcete dozvědět více o FreeCAD, musíte přejít na %1 nebo stiskněte položku Nápověda v nabídce Nápověda.</translation>
+        <source>as:</source>
+        <translation>jako:</translation>
+    </message>
+    <message>
+        <source>=&gt;</source>
+        <translation>=&gt;</translation>
+    </message>
+    <message>
+        <source>Quantity:</source>
+        <translation>Množství:</translation>
+    </message>
+    <message>
+        <source>Units:</source>
+        <translation>Jednotky:</translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation>Nápověda</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Kopírovat</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Zavřít</translation>
     </message>
 </context>
 <context>
@@ -2661,7 +2761,7 @@ Specify another directory, please.</source>
         <source>Press &apos;Start Recovery&apos; to start the recovery process of the doument listed below.
 
 The &apos;Status&apos; column shows whether the document could be recovered.</source>
-        <translation>Stiskněte &quot;Začít obnovu&quot; pro start procesu obnovy dokumentu níže.
+        <translation type="obsolete">Stiskněte &quot;Začít obnovu&quot; pro start procesu obnovy dokumentu níže.
 
 Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</translation>
     </message>
@@ -2703,82 +2803,45 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     </message>
     <message>
         <source>Cleanup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyčistit...</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">Odstranit</translation>
+        <translation>Odstranit</translation>
     </message>
     <message>
         <source>Cleanup</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyčištit</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the selected transient directories?</source>
-        <translation type="unfinished"></translation>
+        <translation>Jste si jist, že chcete odstranit vybrané dočasné adresáře?</translation>
     </message>
     <message>
         <source>When deleting the selected transient directory you won&apos;t be able to recover any files afterwards.</source>
-        <translation type="unfinished"></translation>
+        <translation>Po odstranění vybraného dočasného adresáře jsou soubory nenávratně ztraceny.</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all transient directories?</source>
-        <translation type="unfinished"></translation>
+        <translation>Jste si jist, že chcete odstranit všechny dočasné adresáře?</translation>
     </message>
     <message>
         <source>When deleting all transient directory you won&apos;t be able to recover any files afterwards.</source>
-        <translation type="unfinished"></translation>
+        <translation>Po odstranění všech dočasných adresářů jsou soubory nenávratně ztraceny.</translation>
     </message>
     <message>
         <source>Finished</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokončeno</translation>
     </message>
     <message>
         <source>Transient directories deleted.</source>
+        <translation>Dočasné adresáře odstraněny.</translation>
+    </message>
+    <message>
+        <source>Press &apos;Start Recovery&apos; to start the recovery process of the document listed below.
+
+The &apos;Status&apos; column shows whether the document could be recovered.</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Gui::Dialog::DownloadDialog</name>
-    <message>
-        <source>Download</source>
-        <translation>Stáhnout</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Zrušit</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Zavřít</translation>
-    </message>
-    <message>
-        <source>There already exists a file called %1 in the current directory. Overwrite?</source>
-        <translation>Soubor s názvem %1 již existuje. Přepsat?</translation>
-    </message>
-    <message>
-        <source>Unable to save the file %1: %2.</source>
-        <translation>Nelze uložit soubor %1: %2.</translation>
-    </message>
-    <message>
-        <source>Downloading %1.</source>
-        <translation>Stahování %1.</translation>
-    </message>
-    <message>
-        <source>Download canceled.</source>
-        <translation>Stahování zrušeno.</translation>
-    </message>
-    <message>
-        <source>Download failed: %1.</source>
-        <translation>Stažení se nezdařilo: %1.</translation>
-    </message>
-    <message>
-        <source>Downloaded %1 to current directory.</source>
-        <translation>%1 Staženo do aktuálního adresáře.</translation>
-    </message>
-    <message>
-        <source>%1 at %2</source>
-        <translation>%1 z %2</translation>
     </message>
 </context>
 <context>
@@ -2797,7 +2860,7 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     </message>
     <message>
         <source>Error opening save file: %1</source>
-        <translation>Chyba při otevírání uloženého souboru: %1</translation>
+        <translation type="obsolete">Chyba při otevírání uloženého souboru: %1</translation>
     </message>
     <message>
         <source>Error saving: %1</source>
@@ -2842,6 +2905,10 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     <message>
         <source>MB</source>
         <translation>MB</translation>
+    </message>
+    <message>
+        <source>Error opening saved file: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2918,13 +2985,6 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     <message>
         <source>X:</source>
         <translation>X:</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::Dialog::LicenseDialog</name>
-    <message>
-        <source>Copyright</source>
-        <translation>Autorská práva</translation>
     </message>
 </context>
 <context>
@@ -3150,6 +3210,10 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
         <source>Euler angles (XY&apos;Z&apos;&apos;)</source>
         <translation>Eulerovy úhly (XY&apos;Z&quot;)</translation>
     </message>
+    <message>
+        <source>Use center of mass</source>
+        <translation type="unfinished">Use center of mass</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::PrintModel</name>
@@ -3277,45 +3341,6 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     </message>
 </context>
 <context>
-    <name>Gui::DockWnd::HelpView</name>
-    <message>
-        <source>Previous</source>
-        <translation>Předchozí</translation>
-    </message>
-    <message>
-        <source>Next</source>
-        <translation>Další</translation>
-    </message>
-    <message>
-        <source>Home</source>
-        <translation>Domů</translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation>Otevřít</translation>
-    </message>
-    <message>
-        <source>Open file</source>
-        <translation>Otevřít soubor</translation>
-    </message>
-    <message>
-        <source>All HTML files (*.html *.htm)</source>
-        <translation>Všechny soubory HTML (*.html *.htm)</translation>
-    </message>
-    <message>
-        <source>External browser</source>
-        <translation>Externí prohlížeč</translation>
-    </message>
-    <message>
-        <source>No external browser found. Specify in preferences, please</source>
-        <translation>Žádný externí prohlížeč nebyl nalezen. Zadejte v předvolbách, prosím</translation>
-    </message>
-    <message>
-        <source>Starting of %1 failed</source>
-        <translation>Spuštění %1 se nezdařilo.</translation>
-    </message>
-</context>
-<context>
     <name>Gui::DockWnd::PropertyDockView</name>
     <message>
         <source>Property View</source>
@@ -3384,7 +3409,7 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
     <name>Gui::DockWnd::SelectionView</name>
     <message>
         <source>Property View</source>
-        <translation>Vlastnosti zobrazení</translation>
+        <translation type="obsolete">Vlastnosti zobrazení</translation>
     </message>
     <message>
         <source>Search</source>
@@ -3438,60 +3463,29 @@ Sloupec &quot;Status&quot; zobrazuje, jestli může být dokument obnoven.</tran
         <source>Reveals this object and its subelements in the python console.</source>
         <translation>Odkrýt tento objekt a jeho subelementy v konzoli pythonu.</translation>
     </message>
-</context>
-<context>
-    <name>Gui::DockWnd::TextBrowser</name>
     <message>
-        <source>Could not open file.</source>
-        <translation>Nelze otevřít soubor.</translation>
+        <source>Mark to recompute</source>
+        <translation>Označit k přepočítání</translation>
     </message>
     <message>
-        <source>You tried to access the address %1 which is currently unavailable. Please make sure that the URL exists and try reloading the page.</source>
-        <translation>Pokusili jste se otevřít adresu %1, která není v současné době k dispozici. Zkontrolujte, zda adresa existuje a zkuste znovunačtení stránky.</translation>
+        <source>Mark this object to be recomputed</source>
+        <translation>Označit objekt k přepočítání</translation>
     </message>
     <message>
-        <source>Connecting to %1</source>
-        <translation>Připojování k %1</translation>
+        <source>Selection View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sending to %1</source>
-        <translation>Odeslání %1</translation>
+        <source>The number of selected items</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reading from %1</source>
-        <translation>Čtení z %1</translation>
+        <source>Duplicate subshape</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Download failed: %1.</source>
-        <translation>Stažení se nezdařilo: %1.</translation>
-    </message>
-    <message>
-        <source>Previous</source>
-        <translation>Předchozí</translation>
-    </message>
-    <message>
-        <source>Forward</source>
-        <translation>Vpřed</translation>
-    </message>
-    <message>
-        <source>Home</source>
-        <translation>Domů</translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation>Aktualizovat</translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation>Kopírovat</translation>
-    </message>
-    <message>
-        <source>Select all</source>
-        <translation>Vybrat vše</translation>
-    </message>
-    <message>
-        <source>No description for</source>
-        <translation>Žádný popis</translation>
+        <source>Creates a standalone copy of this subshape in the document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3665,6 +3659,34 @@ Chcete uložit provedené změny?</translation>
         <source>PDF format</source>
         <translation>PDF formát</translation>
     </message>
+    <message>
+        <source>Graphviz not found</source>
+        <translation type="unfinished">Graphviz nebyl nalezen</translation>
+    </message>
+    <message>
+        <source>Graphviz couldn&apos;t be found on your system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read more about it here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to specify its installation path if it&apos;s already installed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphviz installation path</source>
+        <translation type="unfinished">Instalační cesta Graphvizu</translation>
+    </message>
+    <message>
+        <source>Graphviz failed</source>
+        <translation type="unfinished">Graphviz selhal</translation>
+    </message>
+    <message>
+        <source>Graphviz failed to create an image file</source>
+        <translation type="unfinished">Graphvizu se nepodařilo vytvořit soubor s obrázkem</translation>
+    </message>
 </context>
 <context>
     <name>Gui::InputField</name>
@@ -3797,15 +3819,15 @@ Do you want to copy them, too?</source>
     </message>
     <message>
         <source>There is a rendering issue on MacOS.</source>
-        <translation>Na MacOS je problém s vykreslováním.</translation>
-    </message>
-    <message>
-        <source>See &lt;a href=&quot;http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</source>
-        <translation>Podívejte se na &lt;a href=&quot;http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS&quot;&gt; wiki&lt;/a&gt; pro více informací</translation>
+        <translation type="obsolete">Na MacOS je problém s vykreslováním.</translation>
     </message>
     <message>
         <source>Don&apos;t show again</source>
-        <translation>Znovu nezobrazovat</translation>
+        <translation type="obsolete">Znovu nezobrazovat</translation>
+    </message>
+    <message>
+        <source>See &lt;a href=&quot;http://www.freecadweb.org/wiki/OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</source>
+        <translation type="obsolete">See &lt;a href=&quot;http://www.freecadweb.org/wiki/OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</translation>
     </message>
 </context>
 <context>
@@ -3994,7 +4016,11 @@ V pravém pohledu jsou %2 body vybrány.</translation>
     <name>Gui::PropertyEditor::LinkLabel</name>
     <message>
         <source>Edit...</source>
-        <translation>Upravit...</translation>
+        <translation type="obsolete">Upravit...</translation>
+    </message>
+    <message>
+        <source>Change the linked object</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4229,6 +4255,21 @@ Do you want to specify another directory?</source>
     </message>
 </context>
 <context>
+    <name>Gui::TaskCSysDragger</name>
+    <message>
+        <source>Increments</source>
+        <translation>Přírůstek</translation>
+    </message>
+    <message>
+        <source>Translation Increment: </source>
+        <translation type="unfinished">Translation Increment: </translation>
+    </message>
+    <message>
+        <source>Rotation Increment: </source>
+        <translation type="unfinished">Rotation Increment: </translation>
+    </message>
+</context>
+<context>
     <name>Gui::TaskView::TaskAppearance</name>
     <message>
         <source>Plot mode:</source>
@@ -4282,6 +4323,33 @@ Do you want to specify another directory?</source>
     <message>
         <source>edit selection</source>
         <translation>editovat výběr</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::TextDocumentEditorView</name>
+    <message>
+        <source>Text updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text of the underlying object has changed. Discard changes and reload the text from the object?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes, reload.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsaved document</source>
+        <translation type="unfinished">Neuložený dokument</translation>
+    </message>
+    <message>
+        <source>Do you want to save your changes before closing?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you don&apos;t save, your changes will be lost.</source>
+        <translation type="unfinished">V případě neuložení dokumentu budou změny ztraceny.</translation>
     </message>
 </context>
 <context>
@@ -4356,6 +4424,26 @@ Do you want to specify another directory?</source>
         <source>Activate document %1</source>
         <translation>Aktivovat dokumentu %1</translation>
     </message>
+    <message>
+        <source>Skip recomputes</source>
+        <translation>Přeskočit přepočítání</translation>
+    </message>
+    <message>
+        <source>Enable or disable recomputations of document</source>
+        <translation>Povolit nebo zakázat přepočítání dokumentu</translation>
+    </message>
+    <message>
+        <source>Mark to recompute</source>
+        <translation>Označit k přepočítání</translation>
+    </message>
+    <message>
+        <source>Mark this object to be recomputed</source>
+        <translation>Označit objekt k přepočítání</translation>
+    </message>
+    <message>
+        <source>%1, Internal name: %2</source>
+        <translation type="unfinished">%1, Internal name: %2</translation>
+    </message>
 </context>
 <context>
     <name>Gui::View3DInventor</name>
@@ -4381,6 +4469,37 @@ Do you want to specify another directory?</source>
     <message>
         <source>Select the &apos;%1&apos; workbench</source>
         <translation>Vyberte workbench &apos;%1&apos;</translation>
+    </message>
+</context>
+<context>
+    <name>MAC_APPLICATION_MENU</name>
+    <message>
+        <source>Services</source>
+        <translation>Služby</translation>
+    </message>
+    <message>
+        <source>Hide %1</source>
+        <translation>Hide %1</translation>
+    </message>
+    <message>
+        <source>Hide Others</source>
+        <translation>Skrýt ostatní</translation>
+    </message>
+    <message>
+        <source>Show All</source>
+        <translation>Zobrazit vše</translation>
+    </message>
+    <message>
+        <source>Preferences...</source>
+        <translation>Předvolby...</translation>
+    </message>
+    <message>
+        <source>Quit %1</source>
+        <translation>Ukončit %1</translation>
+    </message>
+    <message>
+        <source>About %1</source>
+        <translation>O %1</translation>
     </message>
 </context>
 <context>
@@ -4518,6 +4637,10 @@ Do you want to specify another directory?</source>
         <source>Display properties</source>
         <translation>Zobrazit vlastnosti</translation>
     </message>
+    <message>
+        <source>DAG View</source>
+        <translation>DAG zobrazení</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -4617,18 +4740,6 @@ Do you want to continue?</source>
     <message>
         <source>Cannot open file &apos;%1&apos;.</source>
         <translation>Nelze otevřít soubor &apos;%1&apos;.</translation>
-    </message>
-    <message>
-        <source>Docked</source>
-        <translation>Zakotvený</translation>
-    </message>
-    <message>
-        <source>Undocked</source>
-        <translation>Uvolněný</translation>
-    </message>
-    <message>
-        <source>Fullscreen</source>
-        <translation>Celá obrazovka</translation>
     </message>
     <message>
         <source>files</source>
@@ -4883,6 +4994,41 @@ Dejte si pozor na místo, kam klikáte.</translation>
     <message>
         <source>Not allowed to delete system-wide macros</source>
         <translation>Není povoleno mazat systémová makra</translation>
+    </message>
+    <message>
+        <source>Origin</source>
+        <translation>Počátek</translation>
+    </message>
+    <message>
+        <source> %1.%2.%3 </source>
+        <translation> %1.%2.%3 </translation>
+    </message>
+    <message>
+        <source>Translation: </source>
+        <translation>Překlad: </translation>
+    </message>
+    <message>
+        <source>Rotation: </source>
+        <translation>Rotace: </translation>
+    </message>
+    <message>
+        <source>Delete group content?</source>
+        <translation>Odstranit obsah skupiny?</translation>
+    </message>
+    <message>
+        <source>The %1 is not empty, delete its content as well?</source>
+        <translation type="unfinished">The %1 is not empty, delete its content as well?</translation>
+    </message>
+</context>
+<context>
+    <name>SelectionFilter</name>
+    <message>
+        <source>Not allowed:</source>
+        <translation>Toto není dovoleno:</translation>
+    </message>
+    <message>
+        <source>Selection not allowed by filter</source>
+        <translation>Výběr není povoleno filtrem</translation>
     </message>
 </context>
 <context>
@@ -5953,6 +6099,21 @@ Dejte si pozor na místo, kam klikáte.</translation>
     </message>
 </context>
 <context>
+    <name>StdCmdSelectVisibleObjects</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>Standardní pohledy</translation>
+    </message>
+    <message>
+        <source>Select visible objects</source>
+        <translation>Vybrat viditelné objekty</translation>
+    </message>
+    <message>
+        <source>Select visible objects in the active document</source>
+        <translation>Vybrat viditelné objekty v aktivním dokumentu</translation>
+    </message>
+</context>
+<context>
     <name>StdCmdSetAppearance</name>
     <message>
         <source>Standard-View</source>
@@ -6661,6 +6822,21 @@ Dejte si pozor na místo, kam klikáte.</translation>
     </message>
 </context>
 <context>
+    <name>StdViewDock</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>Standardní pohledy</translation>
+    </message>
+    <message>
+        <source>Docked</source>
+        <translation>Zakotvený</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>Zobrazuje aktivní pohled v plné obrazovce v neukotveném nebo ukotveném módu</translation>
+    </message>
+</context>
+<context>
     <name>StdViewDockUndockFullscreen</name>
     <message>
         <source>Standard-View</source>
@@ -6669,6 +6845,21 @@ Dejte si pozor na místo, kam klikáte.</translation>
     <message>
         <source>Document window</source>
         <translation>Okno dokumentu</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>Zobrazuje aktivní pohled v plné obrazovce v neukotveném nebo ukotveném módu</translation>
+    </message>
+</context>
+<context>
+    <name>StdViewFullscreen</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>Standardní pohledy</translation>
+    </message>
+    <message>
+        <source>Fullscreen</source>
+        <translation>Celá obrazovka</translation>
     </message>
     <message>
         <source>Display the active view either in fullscreen, in undocked or docked mode</source>
@@ -6688,6 +6879,21 @@ Dejte si pozor na místo, kam klikáte.</translation>
     <message>
         <source>Creates a screenshot of the active view</source>
         <translation>Vytvoří snímek aktivního zobrazení</translation>
+    </message>
+</context>
+<context>
+    <name>StdViewUndock</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>Standardní pohledy</translation>
+    </message>
+    <message>
+        <source>Undocked</source>
+        <translation>Uvolněný</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>Zobrazuje aktivní pohled v plné obrazovce v neukotveném nebo ukotveném módu</translation>
     </message>
 </context>
 <context>
@@ -6719,10 +6925,16 @@ Dejte si pozor na místo, kam klikáte.</translation>
         <translation>Závislosti objektu</translation>
     </message>
     <message>
-        <source>This object is referenced by other objects and thus these objects might get broken.
-Are you sure to continue?</source>
-        <translation>Na tento objekt odkazují jiné objekty a proto mohou být tyto objekty poškozeny.
-Opravdu chcete pokračovat?</translation>
+        <source>The following, referencing objects might break.
+
+Are you sure you want to continue?
+
+</source>
+        <translation type="unfinished">The following, referencing objects might break.
+
+Are you sure you want to continue?
+
+</translation>
     </message>
 </context>
 <context>
@@ -6767,6 +6979,22 @@ Opravdu chcete pokračovat?</translation>
         <source>Points mode</source>
         <translation>Režim bodů</translation>
     </message>
+    <message>
+        <source>Hidden line</source>
+        <translation type="unfinished">Hidden line</translation>
+    </message>
+    <message>
+        <source>Hidden line mode</source>
+        <translation type="unfinished">Hidden line mode</translation>
+    </message>
+    <message>
+        <source>No shading</source>
+        <translation type="unfinished">No shading</translation>
+    </message>
+    <message>
+        <source>No shading mode</source>
+        <translation type="unfinished">No shading mode</translation>
+    </message>
 </context>
 <context>
     <name>Std_DuplicateSelection</name>
@@ -6784,16 +7012,16 @@ Do you want to duplicate them, too?</source>
     <name>Std_ExportGraphviz</name>
     <message>
         <source>Graphviz not found</source>
-        <translation>Graphviz nebyl nalezen</translation>
+        <translation type="obsolete">Graphviz nebyl nalezen</translation>
     </message>
     <message>
         <source>Graphviz couldn&apos;t be found on your system.
 Do you want to specify its installation path if it&apos;s already installed?</source>
-        <translation>Graphviz nebyl nalezen v systému. Chcete zadat jeho cestu instalace, pokud je již nainstalován?</translation>
+        <translation type="obsolete">Graphviz nebyl nalezen v systému. Chcete zadat jeho cestu instalace, pokud je již nainstalován?</translation>
     </message>
     <message>
         <source>Graphviz installation path</source>
-        <translation>Instalační cesta Graphvizu</translation>
+        <translation type="obsolete">Instalační cesta Graphvizu</translation>
     </message>
     <message>
         <source>Dependency graph</source>
@@ -6801,11 +7029,11 @@ Do you want to specify its installation path if it&apos;s already installed?</so
     </message>
     <message>
         <source>Graphviz failed</source>
-        <translation>Graphviz selhal</translation>
+        <translation type="obsolete">Graphviz selhal</translation>
     </message>
     <message>
         <source>Graphviz failed to create an image file</source>
-        <translation>Graphvizu se nepodařilo vytvořit soubor s obrázkem</translation>
+        <translation type="obsolete">Graphvizu se nepodařilo vytvořit soubor s obrázkem</translation>
     </message>
 </context>
 <context>
@@ -6815,8 +7043,12 @@ Do you want to specify its installation path if it&apos;s already installed?</so
         <translation>Toto vymaže všechny změny před posledním uložením souboru.</translation>
     </message>
     <message>
-        <source>Are you sure?</source>
-        <translation>Jse si jist?</translation>
+        <source>Revert document</source>
+        <translation>Obnovit dokument</translation>
+    </message>
+    <message>
+        <source>Do you want to continue?</source>
+        <translation>Chcete pokračovat?</translation>
     </message>
 </context>
 <context>

@@ -3,6 +3,7 @@
 	<PythonExport
 		Father="GeometryPy"
 		Name="GeometryCurvePy"
+        PythonName="Part.Curve"
 		Twin="GeomCurve"
 		TwinPointer="GeomCurve"
 		Include="Mod/Part/App/Geometry.h"
@@ -95,6 +96,21 @@ parameterAtDistance([abscissa, startingParameter]) -> Float the</UserDocu>
 of the nearest orthogonal projection of the point.</UserDocu>
 			</Documentation>
 		</Methode>
+		<Methode Name="normal" Const="true">
+		  <Documentation>
+			  <UserDocu>Vector = normal(pos) - Get the normal vector at the given parameter [First|Last] if defined</UserDocu>
+		  </Documentation>
+		</Methode>
+	  <Methode Name="curvature" Const="true">
+		  <Documentation>
+			  <UserDocu>Float = curvature(pos) - Get the curvature at the given parameter [First|Last] if defined</UserDocu>
+		  </Documentation>
+	  </Methode>
+	  <Methode Name="centerOfCurvature" Const="true">
+		  <Documentation>
+			  <UserDocu>Vector = centerOfCurvature(float pos) - Get the center of curvature at the given parameter [First|Last] if defined</UserDocu>
+		  </Documentation>
+	  </Methode>
                 <Methode Name="intersect" Const="true">
                         <Documentation>
                                 <UserDocu>
@@ -124,7 +140,23 @@ of the nearest orthogonal projection of the point.</UserDocu>
 				</UserDocu>
 			</Documentation>
 		</Methode>
-		<Methode Name="approximateBSpline">
+        <Methode Name="toNurbs">
+            <Documentation>
+                <UserDocu>
+                    Converts a curve of any type (only part from First to Last)
+                    toNurbs([Float=First, Float=Last]) -> NURBS curve
+                </UserDocu>
+            </Documentation>
+        </Methode>
+        <Methode Name="trim">
+            <Documentation>
+                <UserDocu>
+                    Returns a trimmed curve defined in the given parameter range
+                    trim([Float=First, Float=Last]) -> trimmed curve
+                </UserDocu>
+            </Documentation>
+        </Methode>
+        <Methode Name="approximateBSpline">
 			<Documentation>
 				<UserDocu>
 					Approximates a curve of any type to a B-Spline curve

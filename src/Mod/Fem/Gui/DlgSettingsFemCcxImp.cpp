@@ -61,6 +61,7 @@ void DlgSettingsFemCcxImp::saveSettings()
     dsb_ccx_analysis_time->onSave(); //Analysis time
 
     cb_analysis_type->onSave();
+    cb_BeamShellOutput->onSave();   //Beam shell output 3d or 2d 
     sb_eigenmode_number->onSave();
     dsb_eigenmode_high_limit->onSave();
     dsb_eigenmode_low_limit->onSave();
@@ -69,6 +70,7 @@ void DlgSettingsFemCcxImp::saveSettings()
     fc_ext_editor->onSave();
     cb_ccx_binary_std->onSave();
     fc_ccx_binary_path->onSave();
+    cb_split_inp_writer->onSave();
 }
 
 void DlgSettingsFemCcxImp::loadSettings()
@@ -84,6 +86,7 @@ void DlgSettingsFemCcxImp::loadSettings()
     dsb_ccx_analysis_time->onRestore(); //Analysis time
 
     cb_analysis_type->onRestore();
+    cb_BeamShellOutput->onRestore(); //Beam shell output 3d or 2d 
     sb_eigenmode_number->onRestore();
     dsb_eigenmode_high_limit->onRestore();
     dsb_eigenmode_low_limit->onRestore();
@@ -92,6 +95,7 @@ void DlgSettingsFemCcxImp::loadSettings()
     fc_ext_editor->onRestore();
     cb_ccx_binary_std->onRestore();
     fc_ccx_binary_path->onRestore();
+    cb_split_inp_writer->onRestore();
 
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath
         ("User parameter:BaseApp/Preferences/Mod/Fem/Ccx");

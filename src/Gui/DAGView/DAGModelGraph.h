@@ -133,7 +133,7 @@ namespace Gui
     public:
       Edge_writer(const GraphEW &graphEWIn) : graphEW(graphEWIn) {}
       template <class EdgeW>
-      void operator()(std::ostream& out, const EdgeW& edgeW) const
+      void operator()(std::ostream& out, const EdgeW& /*edgeW*/) const
       {
         out << "[label=\"";
         out << "edge";
@@ -280,6 +280,7 @@ namespace Gui
       >
     > GraphLinkContainer;
     
+    bool hasRecord(const App::DocumentObject* dObjectIn, const GraphLinkContainer &containerIn);
     const GraphLinkRecord& findRecord(Vertex vertexIn, const GraphLinkContainer &containerIn);
     const GraphLinkRecord& findRecord(const App::DocumentObject* dObjectIn, const GraphLinkContainer &containerIn);
     const GraphLinkRecord& findRecord(const Gui::ViewProviderDocumentObject* VPDObjectIn, const GraphLinkContainer &containerIn);

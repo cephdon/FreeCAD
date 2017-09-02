@@ -48,6 +48,9 @@
 #include <qtimer.h>
 #include <qtranslator.h>
 #include <QUrl>
+#if QT_VERSION >= 0x050000
+#include <QUrlQuery>
+#endif
 #include <qvariant.h>
 #include <QWaitCondition>
 // QtGui
@@ -71,6 +74,7 @@
 #include <QDesktopWidget>
 #include <QDialogButtonBox>
 #include <QDockWidget>
+#include <QDrag>
 #include <qdrawutil.h>
 #include <qevent.h>
 #include <QFileDialog>
@@ -97,7 +101,10 @@
 #include <QMainWindow>
 #include <qmenubar.h>
 #include <qmessagebox.h>
-#include <qmime.h>
+#if QT_VERSION >= 0x050000
+#include <QMessageLogContext>
+#endif
+#include <QMimeData>
 #include <qmovie.h>
 #include <qpainter.h>
 #include <qpalette.h>
@@ -147,20 +154,10 @@
 #include <qobject.h>
 #include <QMdiArea>
 #include <QMdiSubWindow>
-#include <QWorkspace> // obsolete
 // QtNetwork
-#include <QFtp>
-#include <QHttp>
-#include <QHttpResponseHeader>
-#include <QHttpRequestHeader>
+#include <QNetworkAccessManager>
 #include <QTcpServer>
 #include <QTcpSocket>
-// QtOpenGL
-#include <qgl.h>
-#if QT_VERSION >= 0x040200
-#include <QGLFramebufferObject>
-#endif
-#include <QGLPixelBuffer>
 // QtSvg
 #include <QSvgRenderer>
 #include <QSvgWidget>

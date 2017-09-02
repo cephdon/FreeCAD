@@ -2,6 +2,906 @@
 <!DOCTYPE TS>
 <TS version="2.0" language="ja" sourcelanguage="en">
 <context>
+    <name>Attacher</name>
+    <message>
+        <location filename="../../AttacherTexts.cpp" line="+273"/>
+        <source>Any</source>
+        <comment>Attacher reference type</comment>
+        <translation>任意</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Vertex</source>
+        <comment>Attacher reference type</comment>
+        <translation>頂点</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edge</source>
+        <comment>Attacher reference type</comment>
+        <translation>エッジ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Face</source>
+        <comment>Attacher reference type</comment>
+        <translation>面</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Line</source>
+        <comment>Attacher reference type</comment>
+        <translation>直線</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Curve</source>
+        <comment>Attacher reference type</comment>
+        <translation>曲線</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Circle</source>
+        <comment>Attacher reference type</comment>
+        <translation>円</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Conic</source>
+        <comment>Attacher reference type</comment>
+        <translation>円錐</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Ellipse</source>
+        <comment>Attacher reference type</comment>
+        <translation>楕円</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Parabola</source>
+        <comment>Attacher reference type</comment>
+        <translation>放物線</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Hyperbola</source>
+        <comment>Attacher reference type</comment>
+        <translation>双曲線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Plane</source>
+        <comment>Attacher reference type</comment>
+        <translation>平面</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Sphere</source>
+        <comment>Attacher reference type</comment>
+        <translation>球体</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Revolve</source>
+        <comment>Attacher reference type</comment>
+        <translation>回転</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Cylinder</source>
+        <comment>Attacher reference type</comment>
+        <translation>円柱</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Torus</source>
+        <comment>Attacher reference type</comment>
+        <translation>トーラス</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Cone</source>
+        <comment>Attacher reference type</comment>
+        <translation>円錐</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object</source>
+        <comment>Attacher reference type</comment>
+        <translation>オブジェクト</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Solid</source>
+        <comment>Attacher reference type</comment>
+        <translation>ソリッド</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Wire</source>
+        <comment>Attacher reference type</comment>
+        <translation>ワイヤー</translation>
+    </message>
+</context>
+<context>
+    <name>Attacher0D</name>
+    <message>
+        <location line="-65"/>
+        <source>Deactivated</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>非アクティブ化</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attachment is disabled. Point can be moved by editing Placement property.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>アタッチメントは無効です。Placementプロパティーを編集することで点を移動できます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s origin</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>オブジェクトの原点</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Point is put at object&apos;s Placement.Position. Works on objects with placements, and ellipse/parabola/hyperbola edges.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>点がオブジェクトの Placement.Position に配置されます。配置情報を持つオブジェクト、楕円、放物線、双曲線エッジで動作します。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Focus1</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>焦点1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Focus of ellipse, parabola, hyperbola.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>楕円、放物線、双曲線の焦点</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Focus2</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>焦点2</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Second focus of ellipse and hyperbola.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>楕円と双曲線の2つ目の焦点</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>On edge</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>エッジ上</translation>
+    </message>
+    <message>
+        <source>Point is put on edge, MapPathParametr controls where. Additionally, vertex can be linked in for making a projection.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation type="obsolete">点がエッジ上、MapPathParametr コントロール位置に配置されます。また投影するために節点をリンクすることができます。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Center of curvature</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>曲線の中心</translation>
+    </message>
+    <message>
+        <source>Center of osculating circle of an edge. Optinal vertex link defines where.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation type="obsolete">エッジの接触円の中心。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="-2"/>
+        <source>Point is put on edge, MapPathParameter controls where. Additionally, vertex can be linked in for making a projection.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Center of osculating circle of an edge. Optional vertex link defines where.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Center of mass</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>重心</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Center of mass of all references (equal densities are assumed).</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>全ての参照物の重心（等密度を仮定）</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Intersection</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>共通集合</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not implemented</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>実装されていません。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Vertex</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>頂点</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Put Datum point coincident with another vertex.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>他の節点と一致するデータム点を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Proximity point 1</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>近接点1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Point on first reference that is closest to second reference.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>2番目の参照物に最も近い1番目の参照物上の点</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Proximity point 2</source>
+        <comment>AttachmentPoint mode caption</comment>
+        <translation>近接点2</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Point on second reference that is closest to first reference.</source>
+        <comment>AttachmentPoint mode tooltip</comment>
+        <translation>1番目の参照物に最も近い2番目の参照物上の点</translation>
+    </message>
+</context>
+<context>
+    <name>Attacher1D</name>
+    <message>
+        <location line="-97"/>
+        <source>Deactivated</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>非アクティブ化</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attachment is disabled. Line can be moved by editing Placement property.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>アタッチメントは無効です。Placementプロパティーを編集することで線を移動できます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s X</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>オブジェクトのX座標</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+6"/>
+        <source>Line is aligned along local X axis of object. Works on objects with placements, and ellipse/parabola/hyperbola edges.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>オブジェクトのローカルX軸に沿って線を整列。配置情報を持つオブジェクト、楕円、放物線、双曲線エッジで動作します。</translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <source>Object&apos;s Y</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>オブジェクトのY座標</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line is aligned along local Y axis of object. Works on objects with placements, and ellipse/parabola/hyperbola edges.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>オブジェクトのローカルY軸に沿って線を整列。配置情報を持つオブジェクト、楕円、放物線、双曲線エッジで動作します。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s Z</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>オブジェクトのZ座標</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Axis of curvature</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>曲線の軸</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line that is an axis of osculating circle of curved edge. Optional vertex defines where.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>曲線エッジの接触円の軸となる線。オプション節点で位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Directrix1</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>準線1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Directrix line for ellipse, parabola, hyperbola.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>楕円、放物線、双曲線の準線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Directrix2</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>準線2</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Second directrix line for ellipse and hyperbola.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>楕円と双曲線の2番目の準線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Asymptote1</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>漸近線1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Asymptote of a hyperbola.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>双曲線の漸近線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Asymptote2</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>漸近線2</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Second asymptote of hyperbola.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>双曲線の2番目の漸近線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Tangent</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>正接</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line tangent to an edge. Optional vertex link defines where.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>エッジに正接する線。オプションの頂点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Normal</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>標準</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align to N vector of Frenet-Serret coordinate system of curved edge. Optional vertex link defines where.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>曲線エッジのフレネ・セレ座標系のNベクトルに揃えます。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Binormal</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>従法線</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align to B vector of Frenet-Serret coordinate system of curved edge. Optional vertex link defines where.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>曲線エッジのフレネ・セレ座標系のBベクトルに揃えます。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Tangent to surface (U)</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>表面に正接（U）</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+3"/>
+        <source>Tangent to surface, along U parameter. Vertex link defines where.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>Uパラメーターに沿って表面に正接。節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="-1"/>
+        <source>Tangent to surface (V)</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>表面に正接（V）</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Through two points</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>2点を通過</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line that passes through two vertices.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>2つの節点を通過する線</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Intersection</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>共通集合</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Not implemented.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>実装されていません。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Proximity line</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>近接線</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line that spans the shortest distance between shapes.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>シェイプ間の最短距離を結ぶ線。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>1st principal axis</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>第1主軸</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line follows first principal axis of inertia.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>第1慣性主軸に揃った線。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>2nd principal axis</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>第2主軸</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line follows second principal axis of inertia.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>第２慣性主軸に揃った線。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>3rd principal axis</source>
+        <comment>AttachmentLine mode caption</comment>
+        <translation>第3主軸</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Line follows third principal axis of inertia.</source>
+        <comment>AttachmentLine mode tooltip</comment>
+        <translation>第3慣性主軸に揃った線。</translation>
+    </message>
+</context>
+<context>
+    <name>Attacher2D</name>
+    <message>
+        <location line="-115"/>
+        <source>Deactivated</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>非アクティブ化</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attachment is disabled. Plane can be moved by editing Placement property.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>アタッチメントは無効です。Placementプロパティーを編集することで平面を移動できます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Translate origin</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>原点を移動</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Origin is aligned to match Vertex. Orientation is controlled by Placement property.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>原点を頂点を一致するように配置。向きはPlacementプロパティで制御されます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s XY</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>オブジェクトのXY</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is aligned to XY local plane of linked object.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>リンクされたオブジェクトのXYローカル面に平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s XZ</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>オブジェクトのXZ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is aligned to XZ local plane of linked object.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>リンクされたオブジェクトのXZローカル面に平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s  YZ</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>オブジェクトのYZ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is aligned to YZ local plane of linked object.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>リンクされたオブジェクトのYZローカル面に平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Plane face</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>平面</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is aligned to coincide planar face.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>平面フェイスと一致するように平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Tangent to surface</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>表面に正接</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is made tangent to surface at vertex.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>頂点で表面と接するように平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Normal to edge</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>エッジに垂直</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is made tangent to edge. Optional vertex link defines where.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>平面をエッジに正接。オプションの頂点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Frenet NB</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>フレネ NB</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+3"/>
+        <location line="+3"/>
+        <source>Align to Frenet-Serret coordinate system of curved edge. Optional vertex link defines where.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>曲線エッジのフレネ・セレ座標系に揃えて配置。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <source>Frenet TN</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>フレネ TN</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Frenet TB</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>フレネ TB</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Concentric</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>同心</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align to plane to osculating circle of an edge. Origin is aligned to point of curvature. Optional vertex link defines where.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>平面をエッジの接触円に揃えて配置。原点は湾曲点に揃えられます。オプションの頂点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Revolution Section</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>回転押し出しセクション</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane is perpendicular to edge, and Y axis is matched with axis of osculating circle. Optional vertex link defines where.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plane is prependicular to edge, and Y axis is matched with axis of osculating circle. Optional vertex link defines where.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation type="obsolete">平面をエッジに垂直となるよう配置。Y軸は接触円の軸と一致させられます。オプションの頂点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Plane by 3 points</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>3点から決まる平面</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align plane to pass through three vertices.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>3 点を通過する様に平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Normal to 3 points</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>3点に対して垂直</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane will pass through first two vertices, and perpendicular to plane that passes through three vertices.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>初めの2点を通過し、3点を通過する面に垂直な平面</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Folding</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>畳み込み</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Specialty mode for folding polyhedra. Select 4 edges in order: foldable edge, fold line, other fold line, other foldable edge. Plane will be aligned to folding the first edge.</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>多面体畳み込みのための特殊モード。畳み込み可能なエッジ、畳み込み線、別の畳み込み線、別の畳み込み可能なエッジの順番に4つのエッジを選択してください。1番目のエッジを畳み込むために平面が配置されます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Inertia 2-3</source>
+        <comment>AttachmentPlane mode caption</comment>
+        <translation>慣性 2-3</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Plane constructed on second and third principal axes of inertia (passes through center of mass).</source>
+        <comment>AttachmentPlane mode tooltip</comment>
+        <translation>第2慣性主軸と第3慣性主軸上に作成された平面（重心を通過）</translation>
+    </message>
+</context>
+<context>
+    <name>Attacher3D</name>
+    <message>
+        <location line="-106"/>
+        <source>Deactivated</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>非アクティブ化</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Attachment is disabled. CS can be moved by editing Placement property.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>アタッチメントは無効です。Placementプロパティーを編集することでCSを移動できます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Translate origin</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>原点を移動</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Origin is aligned to match Vertex. Orientation is controlled by Placement property.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>原点を頂点を一致するように配置。向きはPlacementプロパティで制御されます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s  X Y Z</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>オブジェクトのXYZ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Placement is made equal to Placement of linked object.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>配置をリンクされたオブジェクトの配置と一致。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s  X Z-Y</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>オブジェクトのXZ-Y</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>X&apos;, Y&apos;, Z&apos; axes are matched with object&apos;s local X, Z, -Y, respectively.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>X&apos;軸、Y&apos;軸、Z&apos;軸はそれぞれオブジェクトのローカルなX、Z、-Yと一致しています。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Object&apos;s  Y Z X</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>オブジェクトのYZX</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>X&apos;, Y&apos;, Z&apos; axes are matched with object&apos;s local Y, Z, X, respectively.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>X&apos;軸、Y&apos;軸、Z&apos;軸はそれぞれオブジェクトのローカルなY、Z、Xと一致しています。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>XY on plane</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>平面上のXY</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>X&apos; Y&apos; plane is aligned to coincide planar face.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>平面フェイスと一致するようにX&apos; Y&apos;平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>XY tangent to surface</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>表面に正接するXY</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>X&apos; Y&apos; plane is made tangent to surface at vertex.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>頂点で表面と接するようにX&apos; Y&apos;平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Z tangent to edge</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>エッジに正接するZ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Z&apos; axis is aligned to be tangent to edge. Optional vertex link defines where.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>Z&apos;軸をエッジに正接。オプションの頂点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Frenet NBT</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>フレネ NBT</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+3"/>
+        <location line="+3"/>
+        <source>Align to Frenet-Serret coordinate system of curved edge. Optional vertex link defines where.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>曲線エッジのフレネ・セレ座標系に揃えて配置。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="-4"/>
+        <source>Frenet TNB</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>フレネ TNB</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Frenet TBN</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>フレネ TBN</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Concentric</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>同心</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align XY plane to osculating circle of an edge. Optional vertex link defines where.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>XY平面をエッジの接触円に揃えて配置。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Revolution Section</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>回転押し出しセクション</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align Y&apos; axis to match axis of osculating circle of an edge. Optional vertex link defines where.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>Y&apos;軸をエッジの接触円の軸に一致するよう配置。オプションの節点リンクで位置を定義。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>XY plane by 3 points</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>3点から決まるXY平面</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align XY plane to pass through three vertices.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>3 点を通過する様にXY平面を配置</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>XZ plane by 3 points</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>3点から決まるXZ平面</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Align XZ plane to pass through 3 points; X axis will pass through two first points.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>3 点を通過する様にXZ平面を配置。X軸は初めの2点を通過。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Folding</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>畳み込み</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Specialty mode for folding polyhedra. Select 4 edges in order: foldable edge, fold line, other fold line, other foldable edge. XY plane will be aligned to folding the first edge.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>多面体畳み込みのための特殊モード。畳み込み可能なエッジ、畳み込み線、別の畳み込み線、別の畳み込み可能なエッジの順番に4つのエッジを選択してください。1番目のエッジを畳み込むためにXY平面が配置されます。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Inertial CS</source>
+        <comment>Attachment3D mode caption</comment>
+        <translation>慣性CS</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Inertial coordinate system, constructed on principal axes of inertia and center of mass.</source>
+        <comment>Attachment3D mode tooltip</comment>
+        <translation>慣性座標系。重心と慣性主軸上に構築されます。</translation>
+    </message>
+</context>
+<context>
     <name>BlockDefinition</name>
     <message>
         <location filename="../../DlgBlock.ui" line="+14"/>
@@ -131,7 +1031,7 @@
 <context>
     <name>CmdCheckGeometry</name>
     <message>
-        <location filename="../../Command.cpp" line="+1661"/>
+        <location filename="../../Command.cpp" line="+1982"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -149,7 +1049,7 @@
 <context>
     <name>CmdColorPerFace</name>
     <message>
-        <location line="+31"/>
+        <location line="+32"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -167,7 +1067,7 @@
 <context>
     <name>CmdMeasureAngular</name>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -181,7 +1081,7 @@
 <context>
     <name>CmdMeasureClearAll</name>
     <message>
-        <location line="+26"/>
+        <location line="+27"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -195,7 +1095,7 @@
 <context>
     <name>CmdMeasureLinear</name>
     <message>
-        <location line="-58"/>
+        <location line="-60"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -209,7 +1109,7 @@
 <context>
     <name>CmdMeasureToggle3d</name>
     <message>
-        <location line="+116"/>
+        <location line="+120"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -223,7 +1123,7 @@
 <context>
     <name>CmdMeasureToggleAll</name>
     <message>
-        <location line="-36"/>
+        <location line="-37"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -237,7 +1137,7 @@
 <context>
     <name>CmdMeasureToggleDelta</name>
     <message>
-        <location line="+60"/>
+        <location line="+62"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -251,7 +1151,7 @@
 <context>
     <name>CmdPartBoolean</name>
     <message>
-        <location line="-889"/>
+        <location line="-1054"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -263,25 +1163,25 @@
     <message>
         <location line="+1"/>
         <source>Run a boolean operation with two shapes selected</source>
-        <translation>選択された二つの図形のブーリアン演算を実行します</translation>
+        <translation>選択された二つの図形のブーリアン演算を実行</translation>
     </message>
 </context>
 <context>
     <name>CmdPartBox</name>
     <message>
-        <location filename="../../CommandParametric.cpp" line="+86"/>
+        <location filename="../../CommandParametric.cpp" line="+87"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+10"/>
+        <location line="+11"/>
         <location line="+5"/>
         <source>Cube</source>
         <translation>立方体</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-15"/>
         <source>Create a cube solid</source>
         <translation>立方体のソリッドを作成</translation>
     </message>
@@ -297,7 +1197,7 @@
 <context>
     <name>CmdPartBox2</name>
     <message>
-        <location filename="../../Command.cpp" line="-861"/>
+        <location filename="../../Command.cpp" line="-1021"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -333,7 +1233,7 @@
 <context>
     <name>CmdPartBuilder</name>
     <message>
-        <location line="+1069"/>
+        <location line="+1237"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -351,7 +1251,7 @@
 <context>
     <name>CmdPartChamfer</name>
     <message>
-        <location line="-95"/>
+        <location line="-98"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -369,7 +1269,7 @@
 <context>
     <name>CmdPartCommon</name>
     <message>
-        <location line="-810"/>
+        <location line="-972"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -387,7 +1287,7 @@
 <context>
     <name>CmdPartCompJoinFeatures</name>
     <message>
-        <location line="+163"/>
+        <location line="+203"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -403,9 +1303,45 @@
     </message>
 </context>
 <context>
+    <name>CmdPartCompOffset</name>
+    <message>
+        <location line="+1044"/>
+        <source>Part</source>
+        <translation>部品</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Offset:</source>
+        <translation>オフセット：</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Tools to offset shapes (construct parallel shapes)</source>
+        <translation>シェイプオフセット用ツール（平行なシェイプを作成）</translation>
+    </message>
+</context>
+<context>
+    <name>CmdPartCompSplitFeatures</name>
+    <message>
+        <location line="-941"/>
+        <source>Part</source>
+        <translation>部品</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Split objects...</source>
+        <translation>オブジェクトの分割...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Shape splitting tools. Compsolid creation tools. OCC 6.9.0 or later is required.</source>
+        <translation>シェイプ分割ツール。Compsolid作成ツール。OCC 6.9.0以降が必要です。</translation>
+    </message>
+</context>
+<context>
     <name>CmdPartCompound</name>
     <message>
-        <location line="+103"/>
+        <location line="+107"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -423,19 +1359,19 @@
 <context>
     <name>CmdPartCone</name>
     <message>
-        <location filename="../../CommandParametric.cpp" line="+78"/>
+        <location filename="../../CommandParametric.cpp" line="+80"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+10"/>
+        <location line="+11"/>
         <location line="+5"/>
         <source>Cone</source>
-        <translation>三角錐</translation>
+        <translation>円錐</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-15"/>
         <source>Create a cone solid</source>
         <translation>円錐のソリッドを作成</translation>
     </message>
@@ -443,7 +1379,7 @@
 <context>
     <name>CmdPartCrossSections</name>
     <message>
-        <location filename="../../Command.cpp" line="+590"/>
+        <location filename="../../Command.cpp" line="+603"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -461,7 +1397,7 @@
 <context>
     <name>CmdPartCut</name>
     <message>
-        <location line="-941"/>
+        <location line="-1106"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -479,7 +1415,7 @@
 <context>
     <name>CmdPartCylinder</name>
     <message>
-        <location filename="../../CommandParametric.cpp" line="-122"/>
+        <location filename="../../CommandParametric.cpp" line="-125"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -490,7 +1426,7 @@
     </message>
     <message>
         <location line="-1"/>
-        <location line="+10"/>
+        <location line="+11"/>
         <location line="+5"/>
         <source>Cylinder</source>
         <translation>円柱</translation>
@@ -499,7 +1435,7 @@
 <context>
     <name>CmdPartExport</name>
     <message>
-        <location filename="../../Command.cpp" line="+499"/>
+        <location filename="../../Command.cpp" line="+654"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -517,7 +1453,7 @@
 <context>
     <name>CmdPartExtrude</name>
     <message>
-        <location line="+252"/>
+        <location line="+256"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -535,7 +1471,7 @@
 <context>
     <name>CmdPartFillet</name>
     <message>
-        <location line="+101"/>
+        <location line="+104"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -547,13 +1483,13 @@
     <message>
         <location line="+1"/>
         <source>Fillet the selected edges of a shape</source>
-        <translation>選択した図形のエッジをフィレットします。</translation>
+        <translation>選択した図形のエッジをフィレット</translation>
     </message>
 </context>
 <context>
     <name>CmdPartFuse</name>
     <message>
-        <location line="-701"/>
+        <location line="-842"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -571,7 +1507,7 @@
 <context>
     <name>CmdPartImport</name>
     <message>
-        <location line="+281"/>
+        <location line="+414"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -589,7 +1525,7 @@
 <context>
     <name>CmdPartImportCurveNet</name>
     <message>
-        <location line="+104"/>
+        <location line="+106"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -607,7 +1543,7 @@
 <context>
     <name>CmdPartLoft</name>
     <message>
-        <location line="+458"/>
+        <location line="+469"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -629,25 +1565,33 @@
 <context>
     <name>CmdPartMakeFace</name>
     <message>
-        <location line="-226"/>
+        <location line="-233"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Make face from sketch</source>
-        <translation>スケッチから面を作成</translation>
+        <source>Make face from wires</source>
+        <translation>ワイヤーから面を作成</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Part_MakeFace: Make face from set of wires (e.g., from a sketch).</source>
+        <translation>Part_MakeFace: (スケッチなどの) ワイヤーセットから面を作成。</translation>
+    </message>
+    <message>
+        <source>Make face from sketch</source>
+        <translation type="obsolete">スケッチから面を作成</translation>
+    </message>
+    <message>
         <source>Make face from selected sketches</source>
-        <translation>選択したスケッチから面を作成</translation>
+        <translation type="obsolete">選択したスケッチから面を作成</translation>
     </message>
 </context>
 <context>
     <name>CmdPartMakeSolid</name>
     <message>
-        <location line="-190"/>
+        <location line="-193"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -665,7 +1609,7 @@
 <context>
     <name>CmdPartMirror</name>
     <message>
-        <location line="+316"/>
+        <location line="+323"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -683,25 +1627,51 @@
 <context>
     <name>CmdPartOffset</name>
     <message>
-        <location line="+148"/>
+        <location line="+153"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>Offset...</source>
-        <translation>オフセット...</translation>
+        <source>3D Offset...</source>
+        <translation>3Dオフセット...</translation>
     </message>
     <message>
         <location line="+1"/>
+        <source>Part_Offset: Utility to offset in 3D</source>
+        <translation>Part_Offset: 3次元オフセットのためのユーティリティー</translation>
+    </message>
+    <message>
+        <source>Offset...</source>
+        <translation type="obsolete">オフセット...</translation>
+    </message>
+    <message>
         <source>Utility to offset</source>
-        <translation>オフセットユーティリティ</translation>
+        <translation type="obsolete">オフセットユーティリティ</translation>
+    </message>
+</context>
+<context>
+    <name>CmdPartOffset2D</name>
+    <message>
+        <location line="+48"/>
+        <source>Part</source>
+        <translation>部品</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>2D Offset...</source>
+        <translation>2Dオフセット...</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Part_Offset2D: Utility to offset planar shapes</source>
+        <translation>Part_Offset2D: 平面シェイプオフセットのためのユーティリティー</translation>
     </message>
 </context>
 <context>
     <name>CmdPartPickCurveNet</name>
     <message>
-        <location line="-1243"/>
+        <location line="-1465"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -719,7 +1689,7 @@
 <context>
     <name>CmdPartPrimitives</name>
     <message>
-        <location line="+124"/>
+        <location line="+126"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -737,7 +1707,7 @@
 <context>
     <name>CmdPartRefineShape</name>
     <message>
-        <location filename="../../CommandSimple.cpp" line="+214"/>
+        <location filename="../../CommandSimple.cpp" line="+217"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -755,7 +1725,7 @@
 <context>
     <name>CmdPartReverseShape</name>
     <message>
-        <location filename="../../Command.cpp" line="+723"/>
+        <location filename="../../Command.cpp" line="+881"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -773,7 +1743,7 @@
 <context>
     <name>CmdPartRevolve</name>
     <message>
-        <location line="+157"/>
+        <location line="+161"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -791,7 +1761,7 @@
 <context>
     <name>CmdPartRuledSurface</name>
     <message>
-        <location line="+449"/>
+        <location line="+603"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -813,7 +1783,7 @@
 <context>
     <name>CmdPartSection</name>
     <message>
-        <location line="-886"/>
+        <location line="-1048"/>
         <source>Make a section of two shapes</source>
         <translation>2つの形状の横断面を作成</translation>
     </message>
@@ -831,7 +1801,7 @@
 <context>
     <name>CmdPartShapeFromMesh</name>
     <message>
-        <location filename="../../CommandSimple.cpp" line="-109"/>
+        <location filename="../../CommandSimple.cpp" line="-111"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -849,7 +1819,7 @@
 <context>
     <name>CmdPartSimpleCopy</name>
     <message>
-        <location line="+61"/>
+        <location line="+62"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -867,7 +1837,7 @@
 <context>
     <name>CmdPartSimpleCylinder</name>
     <message>
-        <location line="-115"/>
+        <location line="-117"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -885,9 +1855,9 @@
 <context>
     <name>CmdPartSphere</name>
     <message>
-        <location filename="../../CommandParametric.cpp" line="+66"/>
+        <location filename="../../CommandParametric.cpp" line="+67"/>
         <source>Create a sphere solid</source>
-        <translation>球形ソリッドを作成する</translation>
+        <translation>球形のソリッドを作成</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -896,7 +1866,7 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+10"/>
+        <location line="+11"/>
         <location line="+5"/>
         <source>Sphere</source>
         <translation>球体</translation>
@@ -905,7 +1875,7 @@
 <context>
     <name>CmdPartSweep</name>
     <message>
-        <location filename="../../Command.cpp" line="+637"/>
+        <location filename="../../Command.cpp" line="+652"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -923,7 +1893,7 @@
 <context>
     <name>CmdPartThickness</name>
     <message>
-        <location line="+73"/>
+        <location line="+218"/>
         <source>Part</source>
         <translation>部品</translation>
     </message>
@@ -938,7 +1908,7 @@
         <translation>厚み適用ユーティリティ</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <location line="+20"/>
         <source>Wrong selection</source>
         <translation>誤った選択</translation>
@@ -957,9 +1927,9 @@
 <context>
     <name>CmdPartTorus</name>
     <message>
-        <location filename="../../CommandParametric.cpp" line="+66"/>
+        <location filename="../../CommandParametric.cpp" line="+67"/>
         <source>Create a torus solid</source>
-        <translation>環状体ソリッドを作成する</translation>
+        <translation>トーラスのソリッドを作成</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -968,10 +1938,10 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+10"/>
+        <location line="+11"/>
         <location line="+5"/>
         <source>Torus</source>
-        <translation>環状体</translation>
+        <translation>トーラス</translation>
     </message>
 </context>
 <context>
@@ -1001,6 +1971,89 @@
     <message>
         <source>Setting a too small deviation causes the tessellation to take longerand thus freezes or slows down the GUI.</source>
         <translation type="obsolete">Setting a too small deviation causes the tessellation to take longerand thus freezes or slows down the GUI.</translation>
+    </message>
+</context>
+<context>
+    <name>PartDesignGui::TaskDatumParameters</name>
+    <message>
+        <location filename="../../../AttachmentEditor/TaskAttachmentEditor.ui" line="+14"/>
+        <source>Form</source>
+        <translation>フォーム</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Selection accepted</source>
+        <translation>選択成功</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Reference 1</source>
+        <translation>参照1</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 2</source>
+        <translation>参照2</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 3</source>
+        <translation>参照3</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 4</source>
+        <translation>参照4</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Attachment mode:</source>
+        <translation>アタッチメントモード:</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Mirror of superPlacement property. Extra placement is expressed in local space of object being attached.</source>
+        <translation>上位の配置プロパティーのミラー。追加される配置はアタッチされているオブジェクトのローカル空間で表現されます。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Extra placement:</source>
+        <translation>追加の配置:</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>X:</source>
+        <translation>X:</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Y:</source>
+        <translation>Y:</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Z:</source>
+        <translation>z:</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Yaw:</source>
+        <translation>縦回転:</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Pitch:</source>
+        <translation>ピッチ:</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Roll:</source>
+        <translation>横回転:</translation>
+    </message>
+    <message>
+        <location line="+92"/>
+        <source>Flip sides</source>
+        <translation>側面を反転</translation>
     </message>
 </context>
 <context>
@@ -1099,7 +2152,7 @@
         <translation>共通集合</translation>
     </message>
     <message>
-        <location filename="../../DlgBooleanOperation.cpp" line="+386"/>
+        <location filename="../../DlgBooleanOperation.cpp" line="+388"/>
         <source>Cannot perform a boolean operation with the same shape</source>
         <translation>同じ図形を使用してブーリアン演算を行うことはできません</translation>
     </message>
@@ -1171,7 +2224,7 @@
 <context>
     <name>PartGui::DlgChamferEdges</name>
     <message>
-        <location filename="../../DlgFilletEdges.cpp" line="+1030"/>
+        <location filename="../../DlgFilletEdges.cpp" line="+1034"/>
         <source>Chamfer Edges</source>
         <translation type="unfinished">Chamfer Edges</translation>
     </message>
@@ -1190,36 +2243,125 @@
     </message>
     <message>
         <location line="+6"/>
+        <source>If checked, direction of extrusion is reversed.</source>
+        <translation>チェックした場合、押し出し方向を反転。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Reversed</source>
+        <translation>逆方向</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Specify direction manually using X,Y,Z values.</source>
+        <translation>X、Y、Zの値を使用して手動で方向を指定。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Custom direction:</source>
+        <translation>カスタム方向:</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Extrude perpendicularly to plane of input shape.</source>
+        <translation>入力シェイプの平面に垂直に押し出し。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Along normal</source>
         <translation>法線に沿って</translation>
     </message>
     <message>
-        <location line="+117"/>
         <source>Length:</source>
-        <translation>長さ:</translation>
+        <translation type="obsolete">長さ:</translation>
     </message>
     <message>
-        <location line="-110"/>
         <source>3D view</source>
-        <translation>3Dビュー</translation>
+        <translation type="obsolete">3Dビュー</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Note:This option works for planes only</source>
-        <translation>注: このオプションは平面に対してのみ動作します</translation>
+        <translation type="obsolete">注: このオプションは平面に対してのみ動作します</translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+283"/>
         <source>Create solid</source>
         <translation>ソリッド作成</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="-62"/>
         <source>Taper outward angle</source>
         <translation>外側のテーパ角度</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="-211"/>
+        <source>Click to start selecting an edge in 3d view.</source>
+        <translation>クリックして3Dビューでのエッジ選択を開始。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location filename="../../DlgExtrusion.cpp" line="+198"/>
+        <source>Select</source>
+        <translation>選択</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Set direction to match a direction of straight edge. Hint: to account for length of the edge too, set both lengths to zero.</source>
+        <translation>直線エッジの方向と一致するよう方向を設定。ヒント:エッジの長さも考慮する場合は両方の長さをゼロに設定してください。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Along edge:</source>
+        <translation>以下のエッジに沿って:</translation>
+    </message>
+    <message>
+        <location line="+98"/>
+        <source>Length</source>
+        <translation>長さ</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Along:</source>
+        <translation>以下に沿って:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Length to extrude along direction (can be negative). If both lengths are zero, magnitude of direction is used.</source>
+        <translation>押し出し方向の長さ (負の値にすることも可)。両方向の長さが 0 である場合には、方向への大きさ(マグニチュード) が使用されます。</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Against:</source>
+        <translation>以下に対面して:</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Length to extrude against direction (can be negative).</source>
+        <translation>方向に対して押し出す長さ （負の値も可）。</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Distribute extrusion length equally to both sides.</source>
+        <translation>両側に均等に押し出し長さを分配。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Symmetric</source>
+        <translation>対称</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <location line="+25"/>
+        <source>Apply slope (draft) to extrusion side faces.</source>
+        <translation>押し出し側の面に勾配（ドラフト）を適用。</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>If checked, extruding closed wires will give solids, not shells.</source>
+        <translation>チェックした場合、閉じたワイヤーの押し出し時にシェルではなくソリッドを作成。</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>Shape</source>
         <translation>シェイプ</translation>
     </message>
@@ -1228,41 +2370,92 @@
         <translation>[empty string]</translation>
     </message>
     <message>
-        <location line="-168"/>
+        <location line="-269"/>
         <source>X:</source>
         <translation>X:</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+46"/>
         <source>Z:</source>
         <translation>z:</translation>
     </message>
     <message>
-        <location line="-26"/>
+        <location line="-23"/>
         <source>Y:</source>
         <translation>Y:</translation>
     </message>
     <message>
-        <location filename="../../DlgExtrusion.cpp" line="+150"/>
         <source>Select a shape for extrusion, first.</source>
-        <translation type="unfinished">Select a shape for extrusion, first.</translation>
+        <translation type="obsolete">Select a shape for extrusion, first.</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location filename="../../DlgExtrusion.cpp" line="-26"/>
+        <source>Selecting...</source>
+        <translation>選択...</translation>
+    </message>
+    <message>
+        <location line="+241"/>
         <source>The document &apos;%1&apos; doesn&apos;t exist.</source>
         <translation type="unfinished">The document &apos;%1&apos; doesn&apos;t exist.</translation>
     </message>
     <message>
-        <location line="+85"/>
-        <source>Succeeded</source>
-        <translation>正常終了</translation>
+        <location line="+48"/>
+        <location line="+5"/>
+        <source>Creating Extrusion failed.
+
+%1</source>
+        <translation>押し出し失敗。
+
+%1</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+5"/>
+        <location line="+67"/>
+        <source>Object not found: %1</source>
+        <translation>オブジェクトが見つかりません: %1</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>No shapes selected for extrusion. Select some, first.</source>
+        <translation>押し出しのためのシェイプが選択されていません。まず選択を行ってください。</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Revolution axis link is invalid.
+
+%1</source>
+        <translation>回転軸リンクは無効です。%1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Direction mode is to use an edge, but no edge is linked.</source>
+        <translation>方向モードではエッジを使用しますが、リンクされているエッジがありません。</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Can&apos;t determine normal vector of shape to be extruded. Please use other mode. 
+
+(%1)</source>
+        <translation>押出されるシェイプの法線ベクトルを決定できません。他のモードを使用してください。
+
+ （%1）</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Extrusion direction is zero-length. It must be non-zero.</source>
+        <translation>回転軸方向の長さがゼロです。この値は非ゼロである必要があります。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Total extrusion length is zero (length1 == -length2). It must be nonzero.</source>
+        <translation>押し出し長さの合計がゼロです（長さ1==-長さ2）。この値は非ゼロである必要があります。</translation>
+    </message>
+    <message>
+        <source>Succeeded</source>
+        <translation type="obsolete">正常終了</translation>
+    </message>
+    <message>
         <source>Failed</source>
-        <translation>失敗</translation>
+        <translation type="obsolete">失敗</translation>
     </message>
 </context>
 <context>
@@ -1328,7 +2521,7 @@
         <translation>選択されていません</translation>
     </message>
     <message>
-        <location filename="../../DlgFilletEdges.cpp" line="-763"/>
+        <location filename="../../DlgFilletEdges.cpp" line="-769"/>
         <source>Length:</source>
         <translation>長さ:</translation>
     </message>
@@ -1349,12 +2542,12 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+555"/>
+        <location line="+561"/>
         <source>Start length</source>
         <translation>開始長さ</translation>
     </message>
     <message>
-        <location line="-554"/>
+        <location line="-560"/>
         <source>End length</source>
         <translation>終了長さ</translation>
     </message>
@@ -1365,17 +2558,17 @@
     </message>
     <message>
         <location line="+1"/>
-        <location line="+552"/>
+        <location line="+558"/>
         <source>Start radius</source>
         <translation>開始半径</translation>
     </message>
     <message>
-        <location line="-551"/>
+        <location line="-557"/>
         <source>End radius</source>
         <translation>終了半径</translation>
     </message>
     <message>
-        <location line="+541"/>
+        <location line="+547"/>
         <source>Length</source>
         <translation>長さ</translation>
     </message>
@@ -1520,12 +2713,12 @@ Please select a valid shape in the drop-down box first.</source>
         <translation>エクスポート</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+38"/>
         <source>Units for export of STEP</source>
         <translation>STEPエクスポート時の単位</translation>
     </message>
     <message>
-        <location line="+21"/>
+        <location line="-31"/>
         <source>Millimeter</source>
         <translation>ミリメートル</translation>
     </message>
@@ -1540,12 +2733,17 @@ Please select a valid shape in the drop-down box first.</source>
         <translation>インチ</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+28"/>
         <source>Scheme</source>
         <translation>スキーム</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+26"/>
+        <source>Write out curves in parametric space of surface</source>
+        <translation>表面のパラメトリック空間で曲線を描く</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Header</source>
         <translation>ヘッダー</translation>
     </message>
@@ -1726,7 +2924,7 @@ Please select a valid shape in the drop-down box first.</source>
     <message>
         <location line="+1"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation>すべてのファイル</translation>
     </message>
 </context>
 <context>
@@ -1773,7 +2971,7 @@ Please select a valid shape in the drop-down box first.</source>
     <message>
         <location line="+1"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation>すべてのファイル</translation>
     </message>
 </context>
 <context>
@@ -1853,7 +3051,7 @@ Please select a valid shape in the drop-down box first.</source>
     </message>
     <message>
         <location line="+91"/>
-        <location filename="../../DlgPrimitives.cpp" line="+542"/>
+        <location filename="../../DlgPrimitives.cpp" line="+540"/>
         <source>Wedge</source>
         <translation>楔形</translation>
     </message>
@@ -1919,7 +3117,7 @@ Please select a valid shape in the drop-down box first.</source>
         <location line="+9"/>
         <location filename="../../DlgPrimitives.cpp" line="+18"/>
         <source>Cone</source>
-        <translation>三角錐</translation>
+        <translation>円錐</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1937,7 +3135,7 @@ Please select a valid shape in the drop-down box first.</source>
         <location line="+9"/>
         <location filename="../../DlgPrimitives.cpp" line="+20"/>
         <source>Torus</source>
-        <translation>環状体</translation>
+        <translation>トーラス</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2165,7 +3363,7 @@ Please select a valid shape in the drop-down box first.</source>
         <translation>始点</translation>
     </message>
     <message>
-        <location filename="../../DlgPrimitives.cpp" line="+190"/>
+        <location filename="../../DlgPrimitives.cpp" line="+192"/>
         <source>&amp;Create</source>
         <translation>作成(&amp;C)</translation>
     </message>
@@ -2182,7 +3380,7 @@ Please select a valid shape in the drop-down box first.</source>
         <translation type="obsolete">Alt+O</translation>
     </message>
     <message>
-        <location line="-485"/>
+        <location line="-487"/>
         <location line="+299"/>
         <location line="+8"/>
         <source>Create %1</source>
@@ -2212,54 +3410,154 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::DlgRevolution</name>
     <message>
-        <location filename="../../DlgRevolution.ui" line="+14"/>
+        <location filename="../../DlgRevolution.ui" line="+20"/>
         <source>Revolve</source>
         <translation>回転</translation>
     </message>
     <message>
+        <source>If checked, revolving wires will produce solids. If not, revolving a wire yeilds a shell.</source>
+        <translation type="obsolete">チェックした場合、ワイヤーの回転押し出しでソリッドを作成。チェックされていない場合、シェルを作成。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>If checked, revolving wires will produce solids. If not, revolving a wire yields a shell.</source>
+        <translation>チェックした場合、ワイヤーの回転押し出しでソリッドを作成。チェックされていない場合、シェルを作成。</translation>
+    </message>
+    <message>
+        <location line="+79"/>
+        <source>Revolution axis</source>
+        <translation>回転軸</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Center X:</source>
+        <translation>中心X:</translation>
+    </message>
+    <message>
         <location line="+20"/>
+        <source>Center Y:</source>
+        <translation>中心Y:</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Center Z:</source>
+        <translation>中心Z:</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <location line="+41"/>
+        <source>Click to set this as axis</source>
+        <translation>クリックして軸として設定</translation>
+    </message>
+    <message>
+        <location line="-38"/>
+        <source>Dir. X:</source>
+        <translation>方向X:</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Dir. Y:</source>
+        <translation>方向Y:</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Dir. Z:</source>
+        <translation>方向Z:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <location filename="../../DlgRevolution.cpp" line="+440"/>
+        <source>Select reference</source>
+        <translation>参照の選択</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>If checked, revolution will extend forwards and backwards by half the angle.</source>
+        <translation>チェックした場合、回転押し出し時に角度の半分づつ前後に押し出されます。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Symmetric angle</source>
+        <translation>対称角度</translation>
+    </message>
+    <message>
         <source>Y:</source>
-        <translation>Y:</translation>
+        <translation type="obsolete">Y:</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>X:</source>
-        <translation>X:</translation>
+        <translation type="obsolete">X:</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="-257"/>
         <source>Angle:</source>
         <translation>角度:</translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Z:</source>
-        <translation>z:</translation>
+        <translation type="obsolete">z:</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Axis:</source>
-        <translation>軸:</translation>
+        <translation type="obsolete">軸:</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="-19"/>
         <source>Shape</source>
         <translation>シェイプ</translation>
     </message>
     <message>
-        <location line="+8"/>
         <source>Select line in 3D view</source>
-        <translation>3Dビューでラインを選択</translation>
+        <translation type="obsolete">3Dビューでラインを選択</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-17"/>
         <source>Create Solid</source>
         <translation>ソリッドを作成</translation>
     </message>
     <message>
-        <location filename="../../DlgRevolution.cpp" line="+178"/>
+        <location filename="../../DlgRevolution.cpp" line="-268"/>
+        <source>Object not found: %1</source>
+        <translation>オブジェクトが見つかりません: %1</translation>
+    </message>
+    <message>
+        <location line="+81"/>
         <source>Select a shape for revolution, first.</source>
         <translation type="unfinished">Select a shape for revolution, first.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <location line="+5"/>
+        <location line="+5"/>
+        <source>Revolution axis link is invalid.
+
+%1</source>
+        <translation>回転軸リンクは無効です。%1</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Revolution axis direction is zero-length. It must be non-zero.</source>
+        <translation>回転軸方向の長さがゼロです。ここではゼロ以外の値となっている必要があります。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Revolution angle span is zero. It must be non-zero.</source>
+        <translation>回転押し出しの角度幅がゼロです。この値は非ゼロでなければなりません。</translation>
+    </message>
+    <message>
+        <location line="+122"/>
+        <location line="+4"/>
+        <source>Creating Revolve failed.
+
+%1</source>
+        <translation>回転押し出し失敗。
+
+%1</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Selecting... (line or arc)</source>
+        <translation>選択...（線または円弧）</translation>
     </message>
 </context>
 <context>
@@ -2333,7 +3631,7 @@ Please select a valid shape in the drop-down box first.</source>
     <message>
         <location line="+3"/>
         <source>Maximum deviation depending on the model bounding box</source>
-        <translation>最大偏差はモデルのバウンディングボックスに依存します</translation>
+        <translation>モデルのバウンディングボックスに依存する最大偏差</translation>
     </message>
     <message>
         <location line="-34"/>
@@ -2434,7 +3732,7 @@ Please select a valid shape in the drop-down box first.</source>
     <message>
         <location line="+26"/>
         <source>Default line color</source>
-        <translation>デフォルトの線の色</translation>
+        <translation>線の既定色</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2493,7 +3791,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::FaceColors</name>
     <message>
-        <location filename="../../TaskFaceColors.cpp" line="+394"/>
+        <location filename="../../TaskFaceColors.cpp" line="+395"/>
         <source>Face colors</source>
         <translation>面の色</translation>
     </message>
@@ -2528,7 +3826,7 @@ Please select a valid shape in the drop-down box first.</source>
         <translation type="obsolete">頂点/連線</translation>
     </message>
     <message>
-        <location filename="../../TaskLoft.cpp" line="+73"/>
+        <location filename="../../TaskLoft.cpp" line="+75"/>
         <location line="+145"/>
         <source>Vertex/Edge/Wire/Face</source>
         <translation>頂点/辺/法線/面</translation>
@@ -2633,7 +3931,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::OffsetWidget</name>
     <message>
-        <location filename="../../TaskOffset.cpp" line="+166"/>
+        <location filename="../../TaskOffset.cpp" line="+204"/>
         <source>Input error</source>
         <translation>入力エラー</translation>
     </message>
@@ -2641,7 +3939,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::ResultModel</name>
     <message>
-        <location filename="../../TaskCheckGeometry.cpp" line="+338"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+340"/>
         <source>Name</source>
         <translation>名前</translation>
     </message>
@@ -2659,7 +3957,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::ShapeBuilderWidget</name>
     <message>
-        <location filename="../../TaskShapeBuilder.cpp" line="+171"/>
+        <location filename="../../TaskShapeBuilder.cpp" line="+204"/>
         <location line="+19"/>
         <location line="+28"/>
         <location line="+52"/>
@@ -2727,7 +4025,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::SweepWidget</name>
     <message>
-        <location filename="../../TaskSweep.cpp" line="+414"/>
+        <location filename="../../TaskSweep.cpp" line="+416"/>
         <source>Vertex/Wire</source>
         <translation>頂点/連線</translation>
     </message>
@@ -2801,9 +4099,170 @@ Please select a valid shape in the drop-down box first.</source>
     </message>
 </context>
 <context>
+    <name>PartGui::TaskAttacher</name>
+    <message>
+        <location filename="../../TaskAttacher.ui" line="+14"/>
+        <source>Form</source>
+        <translation>フォーム</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Selection accepted</source>
+        <translation>選択成功</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Reference 1</source>
+        <translation>参照1</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 2</source>
+        <translation>参照2</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 3</source>
+        <translation>参照3</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Reference 4</source>
+        <translation>参照4</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Attachment mode:</source>
+        <translation>アタッチメントモード:</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Mirror of superPlacement property. Extra placement is expressed in local space of object being attached.</source>
+        <translation>上位の配置プロパティーのミラー。追加される配置はアタッチされているオブジェクトのローカル空間で表現されます。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location filename="../../TaskAttacher.cpp" line="+297"/>
+        <source>Extra placement:</source>
+        <translation>追加の配置:</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>X:</source>
+        <translation>X:</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Y:</source>
+        <translation>Y:</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Z:</source>
+        <translation>z:</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Yaw:</source>
+        <translation>縦回転:</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Pitch:</source>
+        <translation>ピッチ:</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Roll:</source>
+        <translation>横回転:</translation>
+    </message>
+    <message>
+        <location line="+92"/>
+        <source>Flip sides</source>
+        <translation>側面を反転</translation>
+    </message>
+    <message>
+        <location filename="../../TaskAttacher.cpp" line="-17"/>
+        <source>OCC error: %1</source>
+        <translation>OCCエラー: %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>unknown error</source>
+        <translation>不明なエラー</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Attachment mode failed: %1</source>
+        <translation>アタッチメントモード失敗: %1</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Not attached</source>
+        <translation>アタッチされていません。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Attached with mode %1</source>
+        <translation>モード %1 でアタッチ</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Extra placement (inactive - not attached):</source>
+        <translation>追加の配置（非アクティブ - アタッチされていません）:</translation>
+    </message>
+    <message>
+        <location line="+272"/>
+        <source>Face</source>
+        <translation>面</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Edge</source>
+        <translation>エッジ</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Vertex</source>
+        <translation>頂点</translation>
+    </message>
+    <message>
+        <location line="+58"/>
+        <source>Selecting...</source>
+        <translation>選択...</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Reference%1</source>
+        <translation>参照 %1</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Not editable because rotation part of superplacement is bound by expressions.</source>
+        <translation>上位の配置の回転部分が式で制限されているため編集できません。</translation>
+    </message>
+    <message>
+        <location line="+55"/>
+        <source>Reference combinations:
+</source>
+        <translation>参照の組み合わせ:
+</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1 (add %2)</source>
+        <translation>%1（%2を追加）</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>%1 (add more references)</source>
+        <translation>%1（さらに参照を追加）</translation>
+    </message>
+</context>
+<context>
     <name>PartGui::TaskCheckGeometryDialog</name>
     <message>
-        <location filename="../../TaskCheckGeometry.cpp" line="+548"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+567"/>
         <source>Shape Content</source>
         <translation>シェイプのコンテンツ</translation>
     </message>
@@ -2811,7 +4270,7 @@ Please select a valid shape in the drop-down box first.</source>
 <context>
     <name>PartGui::TaskCheckGeometryResults</name>
     <message>
-        <location line="-511"/>
+        <location line="-530"/>
         <source>Check Geometry</source>
         <translation>幾何形状のチェック</translation>
     </message>
@@ -2977,6 +4436,14 @@ Please select a valid shape in the drop-down box first.</source>
     <message>
         <source>Select dragger to modify</source>
         <translation type="obsolete">Select dragger to modify</translation>
+    </message>
+</context>
+<context>
+    <name>PartGui::TaskDlgAttacher</name>
+    <message>
+        <location filename="../../TaskAttacher.cpp" line="+200"/>
+        <source>Datum dialog: Input error</source>
+        <translation>データムダイアログ: 入力エラー</translation>
     </message>
 </context>
 <context>
@@ -3223,7 +4690,7 @@ in the 3D view for the sweep path.</source>
 <context>
     <name>PartGui::ThicknessWidget</name>
     <message>
-        <location filename="../../TaskThickness.cpp" line="+101"/>
+        <location filename="../../TaskThickness.cpp" line="+103"/>
         <location line="+165"/>
         <location line="+10"/>
         <source>Thickness</source>
@@ -3246,40 +4713,93 @@ in the 3D view for the sweep path.</source>
     </message>
 </context>
 <context>
+    <name>Part_FaceMaker</name>
+    <message>
+        <location filename="../../../App/FaceMaker.cpp" line="+172"/>
+        <source>Simple</source>
+        <translation>シンプル</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Makes separate plane face from every wire independently. No support for holes; wires can be on different planes.</source>
+        <translation>各ワイヤーごとに独立に分かれた平面フェイスを作成。ホールはサポートされていません。またワイヤーは異なる平面上に存在できます。</translation>
+    </message>
+    <message>
+        <location filename="../../../App/FaceMakerBullseye.cpp" line="+69"/>
+        <source>Bull&apos;s-eye facemaker</source>
+        <translation>ブルズ・アイ・フェイスメーカー</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Supports making planar faces with holes with islands.</source>
+        <translation>穴、穴の内側に浮かぶ島状の形状のある平面の作成がサポートされます。</translation>
+    </message>
+    <message>
+        <location filename="../../../App/FaceMakerCheese.cpp" line="+248"/>
+        <source>Cheese facemaker</source>
+        <translation>チーズ・フェイスメーカー</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Supports making planar faces with holes, but no islands inside holes.</source>
+        <translation>穴のある平面の作成はサポートしますが、穴の内側に浮かぶ島のようなものは出来ません。</translation>
+    </message>
+    <message>
+        <location filename="../../../App/FeatureExtrusion.cpp" line="+507"/>
+        <source>Part Extrude facemaker</source>
+        <translation>パーツ押し出しフェイスメーカー</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Supports making faces with holes, does not support nesting.</source>
+        <translation>サポートされている穴を作成する面では、入れ子をサポートしていません。</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
-        <location filename="../../Command.cpp" line="-1131"/>
-        <location line="+77"/>
-        <location line="+82"/>
-        <location line="+187"/>
-        <location line="+50"/>
-        <location line="+959"/>
+        <location filename="../../Command.cpp" line="-1444"/>
+        <location line="+97"/>
+        <location line="+102"/>
+        <location line="+299"/>
+        <location line="+51"/>
+        <location line="+1121"/>
         <source>Wrong selection</source>
         <translation>誤った選択</translation>
     </message>
     <message>
-        <location line="-1354"/>
-        <location line="+396"/>
+        <location line="-1669"/>
+        <location line="+549"/>
         <source>Select two shapes please.</source>
         <translation>2つの図形を選択してください。</translation>
     </message>
     <message>
-        <location line="-386"/>
-        <location line="+82"/>
-        <location line="+82"/>
+        <location line="-539"/>
+        <location line="+102"/>
+        <location line="+102"/>
         <source>Non-solids selected</source>
         <translation>非ソリッドが選択されています</translation>
     </message>
     <message>
-        <location line="-163"/>
-        <location line="+82"/>
-        <location line="+82"/>
+        <location line="-203"/>
+        <location line="+102"/>
+        <location line="+102"/>
         <source>The use of non-solids for boolean operations may lead to unexpected results.
 Do you want to continue?</source>
         <translation>非ソリッドをブーリアン演算に用いると、予期しない結果を引き起こす可能性があります。続行しますか？</translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="-118"/>
+        <source>Select two shapes or more, please. Or, select one compound containing two or more shapes to compute common between.</source>
+        <translation>複数のシェイプ、または共通部分を計算する複数のシェイプが入ったコンパウンドを1つ選択してください。</translation>
+    </message>
+    <message>
+        <location line="+102"/>
+        <source>Select two shapes or more, please. Or, select one compound containing two or more shapes to be fused.</source>
+        <translation>複数のシェイプ、または結合する複数のシェイプが入ったコンパウンドを1つ選択してください。</translation>
+    </message>
+    <message>
+        <location line="+299"/>
         <source>Select one shape or more, please.</source>
         <translation>シェイプを 1 つ以上を選択してください。</translation>
     </message>
@@ -3304,7 +4824,7 @@ Do you want to continue?</source>
         <translation type="obsolete">すべてのファイル (*.*)</translation>
     </message>
     <message>
-        <location filename="../../CommandSimple.cpp" line="+59"/>
+        <location filename="../../CommandSimple.cpp" line="+61"/>
         <source>Sewing Tolerance</source>
         <translation>縫い合わせのトレランス</translation>
     </message>
@@ -3314,7 +4834,7 @@ Do you want to continue?</source>
         <translation>図形の縫い合わせ用のトレランスを入力してください</translation>
     </message>
     <message>
-        <location filename="../../ViewProviderMirror.cpp" line="+77"/>
+        <location filename="../../ViewProviderMirror.cpp" line="+78"/>
         <source>Edit mirror plane</source>
         <translation>鏡像面を編集</translation>
     </message>
@@ -3329,7 +4849,7 @@ Do you want to continue?</source>
         <translation>オフセットを編集</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+86"/>
         <source>Edit thickness</source>
         <translation>厚さを編集</translation>
     </message>
@@ -3338,7 +4858,7 @@ Do you want to continue?</source>
         <translation type="obsolete">変換</translation>
     </message>
     <message>
-        <location filename="../../AppPartGui.cpp" line="+180"/>
+        <location filename="../../AppPartGui.cpp" line="+207"/>
         <location line="+1"/>
         <source>Part design</source>
         <translation>部品設計</translation>
@@ -3355,38 +4875,36 @@ Do you want to continue?</source>
         <translation>表示</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="-269"/>
-        <location line="+82"/>
         <source>Select two shapes or more, please.</source>
-        <translation>2つ以上の図形を選択してください．</translation>
+        <translation type="obsolete">2つ以上の図形を選択してください．</translation>
     </message>
     <message>
-        <location line="+387"/>
+        <location filename="../../Command.cpp" line="+204"/>
         <source>All CAD Files</source>
         <translation>全てのCADファイル</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation>すべてのファイル</translation>
     </message>
     <message>
-        <location line="+804"/>
+        <location line="+963"/>
         <source>You have to select either two edges or two wires.</source>
         <translation>2 つのエッジまたは 2 本のワイヤを選択する必要があります。</translation>
     </message>
     <message>
-        <location filename="../../ViewProviderMirror.cpp" line="-325"/>
+        <location filename="../../ViewProviderMirror.cpp" line="-330"/>
         <source>Edit fillet edges</source>
         <translation>フィレットエッジを編集</translation>
     </message>
     <message>
-        <location filename="../../ViewProviderExt.cpp" line="+697"/>
+        <location filename="../../ViewProviderExt.cpp" line="+840"/>
         <source>Set colors...</source>
         <translation>色を設定...</translation>
     </message>
     <message>
-        <location filename="../../TaskCheckGeometry.cpp" line="-305"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="-307"/>
         <source>Compound</source>
         <translation>複合体</translation>
     </message>
@@ -3406,27 +4924,36 @@ Do you want to continue?</source>
         <translation>シェル</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../TaskAttacher.cpp" line="-879"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+1"/>
         <source>Face</source>
         <translation>面</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+1"/>
         <source>Wire</source>
         <translation>ワイヤー</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../TaskAttacher.cpp" line="-9"/>
+        <location line="+33"/>
+        <source>No reference selected</source>
+        <translation>参照が選択されていません。</translation>
+    </message>
+    <message>
+        <location line="-21"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+1"/>
         <source>Edge</source>
         <translation>エッジ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+3"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+1"/>
         <source>Vertex</source>
         <translation>頂点</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location filename="../../TaskCheckGeometry.cpp" line="+1"/>
         <source>Shape</source>
         <translation>シェイプ</translation>
     </message>
@@ -3663,29 +5190,34 @@ Do you want to continue?</source>
     </message>
     <message>
         <location line="+1"/>
+        <source>BOPAlgo_InvalidCurveOnSurface</source>
+        <translation>BOPAlgo_InvalidCurveOnSurface</translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>BOPAlgo NotValid</source>
         <translation>BOPAlgo 不正です</translation>
     </message>
     <message>
-        <location line="+284"/>
-        <location line="+162"/>
+        <location line="+285"/>
+        <location line="+181"/>
         <source>Invalid</source>
         <translation>無効です</translation>
     </message>
     <message>
         <location filename="../../TaskDimension.cpp" line="+552"/>
-        <location line="+1040"/>
+        <location line="+1046"/>
         <source>Selections</source>
         <translation>選択</translation>
     </message>
     <message>
-        <location line="-1033"/>
-        <location line="+1040"/>
+        <location line="-1039"/>
+        <location line="+1046"/>
         <source>Control</source>
         <translation type="unfinished">Control</translation>
     </message>
     <message>
-        <location line="-265"/>
+        <location line="-269"/>
         <source>Reset Dialog</source>
         <translation>ダイアログのリセット</translation>
     </message>

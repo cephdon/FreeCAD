@@ -1404,7 +1404,7 @@ namespace VISCOUS_3D
 #define dumpMoveComm(n,txt)
 #define dumpCmd(txt)
 #define dumpFunctionEnd()
-#define dumpChangeNodes(f)
+#define dumpChangeNodes(f) {}
 #define debugMsg( txt ) {}
 #endif
 }
@@ -3096,7 +3096,7 @@ gp_XYZ _ViscousBuilder::getFaceNormal(const SMDS_MeshNode* node,
       isOK = false;
       return p.XYZ();
     }
-    Quantity_Parameter U,V;
+    Standard_Real U,V;
     projector.LowerDistanceParameters(U,V);
     uv.SetCoord( U,V );
   }
@@ -3606,7 +3606,7 @@ void _ViscousBuilder::computeGeomSize( _SolidData& data )
 {
   data._geomSize = Precision::Infinite();
   double intersecDist;
-  auto_ptr<SMESH_ElementSearcher> searcher
+  unique_ptr<SMESH_ElementSearcher> searcher
     ( SMESH_MeshAlgos::GetElementSearcher( *getMeshDS(),
                                            data._proxyMesh->GetFaces( data._solid )) );
 
@@ -3948,7 +3948,7 @@ bool _ViscousBuilder::smoothAndCheck(_SolidData& data,
   // Check if the last segments of _LayerEdge intersects 2D elements;
   // checked elements are either temporary faces or faces on surfaces w/o the layers
 
-  auto_ptr<SMESH_ElementSearcher> searcher
+  unique_ptr<SMESH_ElementSearcher> searcher
     ( SMESH_MeshAlgos::GetElementSearcher( *getMeshDS(),
                                            data._proxyMesh->GetFaces( data._solid )) );
 
@@ -4464,7 +4464,7 @@ bool _ViscousBuilder::updateNormals( _SolidData&         data,
 
   SMDS_ElemIteratorPtr fIt( new SMDS_ElementVectorIterator( tmpFaces.begin(),
                                                             tmpFaces.end()));
-  auto_ptr<SMESH_ElementSearcher> searcher
+  unique_ptr<SMESH_ElementSearcher> searcher
     ( SMESH_MeshAlgos::GetElementSearcher( *getMeshDS(), fIt ));
 
   // 1) Find intersections
@@ -6645,8 +6645,10 @@ bool _ViscousBuilder::shrink()
     dumpFunction(SMESH_Comment("beforeShrinkFace")<<f2sd->first); // debug
     SMDS_ElemIteratorPtr fIt = smDS->GetElements();
     while ( fIt->more() )
+    {
       if ( const SMDS_MeshElement* f = fIt->next() )
         dumpChangeNodes( f );
+    }
     dumpFunctionEnd();
 
     // Replace source nodes by target nodes in mesh faces to shrink

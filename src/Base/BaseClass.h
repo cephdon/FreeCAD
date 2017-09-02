@@ -41,6 +41,15 @@ private: \
   static Base::Type classTypeId
 
 
+/// Like TYPESYSTEM_HEADER, but declare getTypeId as 'override'
+#define TYPESYSTEM_HEADER_WITH_OVERRIDE() \
+public: \
+  static Base::Type getClassTypeId(void); \
+  virtual Base::Type getTypeId(void) const override; \
+  static void init(void);\
+  static void *create(void);\
+private: \
+  static Base::Type classTypeId
 
 
 /// define to implement a  subclass of Base::BaseClass
@@ -104,11 +113,10 @@ public:
 };
 
 /**
- * Template that works just like dynamic_cast, but expects the argument to
- * inherit from Base::BaseClass.
- *
- */
-
+  * Template that works just like dynamic_cast, but expects the argument to
+  * inherit from Base::BaseClass.
+  *
+  */
 template<typename T> T * freecad_dynamic_cast(Base::BaseClass * t)
 {
     if (t && t->isDerivedFrom(T::getClassTypeId()))
@@ -116,13 +124,12 @@ template<typename T> T * freecad_dynamic_cast(Base::BaseClass * t)
     else
         return 0;
 }
-
+ 
 /**
  * Template that works just like dynamic_cast, but expects the argument to
  * inherit from a const Base::BaseClass.
  *
  */
-
 template<typename T> const T * freecad_dynamic_cast(const Base::BaseClass * t)
 {
     if (t && t->isDerivedFrom(T::getClassTypeId()))

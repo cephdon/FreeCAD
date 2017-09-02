@@ -26,6 +26,7 @@
 
 #include <Gui/ViewProviderGeometryObject.h>
 #include <Gui/ViewProviderBuilder.h>
+#include <Gui/ViewProviderPythonFeature.h>
 
 #include <CXX/Objects.hxx>
 
@@ -52,7 +53,8 @@ public:
                     std::vector<unsigned long>&,
                     std::vector<unsigned long>&,
                     bool &edgeOnly,
-                    bool ShowInner
+                    bool ShowInner,
+                    int MaxFacesShowInner
                    ) const;
 };
 
@@ -73,6 +75,7 @@ public:
     App::PropertyFloatConstraint LineWidth;
     App::PropertyBool     BackfaceCulling;
     App::PropertyBool     ShowInner;
+    App::PropertyInteger  MaxFacesShowInner;
 
     void attach(App::DocumentObject *pcObject);
     void setDisplayMode(const char* ModeName);
@@ -162,6 +165,9 @@ protected:
 private:
     class Private;
 };
+
+typedef Gui::ViewProviderPythonFeatureT<ViewProviderFemMesh> ViewProviderFemMeshPython;
+
 
 } //namespace FemGui
 

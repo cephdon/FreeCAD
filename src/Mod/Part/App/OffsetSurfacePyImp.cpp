@@ -24,6 +24,7 @@
 #include "PreCompiled.h"
 #ifndef _PreComp_
 # include <Geom_OffsetSurface.hxx>
+# include <memory>
 #endif
 
 #include <Base/VectorPy.h>
@@ -31,8 +32,8 @@
 
 #include "OCCError.h"
 #include "Geometry.h"
-#include "OffsetSurfacePy.h"
-#include "OffsetSurfacePy.cpp"
+#include <Mod/Part/App/OffsetSurfacePy.h>
+#include <Mod/Part/App/OffsetSurfacePy.cpp>
 
 using namespace Part;
 
@@ -59,7 +60,7 @@ int OffsetSurfacePy::PyInit(PyObject* args, PyObject* /*kwd*/)
         return -1;
 
     GeometryPy* pcGeo = static_cast<GeometryPy*>(pGeom);
-    Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+    Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
         (pcGeo->getGeometryPtr()->handle());
     if (surf.IsNull()) {
         PyErr_SetString(PyExc_TypeError, "geometry is not a surface");
@@ -67,44 +68,39 @@ int OffsetSurfacePy::PyInit(PyObject* args, PyObject* /*kwd*/)
     }
 
     try {
-        Handle_Geom_OffsetSurface surf2 = new Geom_OffsetSurface(surf, offset);
+        Handle(Geom_OffsetSurface) surf2 = new Geom_OffsetSurface(surf, offset);
         getGeomOffsetSurfacePtr()->setHandle(surf2);
         return 0;
     }
-    catch (Standard_Failure) {
-        Handle_Standard_Failure e = Standard_Failure::Caught();
-        PyErr_SetString(PartExceptionOCCError, e->GetMessageString());
+    catch (Standard_Failure& e) {
+
+        PyErr_SetString(PartExceptionOCCError, e.GetMessageString());
         return -1;
     }
 }
 
-PyObject* OffsetSurfacePy::uIso(PyObject *)
-{
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
-}
-
-PyObject* OffsetSurfacePy::vIso(PyObject *)
-{
-    PyErr_SetString(PyExc_NotImplementedError, "Not yet implemented");
-    return 0;
-}
-
 Py::Float OffsetSurfacePy::getOffsetValue(void) const
 {
-    Handle_Geom_OffsetSurface surf = Handle_Geom_OffsetSurface::DownCast(getGeometryPtr()->handle());
+    Handle(Geom_OffsetSurface) surf = Handle(Geom_OffsetSurface)::DownCast(getGeometryPtr()->handle());
     return Py::Float(surf->Offset());
 }
 
 void  OffsetSurfacePy::setOffsetValue(Py::Float arg)
 {
-    Handle_Geom_OffsetSurface surf = Handle_Geom_OffsetSurface::DownCast(getGeometryPtr()->handle());
+    Handle(Geom_OffsetSurface) surf = Handle(Geom_OffsetSurface)::DownCast(getGeometryPtr()->handle());
     surf->SetOffsetValue((double)arg);
 }
 
 Py::Object OffsetSurfacePy::getBasisSurface(void) const
 {
-    throw Py::Exception(PyExc_NotImplementedError, "Not yet implemented");
+    Handle(Geom_OffsetSurface) surf = Handle(Geom_OffsetSurface)::DownCast
+        (getGeometryPtr()->handle());
+    if (surf.IsNull()) {
+        throw Py::TypeError("geometry is not a surface");
+    }
+
+    std::unique_ptr<GeomSurface> geo(makeFromSurface(surf->BasisSurface()));
+    return Py::asObject(geo->getPyObject());
 }
 
 void  OffsetSurfacePy::setBasisSurface(Py::Object arg)
@@ -112,20 +108,20 @@ void  OffsetSurfacePy::setBasisSurface(Py::Object arg)
     PyObject* p = arg.ptr();
     if (PyObject_TypeCheck(p, &(GeometryPy::Type))) {
         GeometryPy* pcGeo = static_cast<GeometryPy*>(p);
-        Handle_Geom_Surface surf = Handle_Geom_Surface::DownCast
+        Handle(Geom_Surface) surf = Handle(Geom_Surface)::DownCast
             (pcGeo->getGeometryPtr()->handle());
         if (surf.IsNull()) {
             throw Py::TypeError("geometry is not a surface");
         }
 
         try {
-            Handle_Geom_OffsetSurface surf2 = Handle_Geom_OffsetSurface::DownCast
+            Handle(Geom_OffsetSurface) surf2 = Handle(Geom_OffsetSurface)::DownCast
                 (getGeometryPtr()->handle());
             surf2->SetBasisSurface(surf);
         }
-        catch (Standard_Failure) {
-            Handle_Standard_Failure e = Standard_Failure::Caught();
-            throw Py::Exception(e->GetMessageString());
+        catch (Standard_Failure& e) {
+    
+            throw Py::Exception(e.GetMessageString());
         }
     }
 }

@@ -4,27 +4,27 @@
 <context>
     <name>CmdPointsConvert</name>
     <message>
-        <location filename="../../Command.cpp" line="+184"/>
+        <location filename="../../Command.cpp" line="+191"/>
         <source>Points</source>
         <translation>Punten</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Convert to points...</source>
-        <translation type="unfinished">Convert to points...</translation>
+        <translation>Converteer naar punten...</translation>
     </message>
     <message>
         <location line="+1"/>
         <location line="+1"/>
         <location line="+1"/>
         <source>Convert to points</source>
-        <translation type="unfinished">Convert to points</translation>
+        <translation>Converteer naar punten</translation>
     </message>
 </context>
 <context>
     <name>CmdPointsExport</name>
     <message>
-        <location line="-78"/>
+        <location line="-82"/>
         <source>Points</source>
         <translation>Punten</translation>
     </message>
@@ -44,7 +44,7 @@
 <context>
     <name>CmdPointsImport</name>
     <message>
-        <location line="-51"/>
+        <location line="-53"/>
         <source>Points</source>
         <translation>Punten</translation>
     </message>
@@ -62,9 +62,29 @@
     </message>
 </context>
 <context>
+    <name>CmdPointsMerge</name>
+    <message>
+        <location line="+256"/>
+        <source>Points</source>
+        <translation type="unfinished">Punten</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Merge point clouds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+1"/>
+        <location line="+1"/>
+        <source>Merge several point clouds into one</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CmdPointsPolyCut</name>
     <message>
-        <location line="+203"/>
+        <location line="-49"/>
         <source>Points</source>
         <translation>Punten</translation>
     </message>
@@ -84,7 +104,7 @@
 <context>
     <name>CmdPointsTransform</name>
     <message>
-        <location line="-125"/>
+        <location line="-129"/>
         <source>Points</source>
         <translation>Punten</translation>
     </message>
@@ -253,26 +273,26 @@
         <translation type="obsolete">ASCII-punten (*.asc);;alle bestanden (*.*)</translation>
     </message>
     <message>
-        <location filename="../../Command.cpp" line="-78"/>
-        <location line="+49"/>
+        <location filename="../../Command.cpp" line="-80"/>
+        <location line="+51"/>
         <source>Ascii Points</source>
         <translation>ASCII-punten</translation>
     </message>
     <message>
-        <location line="-49"/>
-        <location line="+49"/>
+        <location line="-51"/>
+        <location line="+51"/>
         <source>All Files</source>
-        <translation type="unfinished">All Files</translation>
+        <translation>Alle bestanden</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+74"/>
         <source>Distance</source>
         <translation>Afstand</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter maximum distance:</source>
-        <translation type="unfinished">Enter maximum distance:</translation>
+        <translation>Geef maximale afstand op:</translation>
     </message>
 </context>
 <context>

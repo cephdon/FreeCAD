@@ -57,6 +57,37 @@
     </message>
 </context>
 <context>
+    <name>App::Property</name>
+    <message>
+        <source>The displayed size of the origin</source>
+        <translation>原點之顯示大小</translation>
+    </message>
+    <message>
+        <source>Visual size of the feature</source>
+        <translation>特徵之顯示大小</translation>
+    </message>
+    <message>
+        <source>&lt;empty&gt;</source>
+        <translation type="unfinished">&lt;empty&gt;</translation>
+    </message>
+    <message>
+        <source>Angle</source>
+        <translation>角度</translation>
+    </message>
+    <message>
+        <source>Axis</source>
+        <translation>軸</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation>位置</translation>
+    </message>
+    <message>
+        <source>Base</source>
+        <translation>基礎</translation>
+    </message>
+</context>
+<context>
     <name>CmdTestConsoleOutput</name>
     <message>
         <source>Standard-Test</source>
@@ -144,38 +175,11 @@
     </message>
     <message>
         <source>&amp;Discard</source>
-        <translation>放棄(&amp;D)</translation>
+        <translation>捨棄(&amp;D)</translation>
     </message>
     <message>
         <source>Ok</source>
         <translation>確認</translation>
-    </message>
-</context>
-<context>
-    <name>DlgUnitCalculator</name>
-    <message>
-        <source>Units calculator</source>
-        <translation>單位計算機</translation>
-    </message>
-    <message>
-        <source>as:</source>
-        <translation>作為：</translation>
-    </message>
-    <message>
-        <source>=&gt;</source>
-        <translation>=&gt;</translation>
-    </message>
-    <message>
-        <source>Help</source>
-        <translation>説明</translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation>複製</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>關閉</translation>
     </message>
 </context>
 <context>
@@ -325,6 +329,25 @@ while doing a left or right click and move the mouse up or down</source>
     </message>
 </context>
 <context>
+    <name>Gui::DAG::Model</name>
+    <message>
+        <source>Rename</source>
+        <translation>重新命名</translation>
+    </message>
+    <message>
+        <source>Rename object</source>
+        <translation>重新命名物件</translation>
+    </message>
+    <message>
+        <source>Finish editing</source>
+        <translation>完成編輯</translation>
+    </message>
+    <message>
+        <source>Finish editing object</source>
+        <translation>完成編輯物件</translation>
+    </message>
+</context>
+<context>
     <name>Gui::Dialog::AboutApplication</name>
     <message>
         <source>About</source>
@@ -351,10 +374,6 @@ while doing a left or right click and move the mouse up or down</source>
         <translation>發行日期</translation>
     </message>
     <message>
-        <source>License...</source>
-        <translation>授權...</translation>
-    </message>
-    <message>
         <source>Copy to clipboard</source>
         <translation>複製至剪貼簿</translation>
     </message>
@@ -365,6 +384,18 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source>Word size</source>
         <translation>字型大小</translation>
+    </message>
+    <message>
+        <source>Credits</source>
+        <translation>鳴謝</translation>
+    </message>
+    <message>
+        <source>FreeCAD would be nowhere without their efforts:</source>
+        <translation>FreeCAD能夠在此皆因這些人的貢獻：</translation>
+    </message>
+    <message>
+        <source>License</source>
+        <translation>版權</translation>
     </message>
 </context>
 <context>
@@ -530,6 +561,21 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source>%1 at %2</source>
         <translation>在 %2 的 %1</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::Dialog::DlgCheckableMessageBox</name>
+    <message>
+        <source>Dialog</source>
+        <translation>對話方塊</translation>
+    </message>
+    <message>
+        <source>TextLabel</source>
+        <translation>文字標籤</translation>
+    </message>
+    <message>
+        <source>CheckBox</source>
+        <translation>勾選盒</translation>
     </message>
 </context>
 <context>
@@ -732,6 +778,10 @@ while doing a left or right click and move the mouse up or down</source>
     <message>
         <source></source>
         <translation> </translation>
+    </message>
+    <message>
+        <source>Clear</source>
+        <translation>清除</translation>
     </message>
 </context>
 <context>
@@ -1025,11 +1075,11 @@ Please define another shortcut.</source>
     </message>
     <message>
         <source>Neon GNC</source>
-        <translation type="unfinished">Neon GNC</translation>
+        <translation>Neon GNC</translation>
     </message>
     <message>
         <source>Neon PHC</source>
-        <translation type="unfinished">Neon PHC</translation>
+        <translation>Neon PHC</translation>
     </message>
     <message>
         <source>Obsidian</source>
@@ -1185,28 +1235,40 @@ Please define another shortcut.</source>
         <source>Style sheet:</source>
         <translation>樣式表：</translation>
     </message>
+    <message>
+        <source>Python console</source>
+        <translation>Python 控制台</translation>
+    </message>
+    <message>
+        <source>Enable word wrap</source>
+        <translation type="unfinished">Enable word wrap</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgGeneralImp</name>
     <message>
-        <source>Default (%1 x %1)</source>
-        <translation>預設值 (%1 0x %1)</translation>
-    </message>
-    <message>
-        <source>Small (%1 x %1)</source>
-        <translation>小 (%1 0x %1)</translation>
-    </message>
-    <message>
-        <source>Large (%1 x %1)</source>
-        <translation>大 (%1 0x %1)</translation>
-    </message>
-    <message>
-        <source>Extra large (%1 x %1)</source>
-        <translation>特大(%1 x %1)</translation>
-    </message>
-    <message>
         <source>No style sheet</source>
         <translation>無樣式表</translation>
+    </message>
+    <message>
+        <source>Small (%1px)</source>
+        <translation type="unfinished">Small (%1px)</translation>
+    </message>
+    <message>
+        <source>Medium (%1px)</source>
+        <translation type="unfinished">Medium (%1px)</translation>
+    </message>
+    <message>
+        <source>Large (%1px)</source>
+        <translation type="unfinished">Large (%1px)</translation>
+    </message>
+    <message>
+        <source>Extra large (%1px)</source>
+        <translation type="unfinished">Extra large (%1px)</translation>
+    </message>
+    <message>
+        <source>Custom (%1px)</source>
+        <translation type="unfinished">Custom (%1px)</translation>
     </message>
 </context>
 <context>
@@ -1667,6 +1729,18 @@ Specify another directory, please.</source>
         <source>Please select an object from the list</source>
         <translation>請從清單中選擇一個物件</translation>
     </message>
+    <message>
+        <source>Search</source>
+        <translation>搜尋</translation>
+    </message>
+    <message>
+        <source>A search pattern to filter the results above</source>
+        <translation type="unfinished">A search pattern to filter the results above</translation>
+    </message>
+    <message>
+        <source>None (Remove link)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgReportView</name>
@@ -1871,6 +1945,10 @@ Specify another directory, please.</source>
     <message>
         <source>Perspective renderin&amp;g</source>
         <translation>以透視算繪(&amp;g)</translation>
+    </message>
+    <message>
+        <source>Use OpenGL Vertex Buffer Object (experimental)</source>
+        <translation type="unfinished">Use OpenGL Vertex Buffer Object (experimental)</translation>
     </message>
 </context>
 <context>
@@ -2137,6 +2215,10 @@ Specify another directory, please.</source>
         <source>Save AutoRecovery information every</source>
         <translation>儲存每個自動修復資訊</translation>
     </message>
+    <message>
+        <source>Add the program logo to the generated thumbnail</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsEditorImp</name>
@@ -2391,6 +2473,14 @@ Specify another directory, please.</source>
         <source>Insert comment</source>
         <translation>插入評論</translation>
     </message>
+    <message>
+        <source>Transparent</source>
+        <translation type="unfinished">Transparent</translation>
+    </message>
+    <message>
+        <source>Add watermark</source>
+        <translation type="unfinished">Add watermark</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsMacro</name>
@@ -2485,6 +2575,18 @@ Specify another directory, please.</source>
         <source>Imperial decimal (in/lb)</source>
         <translation>美制(吋/磅)</translation>
     </message>
+    <message utf8="true">
+        <source>Building Euro (cm/m²/m³)</source>
+        <translation>歐規 (cm/m²/m³)</translation>
+    </message>
+    <message>
+        <source>Building US (ft-in/sqft/cuft)</source>
+        <translation>美規 (ft-in/sqft/cuft)</translation>
+    </message>
+    <message>
+        <source>Metric small parts &amp; CNC(mm, mm/min)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgSettingsViewColor</name>
@@ -2520,57 +2622,55 @@ Specify another directory, please.</source>
         <source>Simple color</source>
         <translation>簡單顏色</translation>
     </message>
+    <message>
+        <source>Pick radius (px):</source>
+        <translation>選取半徑 (px)：</translation>
+    </message>
+    <message>
+        <source>Sets the area of confusion for picking elements in 3D view. Larger value make it easier to pick stuff, but will make some small features impossible to select.</source>
+        <translation>設定於3D視圖中選取物件的範圍,較大可以使得選取較為方便,但同時也會使一些較小的特徵無法被選取。</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::DlgTipOfTheDay</name>
-    <message>
-        <source>Tip of the day</source>
-        <translation>每日提示</translation>
-    </message>
-    <message>
-        <source>&lt;b&gt;&lt;font face=&quot;Times New Roman&quot;&gt;&lt;font size=&quot;+3&quot;&gt;Did you know...&lt;/font&gt;&lt;/font&gt;&lt;/b&gt;</source>
-        <translation>&lt;b&gt;&lt;font face=&quot;Times New Roman&quot;&gt;&lt;font size=&quot;+3&quot;&gt;你知道嗎...&lt;/font&gt;&lt;/font&gt;&lt;/b&gt;</translation>
-    </message>
-    <message>
-        <source>&amp;Show tips at start up</source>
-        <translation>啟動時顯示提示(&amp;S)</translation>
-    </message>
-    <message>
-        <source>Alt+S</source>
-        <translation>Alt+S</translation>
-    </message>
-    <message>
-        <source>&amp;Next Tip</source>
-        <translation>下一個提示(&amp;N)</translation>
-    </message>
-    <message>
-        <source>Alt+N</source>
-        <translation>Alt+N</translation>
-    </message>
-    <message>
-        <source>&amp;Close</source>
-        <translation>關閉(&amp;C)</translation>
-    </message>
-    <message>
-        <source>Alt+C</source>
-        <translation>Alt+C</translation>
-    </message>
     <message>
         <source></source>
         <translation> </translation>
     </message>
 </context>
 <context>
-    <name>Gui::Dialog::DlgTipOfTheDayImp</name>
+    <name>Gui::Dialog::DlgUnitCalculator</name>
     <message>
-        <source>Download failed: %1
-</source>
-        <translation>下載失敗：%1
-</translation>
+        <source>Units calculator</source>
+        <translation>單位計算機</translation>
     </message>
     <message>
-        <source>If you want to learn more about FreeCAD you must go to %1 or press the Help item in the Help menu.</source>
-        <translation>如果您想瞭解更多有關 FreeCAD 您必須到 %1，或按説明功能表中的説明項目。</translation>
+        <source>as:</source>
+        <translation>作為：</translation>
+    </message>
+    <message>
+        <source>=&gt;</source>
+        <translation>=&gt;</translation>
+    </message>
+    <message>
+        <source>Quantity:</source>
+        <translation>數量：</translation>
+    </message>
+    <message>
+        <source>Units:</source>
+        <translation>單位：</translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation>説明</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>複製</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>關閉</translation>
     </message>
 </context>
 <context>
@@ -2660,7 +2760,7 @@ Specify another directory, please.</source>
         <source>Press &apos;Start Recovery&apos; to start the recovery process of the doument listed below.
 
 The &apos;Status&apos; column shows whether the document could be recovered.</source>
-        <translation>按下「開始修復」來進行下列檔案之修復動作。
+        <translation type="obsolete">按下「開始修復」來進行下列檔案之修復動作。
 「狀態」欄將顯示哪些檔案可被修復。</translation>
     </message>
     <message>
@@ -2701,82 +2801,45 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     </message>
     <message>
         <source>Cleanup...</source>
-        <translation type="unfinished"></translation>
+        <translation>清除...</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished">刪除</translation>
+        <translation>刪除</translation>
     </message>
     <message>
         <source>Cleanup</source>
-        <translation type="unfinished"></translation>
+        <translation>清除</translation>
     </message>
     <message>
         <source>Are you sure you want to delete the selected transient directories?</source>
-        <translation type="unfinished"></translation>
+        <translation>您確定要刪除已選之暫存資料夾？</translation>
     </message>
     <message>
         <source>When deleting the selected transient directory you won&apos;t be able to recover any files afterwards.</source>
-        <translation type="unfinished"></translation>
+        <translation>當刪除已選之暫存資料夾後您將無法進行任何檔案之復原。</translation>
     </message>
     <message>
         <source>Are you sure you want to delete all transient directories?</source>
-        <translation type="unfinished"></translation>
+        <translation>您確定要移除所有暫存資料夾嗎？</translation>
     </message>
     <message>
         <source>When deleting all transient directory you won&apos;t be able to recover any files afterwards.</source>
-        <translation type="unfinished"></translation>
+        <translation>刪除所有暫存資料夾後您將無法進行任何檔案之復原</translation>
     </message>
     <message>
         <source>Finished</source>
-        <translation type="unfinished"></translation>
+        <translation>完成</translation>
     </message>
     <message>
         <source>Transient directories deleted.</source>
+        <translation>暫存資料夾已刪除</translation>
+    </message>
+    <message>
+        <source>Press &apos;Start Recovery&apos; to start the recovery process of the document listed below.
+
+The &apos;Status&apos; column shows whether the document could be recovered.</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Gui::Dialog::DownloadDialog</name>
-    <message>
-        <source>Download</source>
-        <translation>下載</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>取消</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>關閉</translation>
-    </message>
-    <message>
-        <source>There already exists a file called %1 in the current directory. Overwrite?</source>
-        <translation>於此位置已有%1檔案,是否覆寫?</translation>
-    </message>
-    <message>
-        <source>Unable to save the file %1: %2.</source>
-        <translation>無法下載檔案%1:%2</translation>
-    </message>
-    <message>
-        <source>Downloading %1.</source>
-        <translation>%1下載中</translation>
-    </message>
-    <message>
-        <source>Download canceled.</source>
-        <translation>取消下載</translation>
-    </message>
-    <message>
-        <source>Download failed: %1.</source>
-        <translation>下載失敗：%1。</translation>
-    </message>
-    <message>
-        <source>Downloaded %1 to current directory.</source>
-        <translation>下載%1於目前位置</translation>
-    </message>
-    <message>
-        <source>%1 at %2</source>
-        <translation>在 %2 的 %1</translation>
     </message>
 </context>
 <context>
@@ -2795,7 +2858,7 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     </message>
     <message>
         <source>Error opening save file: %1</source>
-        <translation>開啟儲存檔案錯誤：%1</translation>
+        <translation type="obsolete">開啟儲存檔案錯誤：%1</translation>
     </message>
     <message>
         <source>Error saving: %1</source>
@@ -2840,6 +2903,10 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     <message>
         <source>MB</source>
         <translation>MB</translation>
+    </message>
+    <message>
+        <source>Error opening saved file: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2916,13 +2983,6 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     <message>
         <source>X:</source>
         <translation>X：</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::Dialog::LicenseDialog</name>
-    <message>
-        <source>Copyright</source>
-        <translation>版權</translation>
     </message>
 </context>
 <context>
@@ -3148,6 +3208,10 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
         <source>Euler angles (XY&apos;Z&apos;&apos;)</source>
         <translation>歐拉角 (XY&apos;Z&apos;&apos;)</translation>
     </message>
+    <message>
+        <source>Use center of mass</source>
+        <translation type="unfinished">Use center of mass</translation>
+    </message>
 </context>
 <context>
     <name>Gui::Dialog::PrintModel</name>
@@ -3275,45 +3339,6 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     </message>
 </context>
 <context>
-    <name>Gui::DockWnd::HelpView</name>
-    <message>
-        <source>Previous</source>
-        <translation>上一步</translation>
-    </message>
-    <message>
-        <source>Next</source>
-        <translation>下一步</translation>
-    </message>
-    <message>
-        <source>Home</source>
-        <translation>首頁</translation>
-    </message>
-    <message>
-        <source>Open</source>
-        <translation>開啟</translation>
-    </message>
-    <message>
-        <source>Open file</source>
-        <translation>開啟檔案</translation>
-    </message>
-    <message>
-        <source>All HTML files (*.html *.htm)</source>
-        <translation>所有 HTML檔案(*.html *.htm)</translation>
-    </message>
-    <message>
-        <source>External browser</source>
-        <translation>外部瀏覽器</translation>
-    </message>
-    <message>
-        <source>No external browser found. Specify in preferences, please</source>
-        <translation>沒有找到外部瀏覽器，請在偏好設定中設定</translation>
-    </message>
-    <message>
-        <source>Starting of %1 failed</source>
-        <translation>啟動 %1 失敗</translation>
-    </message>
-</context>
-<context>
     <name>Gui::DockWnd::PropertyDockView</name>
     <message>
         <source>Property View</source>
@@ -3382,7 +3407,7 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
     <name>Gui::DockWnd::SelectionView</name>
     <message>
         <source>Property View</source>
-        <translation>屬性檢視</translation>
+        <translation type="obsolete">屬性檢視</translation>
     </message>
     <message>
         <source>Search</source>
@@ -3436,60 +3461,29 @@ The &apos;Status&apos; column shows whether the document could be recovered.</so
         <source>Reveals this object and its subelements in the python console.</source>
         <translation>將此物件及其子元素於python主控台中顯示</translation>
     </message>
-</context>
-<context>
-    <name>Gui::DockWnd::TextBrowser</name>
     <message>
-        <source>Could not open file.</source>
-        <translation>無法開啟檔案。</translation>
+        <source>Mark to recompute</source>
+        <translation>執行重新運算</translation>
     </message>
     <message>
-        <source>You tried to access the address %1 which is currently unavailable. Please make sure that the URL exists and try reloading the page.</source>
-        <translation>您試圖訪問的位址 %1 目前無法使用。請確認該 URL 存在，並嘗試重新載入頁面。</translation>
+        <source>Mark this object to be recomputed</source>
+        <translation>對此物件執行重新運算</translation>
     </message>
     <message>
-        <source>Connecting to %1</source>
-        <translation>連接到 %1</translation>
+        <source>Selection View</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sending to %1</source>
-        <translation>傳送到 %1</translation>
+        <source>The number of selected items</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reading from %1</source>
-        <translation>讀取 %1</translation>
+        <source>Duplicate subshape</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Download failed: %1.</source>
-        <translation>下載失敗：%1。</translation>
-    </message>
-    <message>
-        <source>Previous</source>
-        <translation>上一步</translation>
-    </message>
-    <message>
-        <source>Forward</source>
-        <translation>前進</translation>
-    </message>
-    <message>
-        <source>Home</source>
-        <translation>首頁</translation>
-    </message>
-    <message>
-        <source>Refresh</source>
-        <translation>重新整理</translation>
-    </message>
-    <message>
-        <source>Copy</source>
-        <translation>複製</translation>
-    </message>
-    <message>
-        <source>Select all</source>
-        <translation>全選</translation>
-    </message>
-    <message>
-        <source>No description for</source>
-        <translation>沒有說明</translation>
+        <source>Creates a standalone copy of this subshape in the document</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3664,6 +3658,34 @@ Do you want to save your changes?</source>
         <source>PDF format</source>
         <translation>PDF 格式</translation>
     </message>
+    <message>
+        <source>Graphviz not found</source>
+        <translation type="unfinished">未發現Graphviz</translation>
+    </message>
+    <message>
+        <source>Graphviz couldn&apos;t be found on your system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read more about it here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do you want to specify its installation path if it&apos;s already installed?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Graphviz installation path</source>
+        <translation type="unfinished">Graphviz安裝路徑</translation>
+    </message>
+    <message>
+        <source>Graphviz failed</source>
+        <translation type="unfinished">Graphviz錯誤</translation>
+    </message>
+    <message>
+        <source>Graphviz failed to create an image file</source>
+        <translation type="unfinished">Graphviz建立影像失敗</translation>
+    </message>
 </context>
 <context>
     <name>Gui::InputField</name>
@@ -3796,15 +3818,15 @@ Do you want to copy them, too?</source>
     </message>
     <message>
         <source>There is a rendering issue on MacOS.</source>
-        <translation>於 MacOS 上有算繪的問題</translation>
-    </message>
-    <message>
-        <source>See &lt;a href=&quot;http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</source>
-        <translation>詳見 &lt;a href=&quot;http://www.freecadweb.org/wiki/index.php?title=OpenGL_on_MacOS&quot;&gt; wiki&lt;/a&gt; 有更多說明</translation>
+        <translation type="obsolete">於 MacOS 上有算繪的問題</translation>
     </message>
     <message>
         <source>Don&apos;t show again</source>
-        <translation>不再提示</translation>
+        <translation type="obsolete">不再提示</translation>
+    </message>
+    <message>
+        <source>See &lt;a href=&quot;http://www.freecadweb.org/wiki/OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</source>
+        <translation type="obsolete">See &lt;a href=&quot;http://www.freecadweb.org/wiki/OpenGL_on_MacOS&quot;&gt; the wiki&lt;/a&gt; for more information</translation>
     </message>
 </context>
 <context>
@@ -3988,7 +4010,11 @@ How do you want to proceed?</source>
     <name>Gui::PropertyEditor::LinkLabel</name>
     <message>
         <source>Edit...</source>
-        <translation>編輯...</translation>
+        <translation type="obsolete">編輯...</translation>
+    </message>
+    <message>
+        <source>Change the linked object</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4223,6 +4249,21 @@ Do you want to specify another directory?</source>
     </message>
 </context>
 <context>
+    <name>Gui::TaskCSysDragger</name>
+    <message>
+        <source>Increments</source>
+        <translation>增加量</translation>
+    </message>
+    <message>
+        <source>Translation Increment: </source>
+        <translation>平移變化量：</translation>
+    </message>
+    <message>
+        <source>Rotation Increment: </source>
+        <translation>旋轉變化量：</translation>
+    </message>
+</context>
+<context>
     <name>Gui::TaskView::TaskAppearance</name>
     <message>
         <source>Plot mode:</source>
@@ -4276,6 +4317,33 @@ Do you want to specify another directory?</source>
     <message>
         <source>edit selection</source>
         <translation>編輯所選物件</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::TextDocumentEditorView</name>
+    <message>
+        <source>Text updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The text of the underlying object has changed. Discard changes and reload the text from the object?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yes, reload.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unsaved document</source>
+        <translation type="unfinished">未儲存文件</translation>
+    </message>
+    <message>
+        <source>Do you want to save your changes before closing?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you don&apos;t save, your changes will be lost.</source>
+        <translation type="unfinished">若不儲存將會失去所有修改</translation>
     </message>
 </context>
 <context>
@@ -4350,6 +4418,26 @@ Do you want to specify another directory?</source>
         <source>Activate document %1</source>
         <translation>啟動檔案 %1</translation>
     </message>
+    <message>
+        <source>Skip recomputes</source>
+        <translation>略過重新運算</translation>
+    </message>
+    <message>
+        <source>Enable or disable recomputations of document</source>
+        <translation>啟用或停用檔案重新運算之功能</translation>
+    </message>
+    <message>
+        <source>Mark to recompute</source>
+        <translation>執行重新運算</translation>
+    </message>
+    <message>
+        <source>Mark this object to be recomputed</source>
+        <translation>對此物件執行重新運算</translation>
+    </message>
+    <message>
+        <source>%1, Internal name: %2</source>
+        <translation type="unfinished">%1, Internal name: %2</translation>
+    </message>
 </context>
 <context>
     <name>Gui::View3DInventor</name>
@@ -4375,6 +4463,37 @@ Do you want to specify another directory?</source>
     <message>
         <source>Select the &apos;%1&apos; workbench</source>
         <translation>選擇 &apos;%1&apos; 工作台</translation>
+    </message>
+</context>
+<context>
+    <name>MAC_APPLICATION_MENU</name>
+    <message>
+        <source>Services</source>
+        <translation>服務</translation>
+    </message>
+    <message>
+        <source>Hide %1</source>
+        <translation>隱藏 %1</translation>
+    </message>
+    <message>
+        <source>Hide Others</source>
+        <translation>隱藏其他</translation>
+    </message>
+    <message>
+        <source>Show All</source>
+        <translation>顯示全部</translation>
+    </message>
+    <message>
+        <source>Preferences...</source>
+        <translation>偏好設定...</translation>
+    </message>
+    <message>
+        <source>Quit %1</source>
+        <translation>離開 %1</translation>
+    </message>
+    <message>
+        <source>About %1</source>
+        <translation>關於%1</translation>
     </message>
 </context>
 <context>
@@ -4512,6 +4631,10 @@ Do you want to specify another directory?</source>
         <source>Display properties</source>
         <translation>顯示屬性</translation>
     </message>
+    <message>
+        <source>DAG View</source>
+        <translation>DAG視圖</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -4611,18 +4734,6 @@ Do you want to continue?</source>
     <message>
         <source>Cannot open file &apos;%1&apos;.</source>
         <translation>無法開啟檔案&apos;%1&apos;</translation>
-    </message>
-    <message>
-        <source>Docked</source>
-        <translation>嵌入</translation>
-    </message>
-    <message>
-        <source>Undocked</source>
-        <translation>未嵌入</translation>
-    </message>
-    <message>
-        <source>Fullscreen</source>
-        <translation>全螢幕</translation>
     </message>
     <message>
         <source>files</source>
@@ -4872,6 +4983,41 @@ Be aware the point where you click matters.</source>
     <message>
         <source>Not allowed to delete system-wide macros</source>
         <translation>不允取刪除系統自有之巨集</translation>
+    </message>
+    <message>
+        <source>Origin</source>
+        <translation>原點</translation>
+    </message>
+    <message>
+        <source> %1.%2.%3 </source>
+        <translation> %1.%2.%3 </translation>
+    </message>
+    <message>
+        <source>Translation: </source>
+        <translation>平移：</translation>
+    </message>
+    <message>
+        <source>Rotation: </source>
+        <translation>旋轉：</translation>
+    </message>
+    <message>
+        <source>Delete group content?</source>
+        <translation>刪除群組內容？</translation>
+    </message>
+    <message>
+        <source>The %1 is not empty, delete its content as well?</source>
+        <translation type="unfinished">The %1 is not empty, delete its content as well?</translation>
+    </message>
+</context>
+<context>
+    <name>SelectionFilter</name>
+    <message>
+        <source>Not allowed:</source>
+        <translation>不允許：</translation>
+    </message>
+    <message>
+        <source>Selection not allowed by filter</source>
+        <translation>不允許透過篩選器選取</translation>
     </message>
 </context>
 <context>
@@ -5942,6 +6088,21 @@ Be aware the point where you click matters.</source>
     </message>
 </context>
 <context>
+    <name>StdCmdSelectVisibleObjects</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>標準視景</translation>
+    </message>
+    <message>
+        <source>Select visible objects</source>
+        <translation>選取顯示中物件</translation>
+    </message>
+    <message>
+        <source>Select visible objects in the active document</source>
+        <translation>於編輯中檔案選取顯示中之物件</translation>
+    </message>
+</context>
+<context>
     <name>StdCmdSetAppearance</name>
     <message>
         <source>Standard-View</source>
@@ -6440,11 +6601,11 @@ Be aware the point where you click matters.</source>
     </message>
     <message>
         <source>Stereo red/cyan</source>
-        <translation type="unfinished">Stereo red/cyan</translation>
+        <translation>立體 紅/青</translation>
     </message>
     <message>
         <source>Switch stereo viewing to red/cyan</source>
-        <translation type="unfinished">Switch stereo viewing to red/cyan</translation>
+        <translation>切換立體視圖至 紅/青</translation>
     </message>
 </context>
 <context>
@@ -6650,6 +6811,21 @@ Be aware the point where you click matters.</source>
     </message>
 </context>
 <context>
+    <name>StdViewDock</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>標準視景</translation>
+    </message>
+    <message>
+        <source>Docked</source>
+        <translation>嵌入</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>無論是在全螢幕，在未嵌入或嵌入模式中均顯示當前視圖</translation>
+    </message>
+</context>
+<context>
     <name>StdViewDockUndockFullscreen</name>
     <message>
         <source>Standard-View</source>
@@ -6658,6 +6834,21 @@ Be aware the point where you click matters.</source>
     <message>
         <source>Document window</source>
         <translation>檔案視窗</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>無論是在全螢幕，在未嵌入或嵌入模式中均顯示當前視圖</translation>
+    </message>
+</context>
+<context>
+    <name>StdViewFullscreen</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>標準視景</translation>
+    </message>
+    <message>
+        <source>Fullscreen</source>
+        <translation>全螢幕</translation>
     </message>
     <message>
         <source>Display the active view either in fullscreen, in undocked or docked mode</source>
@@ -6677,6 +6868,21 @@ Be aware the point where you click matters.</source>
     <message>
         <source>Creates a screenshot of the active view</source>
         <translation>建立作業中的螢幕截圖</translation>
+    </message>
+</context>
+<context>
+    <name>StdViewUndock</name>
+    <message>
+        <source>Standard-View</source>
+        <translation>標準視景</translation>
+    </message>
+    <message>
+        <source>Undocked</source>
+        <translation>未嵌入</translation>
+    </message>
+    <message>
+        <source>Display the active view either in fullscreen, in undocked or docked mode</source>
+        <translation>無論是在全螢幕，在未嵌入或嵌入模式中均顯示當前視圖</translation>
     </message>
 </context>
 <context>
@@ -6708,9 +6914,13 @@ Be aware the point where you click matters.</source>
         <translation>物件相依</translation>
     </message>
     <message>
-        <source>This object is referenced by other objects and thus these objects might get broken.
-Are you sure to continue?</source>
-        <translation>此物件被其他物件所參考,因此這些物件可能會損毀,您確定要繼續嗎?</translation>
+        <source>The following, referencing objects might break.
+
+Are you sure you want to continue?
+
+</source>
+        <translation>下列參考物件可能已損毀。
+您確定要繼續嗎？</translation>
     </message>
 </context>
 <context>
@@ -6755,6 +6965,22 @@ Are you sure to continue?</source>
         <source>Points mode</source>
         <translation>點模式</translation>
     </message>
+    <message>
+        <source>Hidden line</source>
+        <translation type="unfinished">Hidden line</translation>
+    </message>
+    <message>
+        <source>Hidden line mode</source>
+        <translation type="unfinished">Hidden line mode</translation>
+    </message>
+    <message>
+        <source>No shading</source>
+        <translation type="unfinished">No shading</translation>
+    </message>
+    <message>
+        <source>No shading mode</source>
+        <translation type="unfinished">No shading mode</translation>
+    </message>
 </context>
 <context>
     <name>Std_DuplicateSelection</name>
@@ -6772,16 +6998,16 @@ Do you want to duplicate them, too?</source>
     <name>Std_ExportGraphviz</name>
     <message>
         <source>Graphviz not found</source>
-        <translation>未發現Graphviz</translation>
+        <translation type="obsolete">未發現Graphviz</translation>
     </message>
     <message>
         <source>Graphviz couldn&apos;t be found on your system.
 Do you want to specify its installation path if it&apos;s already installed?</source>
-        <translation>於您的系統上未發現Graphviz,若已有安裝,您要指定安裝位置嗎?</translation>
+        <translation type="obsolete">於您的系統上未發現Graphviz,若已有安裝,您要指定安裝位置嗎?</translation>
     </message>
     <message>
         <source>Graphviz installation path</source>
-        <translation>Graphviz安裝路徑</translation>
+        <translation type="obsolete">Graphviz安裝路徑</translation>
     </message>
     <message>
         <source>Dependency graph</source>
@@ -6789,11 +7015,11 @@ Do you want to specify its installation path if it&apos;s already installed?</so
     </message>
     <message>
         <source>Graphviz failed</source>
-        <translation>Graphviz錯誤</translation>
+        <translation type="obsolete">Graphviz錯誤</translation>
     </message>
     <message>
         <source>Graphviz failed to create an image file</source>
-        <translation>Graphviz建立影像失敗</translation>
+        <translation type="obsolete">Graphviz建立影像失敗</translation>
     </message>
 </context>
 <context>
@@ -6803,8 +7029,12 @@ Do you want to specify its installation path if it&apos;s already installed?</so
         <translation>這將會放棄自前次儲存檔案後所有的變更</translation>
     </message>
     <message>
-        <source>Are you sure?</source>
-        <translation>您確定嗎?</translation>
+        <source>Revert document</source>
+        <translation>還原檔案</translation>
+    </message>
+    <message>
+        <source>Do you want to continue?</source>
+        <translation>您要繼續嗎？</translation>
     </message>
 </context>
 <context>
@@ -6889,12 +7119,12 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:20pt; font-weight:600;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Created for Qt 4.3.x&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;&quot;&gt;www.ii-system.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+        <translation>&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;span style=&quot; font-size:20pt; font-weight:600;&quot;&gt;iisTaskPanel&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:20pt; font-weight:600;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:20pt; font-weight:600;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Created for Qt 4.3.x&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:20pt; font-weight:600;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;由Qt 4.3.x所編譯&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt; font-weight:600;&quot;&gt;www.ii-system.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>

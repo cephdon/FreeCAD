@@ -68,6 +68,7 @@
 #include <queue>
 #include <bitset>
 #include <exception>
+#include <random>
 
 // Boost
 #include <boost/signals.hpp>
@@ -84,7 +85,6 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/exception.hpp>
-
 
 #endif //_PreComp_
 

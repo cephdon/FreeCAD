@@ -89,7 +89,7 @@ void ShapeBinder::getFilteredReferences(App::PropertyLinkSubList* prop, Part::Fe
 
     //we only allow one part feature, so get the first one we find
     size_t index = 0;
-    while(!objs[index]->isDerivedFrom(Part::Feature::getClassTypeId()) && index < objs.size())
+    while(index < objs.size() && !objs[index]->isDerivedFrom(Part::Feature::getClassTypeId()))
         index++;
 
     //do we have any part feature?
@@ -142,7 +142,7 @@ Part::TopoShape ShapeBinder::buildShapeFromReferences( Part::Feature* obj, std::
 
     try {
         if(!operators.empty() && !base.isNull())
-            return base.multiFuse(operators);
+            return base.fuse(operators);
     }
     catch(...) {
         return base;

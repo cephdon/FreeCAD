@@ -24,7 +24,8 @@
 #include "PreCompiled.h"
 
 #ifndef _PreComp_
-#   include <assert.h>
+# include <assert.h>
+# include <sstream>
 #endif
 
 /// Here the FreeCAD includes sorted by Base,App,Gui......
@@ -44,15 +45,12 @@ using namespace App;
 using namespace Base;
 using namespace std;
 
-
-
-
 //**************************************************************************
 //**************************************************************************
 // PropertyLink
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyLink , App::Property);
+TYPESYSTEM_SOURCE(App::PropertyLink , App::Property)
 
 //**************************************************************************
 // Construction/Destruction
@@ -76,6 +74,13 @@ PropertyLink::~PropertyLink()
 void PropertyLink::setValue(App::DocumentObject * lValue)
 {
     aboutToSetValue();
+#ifndef USE_OLD_DAG
+    // maintain the back link in the DocumentObject class
+    if(_pcLink)
+        _pcLink->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    if(lValue)
+        lValue->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
     _pcLink=lValue;
     hasSetValue();
 }
@@ -131,6 +136,7 @@ void PropertyLink::Restore(Base::XMLReader &reader)
 
     if (name != "") {
         DocumentObject* parent = static_cast<DocumentObject*>(getContainer());
+
         App::Document* document = parent->getDocument();
         DocumentObject* object = document ? document->getObject(name.c_str()) : 0;
         if (!object) {
@@ -162,16 +168,17 @@ Property *PropertyLink::Copy(void) const
 
 void PropertyLink::Paste(const Property &from)
 {
-    aboutToSetValue();
-    _pcLink = dynamic_cast<const PropertyLink&>(from)._pcLink;
-    hasSetValue();
+    if(!from.isDerivedFrom(PropertyLink::getClassTypeId()))
+        throw Base::TypeError("Incompatible property to paste to");
+
+    setValue(static_cast<const PropertyLink&>(from)._pcLink);
 }
 
 //**************************************************************************
 // PropertyLinkList
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyLinkList, App::PropertyLists);
+TYPESYSTEM_SOURCE(App::PropertyLinkList, App::PropertyLists)
 
 //**************************************************************************
 // Construction/Destruction
@@ -199,10 +206,23 @@ int PropertyLinkList::getSize(void) const
 
 void PropertyLinkList::setValue(DocumentObject* lValue)
 {
+#ifndef USE_OLD_DAG   
+    //maintain the back link in the DocumentObject class
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    if(lValue)
+        lValue->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
+    
     if (lValue){
         aboutToSetValue();
         _lValueList.resize(1);
         _lValueList[0] = lValue;
+        hasSetValue();
+    }
+    else {
+        aboutToSetValue();
+        _lValueList.clear();
         hasSetValue();
     }
 }
@@ -210,6 +230,13 @@ void PropertyLinkList::setValue(DocumentObject* lValue)
 void PropertyLinkList::setValues(const std::vector<DocumentObject*>& lValue)
 {
     aboutToSetValue();
+#ifndef USE_OLD_DAG
+    //maintain the back link in the DocumentObject class
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    for(auto *obj : lValue)
+        obj->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
     _lValueList = lValue;
     hasSetValue();
 }
@@ -265,8 +292,14 @@ void PropertyLinkList::Save(Base::Writer &writer) const
 {
     writer.Stream() << writer.ind() << "<LinkList count=\"" << getSize() << "\">" << endl;
     writer.incInd();
-    for (int i = 0; i<getSize(); i++)
-        writer.Stream() << writer.ind() << "<Link value=\"" << _lValueList[i]->getNameInDocument() << "\"/>" << endl;;
+    for (int i = 0; i<getSize(); i++) {
+        DocumentObject* obj = _lValueList[i];
+        if (obj)
+            writer.Stream() << writer.ind() << "<Link value=\"" << obj->getNameInDocument() << "\"/>" << endl;
+        else
+            writer.Stream() << writer.ind() << "<Link value=\"\"/>" << endl;
+    }
+
     writer.decInd();
     writer.Stream() << writer.ind() << "</LinkList>" << endl;
 }
@@ -277,7 +310,15 @@ void PropertyLinkList::Restore(Base::XMLReader &reader)
     reader.readElement("LinkList");
     // get the value of my attribute
     int count = reader.getAttributeAsInteger("count");
-    assert(getContainer()->getTypeId().isDerivedFrom(App::DocumentObject::getClassTypeId()));
+    App::PropertyContainer* container = getContainer();
+    if (!container)
+        throw Base::RuntimeError("Property is not part of a container");
+    if (!container->getTypeId().isDerivedFrom(App::DocumentObject::getClassTypeId())) {
+        std::stringstream str;
+        str << "Container is not a document object ("
+            << container->getTypeId().getName() << ")";
+        throw Base::TypeError(str.str());
+    }
 
     std::vector<DocumentObject*> values;
     values.reserve(count);
@@ -313,9 +354,7 @@ Property *PropertyLinkList::Copy(void) const
 
 void PropertyLinkList::Paste(const Property &from)
 {
-    aboutToSetValue();
-    _lValueList = dynamic_cast<const PropertyLinkList&>(from)._lValueList;
-    hasSetValue();
+    setValues(dynamic_cast<const PropertyLinkList&>(from)._lValueList);
 }
 
 unsigned int PropertyLinkList::getMemSize(void) const
@@ -327,7 +366,7 @@ unsigned int PropertyLinkList::getMemSize(void) const
 // PropertyLinkSub
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyLinkSub , App::Property);
+TYPESYSTEM_SOURCE(App::PropertyLinkSub , App::Property)
 
 //**************************************************************************
 // Construction/Destruction
@@ -351,6 +390,12 @@ PropertyLinkSub::~PropertyLinkSub()
 void PropertyLinkSub::setValue(App::DocumentObject * lValue, const std::vector<std::string> &SubList)
 {
     aboutToSetValue();
+#ifndef USE_OLD_DAG
+    if (_pcLinkSub)
+        _pcLinkSub->_removeBackLink(static_cast<App::DocumentObject*>(getContainer()));
+    if (lValue)
+        lValue->_addBackLink(static_cast<App::DocumentObject*>(getContainer()));
+#endif
     _pcLinkSub=lValue;
     _cSubList = SubList;
     hasSetValue();
@@ -504,17 +549,14 @@ Property *PropertyLinkSub::Copy(void) const
 
 void PropertyLinkSub::Paste(const Property &from)
 {
-    aboutToSetValue();
-    _pcLinkSub = dynamic_cast<const PropertyLinkSub&>(from)._pcLinkSub;
-    _cSubList = dynamic_cast<const PropertyLinkSub&>(from)._cSubList;
-    hasSetValue();
+    setValue(dynamic_cast<const PropertyLinkSub&>(from)._pcLinkSub, dynamic_cast<const PropertyLinkSub&>(from)._cSubList);
 }
 
 //**************************************************************************
 // PropertyLinkSubList
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-TYPESYSTEM_SOURCE(App::PropertyLinkSubList , App::PropertyLists);
+TYPESYSTEM_SOURCE(App::PropertyLinkSubList , App::PropertyLists)
 
 //**************************************************************************
 // Construction/Destruction
@@ -543,6 +585,14 @@ int PropertyLinkSubList::getSize(void) const
 
 void PropertyLinkSubList::setValue(DocumentObject* lValue,const char* SubName)
 {
+#ifndef USE_OLD_DAG
+    //maintain backlinks
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    if (lValue)
+        lValue->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
+    
     if (lValue) {
         aboutToSetValue();
         _lValueList.resize(1);
@@ -560,9 +610,22 @@ void PropertyLinkSubList::setValue(DocumentObject* lValue,const char* SubName)
 }
 
 void PropertyLinkSubList::setValues(const std::vector<DocumentObject*>& lValue,const std::vector<const char*>& lSubNames)
-{
+{   
     if (lValue.size() != lSubNames.size())
-        throw Base::Exception("PropertyLinkSubList::setValues: size of subelements list != size of objects list");
+        throw Base::ValueError("PropertyLinkSubList::setValues: size of subelements list != size of objects list");
+    
+#ifndef USE_OLD_DAG
+    //maintain backlinks. _lValueList can contain items multiple times, but we trust the document 
+    //object to ensure that this works
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    
+    //maintain backlinks. lValue can contain items multiple times, but we trust the document 
+    //object to ensure that the backlink is only added once
+    for(auto *obj : lValue)
+        obj->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
+    
     aboutToSetValue();
     _lValueList = lValue;
     _lSubList.resize(lSubNames.size());
@@ -575,7 +638,20 @@ void PropertyLinkSubList::setValues(const std::vector<DocumentObject*>& lValue,c
 void PropertyLinkSubList::setValues(const std::vector<DocumentObject*>& lValue,const std::vector<std::string>& lSubNames)
 {
     if (lValue.size() != lSubNames.size())
-        throw Base::Exception("PropertyLinkSubList::setValues: size of subelements list != size of objects list");
+        throw Base::ValueError("PropertyLinkSubList::setValues: size of subelements list != size of objects list");
+    
+#ifndef USE_OLD_DAG
+    //maintain backlinks. _lValueList can contain items multiple times, but we trust the document 
+    //object to ensure that this works
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    
+    //maintain backlinks. lValue can contain items multiple times, but we trust the document 
+    //object to ensure that the backlink is only added once
+    for(auto *obj : lValue)
+        obj->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
+    
     aboutToSetValue();
     _lValueList = lValue;
     _lSubList   = lSubNames;
@@ -584,13 +660,27 @@ void PropertyLinkSubList::setValues(const std::vector<DocumentObject*>& lValue,c
 
 void PropertyLinkSubList::setValue(DocumentObject* lValue, const std::vector<string> &SubList)
 {
+#ifndef USE_OLD_DAG    
+    //maintain backlinks. _lValueList can contain items multiple times, but we trust the document 
+    //object to ensure that this works
+    for(auto *obj : _lValueList)
+        obj->_removeBackLink(static_cast<DocumentObject*>(getContainer()));
+    
+    //maintain backlinks. lValue can contain items multiple times, but we trust the document 
+    //object to ensure that the backlink is only added once
+    if(lValue)
+        lValue->_addBackLink(static_cast<DocumentObject*>(getContainer()));
+#endif
+    
     aboutToSetValue();
-    int size = SubList.size();
+    std::size_t size = SubList.size();
     this->_lValueList.clear();
+    this->_lSubList.clear();
     if (size == 0) {
-        if (lValue)
+        if (lValue) {
             this->_lValueList.push_back(lValue);
-        this->_lSubList.clear();
+            this->_lSubList.push_back(std::string());
+        }
     }
     else {
         this->_lSubList = SubList;
@@ -659,7 +749,7 @@ std::vector<PropertyLinkSubList::SubSet> PropertyLinkSubList::getSubListValues()
 {
     std::vector<PropertyLinkSubList::SubSet> values;
     if (_lValueList.size() != _lSubList.size())
-        throw Base::Exception("PropertyLinkSubList::getSubListValues: size of subelements list != size of objects list");
+        throw Base::ValueError("PropertyLinkSubList::getSubListValues: size of subelements list != size of objects list");
 
     std::map<App::DocumentObject*, std::vector<std::string> > tmp;
     for (std::size_t i = 0; i < _lValueList.size(); i++) {
@@ -807,7 +897,6 @@ void PropertyLinkSubList::Restore(Base::XMLReader &reader)
     reader.readElement("LinkSubList");
     // get the value of my attribute
     int count = reader.getAttributeAsInteger("count");
-    assert(getContainer()->getTypeId().isDerivedFrom(App::DocumentObject::getClassTypeId()) );
 
     std::vector<DocumentObject*> values;
     values.reserve(count);
@@ -848,10 +937,7 @@ Property *PropertyLinkSubList::Copy(void) const
 
 void PropertyLinkSubList::Paste(const Property &from)
 {
-    aboutToSetValue();
-    _lValueList = dynamic_cast<const PropertyLinkSubList&>(from)._lValueList;
-    _lSubList   = dynamic_cast<const PropertyLinkSubList&>(from)._lSubList;
-    hasSetValue();
+    setValues(dynamic_cast<const PropertyLinkSubList&>(from)._lValueList, dynamic_cast<const PropertyLinkSubList&>(from)._lSubList);
 }
 
 unsigned int PropertyLinkSubList::getMemSize (void) const
